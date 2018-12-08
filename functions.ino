@@ -283,6 +283,45 @@ void get_state() {
 
 
 
+//calculate pitchbend expression based on pressure
+void getExpression() {
+	
+
+
+  if(breathMode < kPressureSingle) {
+
+		int lowerBound = sensorThreshold[0];
+		int upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier));
+		int halfway = (upperBound - lowerBound) >> 1;
+
+
+	  if(newState == 3) {
+
+
+
+
+	
+  	}
+   
+    if(newState == 2) {		
+  	   if (sensorValue < halfway){
+	     expression = - (halfway - sensorValue) * expressionDepth;
+	     }
+       else {expression = (sensorValue - halfway) * expressionDepth;
+        }
+    }
+
+
+
+  }
+
+
+}
+
+
+
+
+
 
 //find how many steps down to the next lower note on the scale. Doing this in a function because the fingering charts can't be read from the main page, due to compilation order.
 void findStepsDown() { 
@@ -452,7 +491,7 @@ pitchBend = 0; //reset the overall pitchbend in preparation for adding up the co
 if (pitchBend > 8191) {pitchBend = 8191;} //cap at 8191 (no pitchbend) if for some reason they add up to more than that
  
 
-pitchBend = 8191 - pitchBend;
+pitchBend = 8191 - pitchBend + expression;
 
 if(prevPitchBend != pitchBend){
    if (pitchBendMode < kPitchBendNone && noteon) {sendUSBMIDI(PITCH_BEND,1,pitchBend & 0x7F,pitchBend >> 7);
