@@ -316,7 +316,7 @@ void getExpression() {
 
   }
 
-if(expression > 4000) {expression = 4000;}
+if(expression > 2000) {expression = 2000;}
 
 }
 

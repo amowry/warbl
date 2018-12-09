@@ -385,7 +385,7 @@ void loop() {
     //Serial.println(learnedPressureSelector[0]);
     //Serial.println(learnedPressure);
    // Serial.println("");
-    //Serial.println(expression);
+    //Serial.println(expressionOn);
 
  
     //FREERAM_PRINT; //uncomment to show free ram (also uncomment library define at top)
