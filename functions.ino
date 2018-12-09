@@ -288,7 +288,7 @@ void getExpression() {
 	
 
 
-  if(breathMode < kPressureSingle) {
+  if(breathMode != kPressureBagless) {
 
 		int lowerBound = sensorThreshold[0];
 		int upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier));
@@ -296,14 +296,15 @@ void getExpression() {
 
 
 	  if(newState == 3) {
-
-
-
-
-	
+       halfway = (lowerBound + halfway) >> 1;
+       if (sensorValue < halfway){
+       expression = - (halfway - sensorValue) * expressionDepth;
+       }
+       else {expression = (sensorValue - halfway) * expressionDepth;
+       }
   	}
    
-    if(newState == 2) {		
+     else if(newState == 2) {		
   	   if (sensorValue < halfway){
 	     expression = - (halfway - sensorValue) * expressionDepth;
 	     }
@@ -315,6 +316,7 @@ void getExpression() {
 
   }
 
+if(expression > 4000) {expression = 4000;}
 
 }
 
@@ -343,6 +345,8 @@ void handleFingerVibrato(){
     if (vibratoEnable==1){
       pitchBend = 8191 - vibratoDepth;
     }
+
+    pitchBend = pitchBend + expression;
       
     if (prevPitchBend != pitchBend) {
       sendUSBMIDI(PITCH_BEND, 1, pitchBend & 0x7F, pitchBend >> 7);
@@ -430,7 +434,7 @@ void handleCustomPitchBend() {
       }
   }
 
-  pitchBend = 8191 - pitchBend;
+  pitchBend = 8191 - pitchBend + expression;
 
   if (prevPitchBend != pitchBend) {
     
@@ -748,6 +752,7 @@ void receiveMIDI() {
             EEPROM.update(45 + mode, secretSelector[mode]);
             EEPROM.update(50 + mode, senseDistanceSelector[mode]);
             EEPROM.update(60 + mode, pitchBendModeSelector[mode]);
+            EEPROM.update(63 + mode, expressionOnSelector[mode]);
             EEPROM.update(70 + mode, breathModeSelector[mode]);
             EEPROM.update(83 + (mode * 2), lowByte(vibratoHolesSelector[mode]));
             EEPROM.update(84 + (mode * 2), highByte(vibratoHolesSelector[mode]));           
@@ -905,6 +910,20 @@ void receiveMIDI() {
           calibration = 2;
           }
 
+
+        if(rx.byte3 == 43){
+          blinkNumber = 1;
+          ledTimer = millis();
+          expressionOnSelector[mode] = 0;
+          loadPrefs();}
+
+
+         if(rx.byte3 == 44){
+          blinkNumber = 1;
+          ledTimer = millis();
+          expressionOnSelector[mode] = 1;
+          loadPrefs();}
+
             
 
 
@@ -958,6 +977,7 @@ void saveSettingsForAllModes() {
     EEPROM.update(45 + i, secretSelector[mode]);
     EEPROM.update(50 + i, senseDistanceSelector[mode]);
     EEPROM.update(60 + i, pitchBendModeSelector[mode]);
+    EEPROM.update(63 + i, expressionOnSelector[mode]);    
     EEPROM.update(70 + i, breathModeSelector[mode]);
     EEPROM.update(83 + (i * 2), lowByte(vibratoHolesSelector[mode]));
     EEPROM.update(84 + (i * 2), highByte(vibratoHolesSelector[mode]));
@@ -1018,6 +1038,7 @@ void loadSettingsForAllModes() {
     customSelector[i] = EEPROM.read(80 + i);
     ventedSelector[i] = EEPROM.read(56 + i);
     secretSelector[i] = EEPROM.read(45 + i);   
+    expressionOnSelector[i] = EEPROM.read(63 + i); 
     pitchBendModeSelector[i] =  EEPROM.read(60 + i);
     breathModeSelector[i] = EEPROM.read(70 + i);
     vibratoHolesSelector[i] = word(EEPROM.read(84 + (i * 2)),EEPROM.read(83 + (i * 2)));
@@ -1061,6 +1082,7 @@ void saveFactorySettings() {
     EEPROM.update(60 + i, pitchBendModeSelector[i]);
     EEPROM.update(70 + i, breathModeSelector[i]);
     EEPROM.update(80 + i, customSelector[i]);
+    EEPROM.update(63 + i, expressionOnSelector[i]);
     EEPROM.update(60 + i, pitchBendModeSelector[i]);
     EEPROM.update(53 + i, noteShiftSelector[i]);
     EEPROM.update(40 + i, modeSelector[i]);
@@ -1131,6 +1153,8 @@ void sendSettings() {
   sendUSBMIDI(CC, 7, 102, 70 + pitchBendMode); //send current pitchBend mode
   sendUSBMIDI(CC, 7, 102, 80 + breathMode); //send current breathMode
   sendUSBMIDI(CC, 7, 109, hysteresis); //send offset for bag mode
+
+  
   if(noteShiftSelector[0] >=0){
     sendUSBMIDI(CC, 7, 111, noteShiftSelector[0]);} //send noteShift, with a transformation for sending negative values over MIDI.
     else{sendUSBMIDI(CC, 7, 111, noteShiftSelector[0] + 127);}
@@ -1149,6 +1173,7 @@ void sendSettings() {
   sendUSBMIDI(CC, 7, 102, 65 + vented); //send vented option
   sendUSBMIDI(CC, 7, 106, 16 + custom); //send custom option
   sendUSBMIDI(CC, 7, 106, 39 + useLearnedPressure); //send calibration option
+  sendUSBMIDI(CC, 7, 106, 43 + expressionOn); //send expressionOn
 
   for (byte i = 0; i < 9; i++) {
     sendUSBMIDI(CC, 7, 106, 20 + i + (10 * (bitRead(vibratoHolesSelector[mode],i)))); //send enabled vibrato holes  
@@ -1533,6 +1558,7 @@ void loadPrefs() {
       pitchBendMode = pitchBendModeSelector[i];
       useLearnedPressure = useLearnedPressureSelector[i];
       learnedPressure = learnedPressureSelector[i];
+      expressionOn = expressionOnSelector[i];
 
         if (pitchBendMode == kPitchBendNone) {
           pitchBend = 8191;

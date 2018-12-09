@@ -116,6 +116,7 @@ byte useLearnedPressureSelector[] = {0,0,0};
 int learnedPressureSelector[] = {0,0,0};
 unsigned int vibratoHolesSelector[] = {0b111111111,0b111111111,0b111111111};
 unsigned int vibratoDepthSelector[] = {1024,1024,1024};
+bool expressionOnSelector[] = {0,0,0};
 
 bool momentary[3][3] = {{0,0,0},{0,0,0},{0,0,0}} ; //whether momentary click behavior is desired for MIDI on/off message sent with a button. Dimension 0 is mode, dimension 1 is button 0,1,2.
 
@@ -223,7 +224,8 @@ unsigned int toneholeScale[] = {0,0,0,0,0,0,0,0,0}; //a scale for normalizing th
 unsigned int vibratoScale[] = {0,0,0,0,0,0,0,0,0}; //same as above but for vibrato
 unsigned int vibratoDepth = 1024; //vibrato depth from 0 (no vibrato) to 8191 (one semitone)
 int expression = 0; //pitchbend up or down from current note based on pressure
-byte expressionDepth = 10; //a factor for calculating pitchBend depth with pressure expression
+byte expressionDepth = 5; //a factor for calculating pitchBend depth with pressure expression
+bool expressionOn = 0;
 
 
 //variables for managing MIDI note output
@@ -351,8 +353,8 @@ void loop() {
   
   if (sensorDataReady && breathMode != kPressureBagless) {
     get_state();//get the breath state from the pressure sensor if there's been a reading and we're not in bagless mode.
-    getExpression(); //calculate pitchbend based on pressure reading
-    } 
+    if(expressionOn) {getExpression();} //calculate pitchbend based on pressure reading    
+  }
     
   shift = ((octaveShift * 12) + noteShift); //add up any transposition.
   
