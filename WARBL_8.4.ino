@@ -28,7 +28,6 @@
 #define  GPIO2_PREFER_SPEED  1 //digitalread speed, see: https://github.com/Locoduino/DIO2/blob/master/examples/standard_outputs/standard_outputs.ino
 
 // MAE FOOFOO 17Nov2018 For finger vibrato 
-#define DIATONICSLIDEHOLECHART_SIZE 26 //number of entries in the diatonic slidehole chart
 #define TINWHISTLE_EXPLICIT_SIZE 64 //the number of entries in the tinwhistle explicit fingering chart
 #define UILLEANN_EXPLICIT_SIZE 128 //the number of entries in the uilleann pipes explicit fingering chart
 #define GHB_EXPLICIT_SIZE 128 //the number of entries in the GHB/Scottish smallpipes fingering chart

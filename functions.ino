@@ -152,7 +152,7 @@ int get_note() {
      return 74;
     }
     
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thunmb hole and bell sensor
+    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
 
       ret = pgm_read_byte(&uilleann_explicit[tempCovered].midi_note);
       vibratoEnable = pgm_read_byte(&uilleann_explicit[tempCovered].vibrato);
@@ -161,19 +161,14 @@ int get_note() {
 
   if (modeSelector[mode] == kModeGHB) { //GHB/Scottish smallpipe mode
 
-     //If back A open, always play the A and allow finger vibrato
+     //If back A open, always play the A
     if ((holeCovered & 0b100000000) == 0){
      return 74;
     }
 
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thunmb hole and bell sensor
-
-    for (uint8_t i = 0; i < GHB_EXPLICIT_SIZE; i++) {
-      if (tempCovered == pgm_read_byte(&GHB_explicit[i].keys)) {
+    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
           ret = pgm_read_byte(&GHB_explicit[tempCovered].midi_note);
         return ret;
-      }
-    }
   }
 
   if (modeSelector[mode] == kModeNorthumbrian) { //Northumbriam smallpipe mode
@@ -328,10 +323,10 @@ if(expression > 2000) {expression = 2000;}
 //find how many steps down to the next lower note on the scale. Doing this in a function because the fingering charts can't be read from the main page, due to compilation order.
 void findStepsDown() { 
    if(modeSelector[mode] == kModeGaita){ 
-     stepsDown = pgm_read_byte(&diatonicSlideHoleChart[tempNewNote-60].steps);} //read stepsDown from the chart.
+     stepsDown = pgm_read_byte(&steps[tempNewNote-60]);} //read stepsDown from the chart.
    else if(modeSelector[mode] == kModeGHB){
-      stepsDown = pgm_read_byte(&diatonicSlideHoleChart[tempNewNote-52].steps);}
-   else {stepsDown = pgm_read_byte(&diatonicSlideHoleChart[tempNewNote-59].steps);} 
+      stepsDown = pgm_read_byte(&steps[tempNewNote-52]);}
+   else {stepsDown = pgm_read_byte(&steps[tempNewNote-59]);} 
   // Serial.println(tempNewNote);
   // Serial.println(stepsDown);
   // Serial.println("");

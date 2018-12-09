@@ -1,38 +1,32 @@
 //Chart for determining the numbers of steps down from the current note to the next lower note on the scale, for sliding
-struct diatonicSlideHoleChart_entry {
-  uint8_t midi_note;
-  uint8_t steps;
-};
+const PROGMEM byte steps[] = {
 
-const struct diatonicSlideHoleChart_entry diatonicSlideHoleChart[DIATONICSLIDEHOLECHART_SIZE]PROGMEM  = { 
-  // MIDI note and the number of steps down to the next lower note on a major scale in the key of D. For other tonics and modes we can begin the lookup in different parts of the table.
-  {59, 1}, //B 
-  {60, 1}, //C
-  {61, 2}, //C#
-  {62, 1}, //D //Ionian starts here
-  {63, 1}, //D#
-  {64, 2}, //E
-  {65, 1}, //F
-  {66, 2}, //F#
-  {67, 1}, //G
-  {68, 1}, //G#
-  {69, 2}, //A //Mixolydian starts here
-  {70, 1}, //Bb //natural minor starts here
-  {71, 2}, //B
-  {72, 1}, //C
-  {73, 2}, //C#
-  {74, 1}, //D
-  {75, 2}, //D#
-  {76, 2}, //E
-  {77, 1}, //F
-  {78, 2}, //F#
-  {79, 1}, //G
-  {80, 1}, //G#
-  {81, 2}, //A
-  {82, 1}, //Bb
-  {83, 2}, //B
-  {84, 1}, //C
-
+  1, //B 59
+  1, //C 60
+  2, //C# 61
+  1, //D 62//Ionian starts here
+  1, //D# 63
+  2, //E 64
+  1, //F 65
+  2, //F# 66
+  1, //G 67
+  1, //G# 68
+  2, //A 69//Mixolydian starts here
+  1, //Bb 70//natural minor starts here
+  2, //B 71
+  1, //C 72
+  2, //C# 73
+  1, //D 74
+  2, //D# 75
+  2, //E 76
+  1, //F 77
+  2, //F# 78
+  1, //G 79
+  1, //G# 80
+  2, //A 81
+  1, //Bb 82
+  2, //B 83
+  1, //C 84
  };
 
 
