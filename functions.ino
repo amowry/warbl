@@ -175,18 +175,6 @@ int get_note() {
 
     uint16_t tempCovered = holeCovered >> 1; //bitshift once to ignore bell sensor reading
 
-
-    /* //We currently don't use any explicit patterns for this one.
-        //first we'll check the explicit chart to look for exact matches.
-      for (uint8_t i = 0; i < NORTHUMBRIAN_EXPLICIT_SIZE; i++) {
-        if (tempCovered == pgm_read_byte(&northumbrian_explicit[i].keys)) {
-          ret = pgm_read_byte(&northumbrian_explicit[i].midi_note);
-          slideHole = pgm_read_byte(&northumbrian_explicit[i].expressive_hole);
-          stepsDown = pgm_read_byte(&northumbrian_explicit[i].distance);
-          return ret;}}
-    */
-    //if we didn't find exact an exact match in the first chart, we move on to the general chart, which only looks at the uppermost uncovered hole
-
     bitWrite(tempCovered, 8, 1); //we set a bit above the highest hole, which will allow us to see if the highest hole is uncovered.
 
     tempCovered = findleftmostunsetbit(tempCovered);  //here we find the index of the leftmost uncovered hole, which will be used to determine the note from the general chart.
@@ -194,8 +182,6 @@ int get_note() {
     for (uint8_t i = 0; i < NORTHUMBRIAN_GENERAL_SIZE; i++) {
       if (tempCovered == pgm_read_byte(&northumbrian_general[i].keys)) {
         ret = pgm_read_byte(&northumbrian_general[i].midi_note);
-        slideHole = pgm_read_byte(&northumbrian_general[i].expressive_hole);
-        stepsDown = pgm_read_byte(&northumbrian_general[i].distance);
         return ret;
       }
     }
@@ -287,11 +273,11 @@ void getExpression() {
 
 		int lowerBound = sensorThreshold[0];
 		int upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier));
-		int halfway = (upperBound - lowerBound) >> 1;
+		int halfway = ((upperBound - lowerBound) >> 1) + lowerBound;
 
 
 	  if(newState == 3) {
-       halfway = (lowerBound + halfway) >> 1;
+       halfway = upperBound + halfway;
        if (sensorValue < halfway){
        expression = - (halfway - sensorValue) * expressionDepth;
        }
@@ -307,12 +293,22 @@ void getExpression() {
         }
     }
 
-
-
   }
 
-if(expression > 2000) {expression = 2000;}
+if(expression > 500) {expression = 500;} //put a caps on it, because in the upper register or in single-register mode, there's no upper limit
+if(expression < -500) {expression = -500;} 
 
+//Serial.println(expression);
+
+ if(pitchBendMode == kPitchBendNone) { //if we're not using vibrato, send the pitchbend now instead of adding it in later.
+pitchBend = 8191 + expression;
+
+
+if(prevPitchBend != pitchBend){ 
+   if (noteon) {sendUSBMIDI(PITCH_BEND,1,pitchBend & 0x7F,pitchBend >> 7);
+   prevPitchBend = pitchBend;}
+   }
+ }
 }
 
 
@@ -327,10 +323,11 @@ void findStepsDown() {
    else if(modeSelector[mode] == kModeGHB){
       stepsDown = pgm_read_byte(&steps[tempNewNote-52]);}
    else {stepsDown = pgm_read_byte(&steps[tempNewNote-59]);} 
-  // Serial.println(tempNewNote);
-  // Serial.println(stepsDown);
-  // Serial.println("");
 }
+
+
+
+
 
 // finger vibrato support for whistle and uilleann fingering
 void handleFingerVibrato(){
@@ -346,7 +343,7 @@ void handleFingerVibrato(){
     if (prevPitchBend != pitchBend) {
       sendUSBMIDI(PITCH_BEND, 1, pitchBend & 0x7F, pitchBend >> 7);
       prevPitchBend = pitchBend;      
-      pitchBendTimer = millis();
+      //pitchBendTimer = millis();
     }
 
 }
@@ -367,9 +364,9 @@ void handleCustomPitchBend() {
     if (((toneholeRead[3] > senseDistance) && (bitRead(holeCovered, 3) != 1)) && ((toneholeRead[2] > senseDistance) && (bitRead(holeCovered, 2) != 1))) {
 
         // Each contributes half of the bend
-        pitchBend = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 4; 
+        pitchBend = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2; 
       
-        pitchBend += ((toneholeRead[2] - senseDistance) * vibratoScale[2]) >> 4; 
+        pitchBend += ((toneholeRead[2] - senseDistance) * vibratoScale[2]) >> 2; 
         
     }
     else
@@ -387,9 +384,12 @@ void handleCustomPitchBend() {
     
     }
      
-    if (pitchBend > 8191) {
-      pitchBend = 8191; //cap at 8191 (no pitchbend) if for some reason they add up to more than that
+    if (pitchBend > vibratoDepth) {
+      pitchBend = vibratoDepth; //cap at max vibrato depth if they combine to add up to more than that (changed by AM in v. 8.5 to fix an unwanted oscillation when both fingers were contributing.
     }
+
+
+    
     
   }
   else
