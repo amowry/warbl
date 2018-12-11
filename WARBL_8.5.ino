@@ -223,7 +223,7 @@ unsigned int toneholeScale[] = {0,0,0,0,0,0,0,0,0}; //a scale for normalizing th
 unsigned int vibratoScale[] = {0,0,0,0,0,0,0,0,0}; //same as above but for vibrato
 unsigned int vibratoDepth = 1024; //vibrato depth from 0 (no vibrato) to 8191 (one semitone)
 int expression = 0; //pitchbend up or down from current note based on pressure
-byte expressionDepth = 5; //a factor for calculating pitchBend depth with pressure expression
+byte expressionDepth = 4; //a factor for calculating pitchBend depth with pressure expression. Can have values of around 1-8
 bool expressionOn = 0;
 
 
@@ -352,7 +352,7 @@ void loop() {
   
   if (sensorDataReady && breathMode != kPressureBagless) {
     get_state();//get the breath state from the pressure sensor if there's been a reading and we're not in bagless mode.
-    if(expressionOn) {getExpression();} //calculate pitchbend based on pressure reading
+
   }
     
   shift = ((octaveShift * 12) + noteShift); //add up any transposition.
@@ -369,15 +369,9 @@ void loop() {
   
   if ((millis() - pitchBendTimer) >= 10){ //check pitchbend very so often
     pitchBendTimer = millis();
-
-   // if (sensorDataReady && breathMode != kPressureBagless) {
-      
-    // }
-
+    if(expressionOn && breathMode != kPressureBagless) {getExpression();} //calculate pitchbend based on pressure reading
     
-   if(!customEnabled && pitchBendMode != kPitchBendNone){
-    handlePitchBend();
-    } 
+   if(!customEnabled && pitchBendMode != kPitchBendNone){handlePitchBend();} 
 
     if (customEnabled) { 
          if (vibratoEnable == 0b000010){
@@ -421,8 +415,9 @@ void loop() {
         if(noteon){sendUSBMIDI(NOTE_OFF, 1, notePlaying, velocity); //always turn off the previous note before turning on the new one.
         if(!customEnabled && pitchBendMode != kPitchBendNone){
           handlePitchBend();
+          pitchBendTimer = millis();}  //check to see if we need to update pitchbend before changing to a new note. 
           } 
-         pitchBendTimer = millis();}  //check to see if we need to update pitchbend before changing to a new note.   
+  
          sendUSBMIDI(NOTE_ON, 1, newNote + shift, velocity);
          notePlaying = newNote + shift;
          prevNote = newNote;

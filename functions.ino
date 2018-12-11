@@ -269,8 +269,6 @@ void getExpression() {
 	
 
 
-  if(breathMode != kPressureBagless) {
-
 	int lowerBound = sensorThreshold[0];
 	int upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier));
 	unsigned int halfway = ((upperBound - lowerBound) >> 1) + lowerBound;
@@ -282,7 +280,7 @@ void getExpression() {
   	}  
 	
   	if (sensorValue < halfway){
-       byte scale = (((halfway-sensorValue)*100)/(halfway - lowerBound)); //should figure out how to do this without dividing.
+       byte scale = (((halfway-sensorValue) * expressionDepth * 20)/(halfway - lowerBound)); //should figure out how to do this without dividing.
 	     expression = - ((scale * scale) >> 3);
 	     }
     else {expression = (sensorValue - halfway) * expressionDepth;   
@@ -291,14 +289,8 @@ void getExpression() {
 
   //Serial.println(expression);
 
-   
-  }
 
-
-
-if(expression > 500) {expression = 500;} //put caps on it, because in the upper register or in single-register mode, there's no upper limit
-if(expression < -2000) {expression = -2000;} 
-
+if(expression > expressionDepth * 200) {expression = expressionDepth * 200;} //put cap on it, because in the upper register or in single-register mode, there's no upper limit
 
 
  if(pitchBendMode == kPitchBendNone) { //if we're not using vibrato, send the pitchbend now instead of adding it in later.
