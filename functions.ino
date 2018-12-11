@@ -271,34 +271,35 @@ void getExpression() {
 
   if(breathMode != kPressureBagless) {
 
-		int lowerBound = sensorThreshold[0];
-		int upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier));
-		int halfway = ((upperBound - lowerBound) >> 1) + lowerBound;
+	int lowerBound = sensorThreshold[0];
+	int upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier));
+	unsigned int halfway = ((upperBound - lowerBound) >> 1) + lowerBound;
 
 
 	  if(newState == 3) {
        halfway = upperBound + halfway;
-       if (sensorValue < halfway){
-       expression = - (halfway - sensorValue) * expressionDepth;
-       }
-       else {expression = (sensorValue - halfway) * expressionDepth;
-       }
-  	}
-   
-     else if(newState == 2) {		
-  	   if (sensorValue < halfway){
-	     expression = - (halfway - sensorValue) * expressionDepth;
+       lowerBound = upperBound;
+  	}  
+	
+  	if (sensorValue < halfway){
+       byte scale = (((halfway-sensorValue)*100)/(halfway - lowerBound)); //should figure out how to do this without dividing.
+	     expression = - ((scale * scale) >> 3);
 	     }
-       else {expression = (sensorValue - halfway) * expressionDepth;
-        }
-    }
+    else {expression = (sensorValue - halfway) * expressionDepth;   
+      }
 
+
+  //Serial.println(expression);
+
+   
   }
 
-if(expression > 500) {expression = 500;} //put a caps on it, because in the upper register or in single-register mode, there's no upper limit
-if(expression < -500) {expression = -500;} 
 
-//Serial.println(expression);
+
+if(expression > 500) {expression = 500;} //put caps on it, because in the upper register or in single-register mode, there's no upper limit
+if(expression < -2000) {expression = -2000;} 
+
+
 
  if(pitchBendMode == kPitchBendNone) { //if we're not using vibrato, send the pitchbend now instead of adding it in later.
 pitchBend = 8191 + expression;

@@ -28,12 +28,12 @@
 #define  GPIO2_PREFER_SPEED  1 //digitalread speed, see: https://github.com/Locoduino/DIO2/blob/master/examples/standard_outputs/standard_outputs.ino
 
 // MAE FOOFOO 17Nov2018 For finger vibrato 
-#define TINWHISTLE_EXPLICIT_SIZE 64 //the number of entries in the tinwhistle explicit fingering chart
-#define UILLEANN_EXPLICIT_SIZE 128 //the number of entries in the uilleann pipes explicit fingering chart
+#define TINWHISTLE_EXPLICIT_SIZE 64 //the number of entries in the tinwhistle fingering chart
+#define UILLEANN_EXPLICIT_SIZE 128 //the number of entries in the uilleann pipes fingering chart
 #define GHB_EXPLICIT_SIZE 128 //the number of entries in the GHB/Scottish smallpipes fingering chart
 #define NORTHUMBRIAN_EXPLICIT_SIZE 0 //the number of entries in the Northumbrian smallpipes explicit fingering chart
 #define NORTHUMBRIAN_GENERAL_SIZE 9 //the number of entries in the Northumbrian smallpipes general fingering chart
-#define GAITA_EXPLICIT_SIZE 256 //the number of entries in the Gaita general fingering chart
+#define GAITA_EXPLICIT_SIZE 256 //the number of entries in the Gaita fingering chart
 #define DEBOUNCE_TIME    0.02  //debounce time, in seconds---Integrating debouncing algorithm is taken from debounce.c, written by Kenneth A. Kuhn:http://www.kennethkuhn.com/electronics/debounce.c
 #define SAMPLE_FREQUENCY  200 //button sample frequency, in Hz
 
