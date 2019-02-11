@@ -93,7 +93,7 @@
 #define EXPRESSION_ON 0
 #define EXPRESSION_DEPTH 1
 #define SEND_PRESSURE 2
-#define CURVE 3 // (0 is linear)
+#define CURVE 3 // (0 is linear, 1 and 2 are power curves)
 #define PRESSURE_CHANNEL 4
 #define PRESSURE_CC 5
 #define INPUT_PRESSURE_MIN 6
@@ -479,11 +479,12 @@ void loop() {
 
 //Serial.println((ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE]));
 //Serial.println(learnedPressure);
- //Serial.println(toneholeRead[8]);
+ //Serial.println(tonhole);
 //for (byte i = 0; i < 9; i++) { 
-  //Serial.println(tempToneholeReadA[i]);
-// Serial.println(toneholeRead[0]);
-   //Serial.println("");
+  //Serial.println(toneholeCovered[i]);
+//}
+//Serial.println(ED[mode][DRONES_ON_COMMAND]);
+  //Serial.println("");
 
  
     //FREERAM_PRINT; //uncomment to show free ram (also uncomment library include at top)

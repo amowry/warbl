@@ -1111,9 +1111,18 @@ void loadFingering() {
     sendUSBMIDI(CC, 7, 102, 30 + modeSelector[0]); //send currently selected 3 fingering patterns.
     sendUSBMIDI(CC, 7, 102, 40 + modeSelector[1]);
     sendUSBMIDI(CC, 7, 102, 50 + modeSelector[2]);
-    sendUSBMIDI(CC, 7, 111, noteShiftSelector[0]); //send noteShift
-    sendUSBMIDI(CC, 7, 112, noteShiftSelector[1]); //send noteShift
-    sendUSBMIDI(CC, 7, 113, noteShiftSelector[2]); //send noteShift
+
+  if(noteShiftSelector[0] >=0){
+    sendUSBMIDI(CC, 7, 111, noteShiftSelector[0]);} //send noteShift, with a transformation for sending negative values over MIDI.
+    else{sendUSBMIDI(CC, 7, 111, noteShiftSelector[0] + 127);}
+    
+  if(noteShiftSelector[1] >=0){
+    sendUSBMIDI(CC, 7, 112, noteShiftSelector[1]);} //send noteShift
+    else{sendUSBMIDI(CC, 7, 112, noteShiftSelector[1] + 127);}
+    
+  if(noteShiftSelector[2] >=0){
+    sendUSBMIDI(CC, 7, 113, noteShiftSelector[2]);} //send noteShift
+    else{sendUSBMIDI(CC, 7, 113, noteShiftSelector[2] + 127);}
   }
 }
 
@@ -1244,12 +1253,16 @@ void restoreFactorySettings() {
     EEPROM.update(i - 63, reading);
   }
 
-    for (byte i = 0; i < 18; i++) { //do the same with sensor calibration (copy 0-17 to 18-35)
+if(hardwareRevision > 21){
+    for (byte i = 0; i < 18; i++) { //do the same with sensor calibration (copy 0-17 to 18-35) if it's the new hardware with factory calibration saved.
     EEPROM.update((i+18), EEPROM.read(i));
     }
 
+
     for (int i = 731; i < 741; i++) { //do the same with sensor baseline (copy 731-740 to 721-730)
     EEPROM.update((i - 10), EEPROM.read(i));
+    }
+
     }
 
    EEPROM.update(36,EEPROM.read(38)); //hysteresis
@@ -1798,31 +1811,37 @@ void ADC_read(byte pin)
 
 void startDrones()
 {
+     dronesOn = 1;
   switch (ED[mode][DRONES_ON_COMMAND]) {
    case 0:
       sendUSBMIDI(NOTE_ON, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+      break;
    case 1:
       sendUSBMIDI(NOTE_OFF, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+      break;
    case 2:
       sendUSBMIDI(CC, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
-
+      break;
   }
-   dronesOn = 1;
   }
 
 
 
 void stopDrones()
 {
+     dronesOn = 0;
   switch (ED[mode][DRONES_OFF_COMMAND]) {
    case 0:
       sendUSBMIDI(NOTE_ON, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+            break;
    case 1:
       sendUSBMIDI(NOTE_OFF, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+            break;
    case 2:
       sendUSBMIDI(CC, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+            break;
   }
-   dronesOn = 0;
+
   }
 
 
