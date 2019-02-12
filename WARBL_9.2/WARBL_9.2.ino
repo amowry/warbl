@@ -479,7 +479,7 @@ void loop() {
 
 //Serial.println((ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE]));
 //Serial.println(learnedPressure);
- //Serial.println(tonhole);
+//Serial.println(newNote);
 //for (byte i = 0; i < 9; i++) { 
   //Serial.println(toneholeCovered[i]);
 //}
@@ -520,22 +520,24 @@ void loop() {
          sendUSBMIDI(NOTE_ON, 1, newNote + shift, velocity);
          notePlaying = newNote + shift;
          prevNote = newNote;
+         noteon = 1; //keep track of the fact that there's a note turned on
          if (ED[mode][DRONES_CONTROL_MODE] == 2 && !dronesOn) { //start drones if drones are being controlled with chanter on/off
             startDrones();
           }
-         noteon = 1; //keep track of the fact that there's a note turned on
+
         }
       
   if (                                                                               //several conditions to turn a note off
-    (noteon && (newState == 1 && !bagless || (bagless && !play))) ||   //if the state drops to 1 (off) or we're in bagless mode and the sound has been turned off
+    (noteon && ((newState == 1 && !bagless) || (bagless && !play))) ||   //if the state drops to 1 (off) or we're in bagless mode and the sound has been turned off
       (noteon && modeSelector[mode] == kModeNorthumbrian && newNote == 60) ||                         //closed Northumbrian pipe
       (noteon && modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { //closed Uillean pipe
           sendUSBMIDI(NOTE_OFF, 1, notePlaying, 127); //turn the note off if the breath pressure drops or if we're in Uilleann mode, the bell sensor is covered, and all the finger holes are covered.
-          if (ED[mode][DRONES_CONTROL_MODE] == 2 && dronesOn) { //start drones if drones are being controlled with chanter on/off
-            stopDrones();
-          }
           noteon = 0; //keep track
           prevPitchBend = -5000;} //if we turn a note off we set pitchbend to a weird (negative) number so that we know to resend a newly calculted value when we turn a note back on.
+          if (ED[mode][DRONES_CONTROL_MODE] == 2 && dronesOn) { //stop drones if drones are being controlled with chanter on/off
+            stopDrones();
+          }
+
 
    
 }

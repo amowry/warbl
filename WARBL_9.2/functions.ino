@@ -1681,23 +1681,38 @@ void handleMomentary(byte button) {
 //load the correct user settings for the current instrument. This is used at startup and any time settings are changed.
 void loadPrefs() {
 
+      vented = ventedSelector[mode];
+      bagless = baglessSelector[mode];
+      custom = customSelector[mode];
+      vibratoHoles = vibratoHolesSelector[mode];    
+      secret = secretSelector[mode];
+      octaveShift = octaveShiftSelector[mode];
+      noteShift = noteShiftSelector[mode];
+      pitchBendMode = pitchBendModeSelector[mode];
+      useLearnedPressure = useLearnedPressureSelector[mode];
+      learnedPressure = learnedPressureSelector[mode]; 
+      senseDistance = senseDistanceSelector[mode];
+      vibratoDepth = vibratoDepthSelector[mode];
+      breathMode = breathModeSelector[mode];            
 
-  for (byte i = 0; i < 3; i++) {
-    if (mode == i) {
-      vented = ventedSelector[i];
-      bagless = baglessSelector[i];
-      custom = customSelector[i];
-      vibratoHoles = vibratoHolesSelector[i];    
-      secret = secretSelector[i];
-      octaveShift = octaveShiftSelector[i];
-      noteShift = noteShiftSelector[i];
-      pitchBendMode = pitchBendModeSelector[i];
-      useLearnedPressure = useLearnedPressureSelector[i];
-      learnedPressure = learnedPressureSelector[i]; 
-      senseDistance = senseDistanceSelector[i];
-      vibratoDepth = vibratoDepthSelector[i];
-      breathMode = breathModeSelector[i];     
-      
+        if (vented) { //some special settings for vented mode
+          offset = pressureSelector[mode][6];
+          multiplier = pressureSelector[mode][7];
+          jumpValue = pressureSelector[mode][8];
+          dropValue = pressureSelector[mode][9];
+          jumpTime = pressureSelector[mode][10];
+          dropTime = pressureSelector[mode][11];
+        }
+        else {
+          offset = pressureSelector[mode][0];
+          multiplier = pressureSelector[mode][1];
+          jumpValue = pressureSelector[mode][2];
+          dropValue = pressureSelector[mode][3];
+          jumpTime = pressureSelector[mode][4];
+          dropTime = pressureSelector[mode][5];
+          }
+
+
       pitchBend = 8191;
       expression = 0;
       pitchBendTimer = millis();
@@ -1711,34 +1726,18 @@ void loadPrefs() {
         if (custom && ((modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeUilleann) && pitchBendMode == kPitchBendVibrato)) {
           customEnabled = 1;
         }
-        else (customEnabled = 0); //decide here whether custom vibrato can currently be used, so we don't have to do it every time we need to check pitchBend.         
-
-        if (vented) { //some special settings for vented mode
-          offset = pressureSelector[i][6];
-          multiplier = pressureSelector[i][7];
-          jumpValue = pressureSelector[i][8];
-          dropValue = pressureSelector[i][9];
-          jumpTime = pressureSelector[i][10];
-          dropTime = pressureSelector[i][11];
-        }
-        else {
-          offset = pressureSelector[i][0];
-          multiplier = pressureSelector[i][1];
-          jumpValue = pressureSelector[i][2];
-          dropValue = pressureSelector[i][3];
-          jumpTime = pressureSelector[i][4];
-          dropTime = pressureSelector[i][5];
-
+        else (customEnabled = 0); //decide here whether custom vibrato can currently be used, so we don't have to do it every time we need to check pitchBend.       
+          
         if(!useLearnedPressure){
             sensorThreshold[0] = (sensorCalibration + soundTriggerOffset); //pressure sensor calibration at startup. We set the on/off threshhold just a bit higher than the reading at startup.
         }
+        
         else{sensorThreshold[0] = (learnedPressure + soundTriggerOffset);
         } 
         
         sensorThreshold[1] = sensorThreshold[0] + (offset << 2); //threshold for move to second octave
-      }
-    } 
-  }
+      
+  
     for (byte i=0; i < 9; i++) {
        toneholeScale[i] = ((8 * 8191)/(toneholeCovered[i] - 50 - senseDistance)/2); // Precalculate scaleing factors for pitchbend. This one is for sliding. We multiply by 8 first to reduce rounding errors. We'll divide again later.
        vibratoScale[i] = ((8 * vibratoDepth)/(toneholeCovered[i] - 50 - senseDistance)/2);} //This one is for vibrato
@@ -1747,6 +1746,9 @@ void loadPrefs() {
   minOut = (ED[mode][OUTPUT_PRESSURE_MIN] * 129);
   maxOut = (ED[mode][OUTPUT_PRESSURE_MAX] * 129);
 }
+
+
+
 
 // find leftmost unset bit, used for finding the uppermost uncovered hole when reading from the fingering charts
 byte findleftmostunsetbit(uint16_t n) {
@@ -1832,16 +1834,15 @@ void stopDrones()
      dronesOn = 0;
   switch (ED[mode][DRONES_OFF_COMMAND]) {
    case 0:
-      sendUSBMIDI(NOTE_ON, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+      sendUSBMIDI(NOTE_ON, ED[mode][DRONES_OFF_CHANNEL], ED[mode][DRONES_OFF_BYTE2], ED[mode][DRONES_OFF_BYTE3]);
             break;
    case 1:
-      sendUSBMIDI(NOTE_OFF, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+      sendUSBMIDI(NOTE_OFF, ED[mode][DRONES_OFF_CHANNEL], ED[mode][DRONES_OFF_BYTE2], ED[mode][DRONES_OFF_BYTE3]);
             break;
    case 2:
-      sendUSBMIDI(CC, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
+      sendUSBMIDI(CC, ED[mode][DRONES_OFF_CHANNEL], ED[mode][DRONES_OFF_BYTE2], ED[mode][DRONES_OFF_BYTE3]);
             break;
   }
-
   }
 
 
