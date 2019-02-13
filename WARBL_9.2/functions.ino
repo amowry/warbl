@@ -1644,6 +1644,7 @@ void performAction(byte action) {
     case 7:
             for (byte i = 1; i < 17; i++) { //send MIDI panic
         sendUSBMIDI(CC, i, 123, 0);
+        dronesOn = 0; //remember that drones are off, because MIDI panic will have most likely turned them off in all apps.
         }
       break;
 
@@ -1814,6 +1815,7 @@ void ADC_read(byte pin)
 void startDrones()
 {
      dronesOn = 1;
+//          Serial.println("on");
   switch (ED[mode][DRONES_ON_COMMAND]) {
    case 0:
       sendUSBMIDI(NOTE_ON, ED[mode][DRONES_ON_CHANNEL], ED[mode][DRONES_ON_BYTE2], ED[mode][DRONES_ON_BYTE3]);
@@ -1832,6 +1834,7 @@ void startDrones()
 void stopDrones()
 {
      dronesOn = 0;
+    // Serial.println("off");
   switch (ED[mode][DRONES_OFF_COMMAND]) {
    case 0:
       sendUSBMIDI(NOTE_ON, ED[mode][DRONES_OFF_CHANNEL], ED[mode][DRONES_OFF_BYTE2], ED[mode][DRONES_OFF_BYTE3]);
