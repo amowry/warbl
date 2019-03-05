@@ -1175,7 +1175,7 @@ void saveFactorySettings() {
   }
   
 
-  EEPROM.update(36, EEPROM.read(38)); //do the same for hysteresis, which is stored in a different place.
+  EEPROM.update(38, EEPROM.read(36)); //do the same for hysteresis, which is stored in a different place.
 
   EEPROM.update(44, 3); //indicates settings have been saved
 }
