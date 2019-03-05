@@ -722,8 +722,11 @@ void receiveMIDI() {
     if (rx.header != 0) {
 
        //Serial.println(rx.byte1 &0x0f);
-       //Serial.println(rx.byte3);
+      // Serial.println(rx.byte2);
+      // Serial.println(rx.byte3);
        //Serial.println("");
+
+      if (rx.byte2 < 119) { //Chrome sends CC 121 and 123 on all channels when it connects, so ignore these.  
 
       if ((rx.byte1 & 0x0f) == 6) { //if we're on channel 7, we may be receiving messages from the configuration tool.
           blinkNumber = 1; //blink once, indicating a received message. Some commands below will change this to three (or zero) blinks.
@@ -1036,6 +1039,9 @@ void receiveMIDI() {
       }
 
     }
+
+    } //end of ignore CCs 121, 123
+    
   } while (rx.header != 0);
   
 }
@@ -1296,6 +1302,7 @@ void sendSettings() {
      sendUSBMIDI(CC, 7, 104, i+1); //indicate which pressure variable we'll be sending data for
      sendUSBMIDI(CC, 7, 105, pressureSelector[mode][i]); //send the data
     }
+
 
 }
 

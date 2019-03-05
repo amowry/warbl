@@ -42,7 +42,7 @@ extern const u16 STRING_LANGUAGE[] PROGMEM;
 extern const u8 STRING_PRODUCT[] PROGMEM;
 extern const u8 STRING_MANUFACTURER[] PROGMEM;
 extern const DeviceDescriptor USB_DeviceDescriptorIAD PROGMEM;
-extern bool _updatedLUFAbootloader;
+//extern bool _updatedLUFAbootloader;
 //bool _updatedLUFAbootloader = false; // MAE FOOFOO
 
 const u16 STRING_LANGUAGE[2] = {
@@ -837,6 +837,7 @@ void USBDevice_::attach()
 	
 	TX_RX_LED_INIT;
 
+/*
 #if !defined(CDCCON_DISABLE)
 #if MAGIC_KEY_POS != (RAMEND-1)
 	if (pgm_read_word(FLASHEND - 1) == NEW_LUFA_SIGNATURE) {
@@ -844,6 +845,8 @@ void USBDevice_::attach()
 	}
 #endif
 #endif
+*/
+
 }
 
 void USBDevice_::detach()
