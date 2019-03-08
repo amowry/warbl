@@ -17,13 +17,14 @@
 ** SOFTWARE.  
 */
 
-
-
 //We include our own version of the core USB files with WARBL that have been modified to remove the CDC serial class to make the device full class-compliant.
+//The line below will remove serial communcation to make the device fully class-commpliant and not require drivers on any OS.
+//It can be commented out to use Serial.print or to make it unnecessary to double-click the reset button for programming.
 
 
+#define CDCCON_DISABLE  
 
-#include "WARBL_Serial.h"
+
 #include "USBAPI.h"
 #include "PluggableUSB.h"
 #include <stdlib.h>
@@ -42,8 +43,7 @@ extern const u16 STRING_LANGUAGE[] PROGMEM;
 extern const u8 STRING_PRODUCT[] PROGMEM;
 extern const u8 STRING_MANUFACTURER[] PROGMEM;
 extern const DeviceDescriptor USB_DeviceDescriptorIAD PROGMEM;
-//extern bool _updatedLUFAbootloader;
-//bool _updatedLUFAbootloader = false; // MAE FOOFOO
+
 
 const u16 STRING_LANGUAGE[2] = {
 	(3<<8) | (2+2),
@@ -342,11 +342,12 @@ int USB_Send(u8 ep, const void* d, int len)
 u8 _initEndpoints[USB_ENDPOINTS] =
 {
 	0,                      // Control Endpoint
-	
+
+ //#if !defined(CDCCON_DISABLE)
 	EP_TYPE_INTERRUPT_IN,   // CDC_ENDPOINT_ACM
 	EP_TYPE_BULK_OUT,       // CDC_ENDPOINT_OUT
 	EP_TYPE_BULK_IN,        // CDC_ENDPOINT_IN
-
+//#endif
 	// Following endpoints are automatically initialized to 0
 };
 

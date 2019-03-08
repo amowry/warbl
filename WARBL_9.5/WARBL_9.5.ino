@@ -488,8 +488,7 @@ void loop() {
 
 
 //Serial.println((ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE]));
-//Serial.println(buttonPrefs[0][0][1]);
-//Serial.println(EEPROM.read(36));
+//Serial.println(buttonPrefs[0][0][1]);Serial.println(TEST);
 
 //Serial.println(momentary[mode][0]);
 //for (byte i = 0; i < 9; i++) { 
