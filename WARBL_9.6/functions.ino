@@ -1343,6 +1343,11 @@ void blink() { //blink LED given number of times
       digitalWrite2(ledPin, LOW);
       blinkNumber--;
       LEDon = 0;
+
+     if(sensorCalibration == 0) {     //this is a good time to take an initial reading to calibrate the pressure sensor, because this will happen right afer blinking the LED at startup.
+      sensorCalibration = sensorValue;
+     }
+      
       return;
     }
 

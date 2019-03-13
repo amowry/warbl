@@ -235,7 +235,7 @@ uint8_t buttonPrefs[3][8][5]= //The button configuration settings. Dimension 1 c
 //other misc. variables
 byte hardwareRevision = 22;
 unsigned long ledTimer = 0; //for blinking LED
-byte blinkNumber = 0; //the number of remaining blinks when blinking LED to indicate control changes
+byte blinkNumber = 1; //the number of remaining blinks when blinking LED to indicate control changes. Set to 1 initially to cause a blink at atartup.
 bool LEDon = 0; //whether the LED is currently on
 bool play = 0; //turns sound off and on (with the use of a button action) when in bagless mode
 bool bellSensor = 0; //whether the bell sensor is plugged in
@@ -368,16 +368,12 @@ void setup() {
   loadFingering();
   loadSettingsForAllModes();  
 
-  analogRead(A4); // the first analog readings are sometimes nonsense, so we read a few times and throw them away.
+   analogRead(A4); // the first analog readings are sometimes nonsense, so we read a few times and throw them away.
   analogRead(A4);
-  sensorCalibration = analogRead(A4);
+  sensorCalibration = analogRead(A4); //calibrate the pressure sensor
   sensorValue = sensorCalibration; //an initial reading to "seed" subsequent pressure readings
     
   loadPrefs(); //load the correct user settings based on current instrument.
-
-  digitalWrite2(ledPin, HIGH);
-  delay(500);
-  digitalWrite2(ledPin, LOW);
 
   if(hardwareRevision == 21){ //old sensors
   ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear ADC prescaler bits
@@ -493,7 +489,6 @@ void loop() {
 //Serial.println((ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE]));
 //Serial.println(modeSelector[0]);
 
-//Serial.println(invert[0]);
 //for (byte i = 0; i < 9; i++) { 
   //Serial.println(toneholeRead[i]);
 //}
