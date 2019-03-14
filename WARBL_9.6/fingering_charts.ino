@@ -69,7 +69,7 @@ const struct tinwhistle_explicit_entry tinwhistle_explicit[TINWHISTLE_EXPLICIT_S
 {73, 0}, //0010101 C#
 {73, 0}, //0010110 C#
 {73, 0}, //0010111 C#
-{72, 0b000010}, //0011000 C#
+{72, 0b000010}, //0011000 C
 {72, 1}, //0011001 C | kVibratoMask;
 {72, 1}, //0011010 C| kVibratoMask; 
 {72, 1}, //0011011 C| kVibratoMask; 
@@ -101,12 +101,12 @@ const struct tinwhistle_explicit_entry tinwhistle_explicit[TINWHISTLE_EXPLICIT_S
 {69, 0}, //0110101 A
 {69, 0}, //0110110 A
 {68, 0}, //0110111 G#
-{67, 0b000010}, //0111000 G#
+{67, 0b000010}, //0111000 G
 {67, 1}, //0111001 G | kVibratoMask;
 {67, 1}, //0111010 G | kVibratoMask;
 {67, 1}, //0111011 G | kVibratoMask;
 {66, 0}, //0111100 F#
-{65, 0}, //0111101 F#
+{65, 0}, //0111101 F
 {64, 0}, //0111110 E
 {62, 0}, //0111111 D
 
@@ -194,7 +194,7 @@ const struct uilleann_explicit_entry uilleann_explicit[UILLEANN_EXPLICIT_SIZE] P
 {71, 1}, //1000101 B | kVibratoMask;
 {71, 0}, //1000110 B
 {71, 1}, //1000111 B | kVibratoMask;
-{70, 0}, //1001000 A3
+{70, 0}, //1001000 A#
 {71, 0}, //1001001 B
 {70, 0}, //1001010 A#
 {71, 0}, //1001011 B

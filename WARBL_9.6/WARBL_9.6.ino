@@ -354,7 +354,7 @@ void setup() {
   //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
 //the four lines below can be uncommented to make a version of the software that will resave factory settings the first time it is loaded.
-//  if(EEPROM.read(901) != VERSION){ //a new software version has been loaded
+ // if(EEPROM.read(901) != VERSION){ //a new software version has been loaded
  // EEPROM.update(901, VERSION); //update the stored software version
  // EEPROM.update(44, 255); //change this, which will force the factory settings to be resaved.
  // }
@@ -375,18 +375,21 @@ void setup() {
     
   loadPrefs(); //load the correct user settings based on current instrument.
 
+
   if(hardwareRevision == 21){ //old sensors
-  ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear ADC prescaler bits
-  ADCSRA |= bit (ADPS0) | bit (ADPS2);                 //  32 ADC prescale (takes about 61 usec per analogRead)
-  Timer1.initialize(170); //number of microseconds between sensor readings
-  Timer1.attachInterrupt(readSensors); // timer ISR to read tonehole sensors at a regular interval
+    hysteresis = 15;
+     ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear ADC prescaler bits
+    ADCSRA |= bit (ADPS0) | bit (ADPS2);                 //  32 ADC prescale (takes about 61 usec per analogRead)
+    Timer1.initialize(170); //number of microseconds between sensor readings
+    Timer1.attachInterrupt(readSensors); // timer ISR to read tonehole sensors at a regular interval
   }
 
+
   else{ //new sensors
-  Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
-  Timer1.attachInterrupt(timerDelay);
-  Timer1.stop(); //stop the timer because we don't need it until we've read all the sensors once.
-  ADC_init(); //initialize the ADC and start conversions
+    Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
+    Timer1.attachInterrupt(timerDelay);
+    Timer1.stop(); //stop the timer because we don't need it until we've read all the sensors once.
+    ADC_init(); //initialize the ADC and start conversions
   }
 }
 
@@ -456,7 +459,7 @@ void loop() {
     
   shift = ((octaveShift * 12) + noteShift); //add up any transposition.
   
-  if (newState == 3 || (breathMode == kPressureBell && modeSelector[mode] != kModeUilleann && bitRead(holeCovered,0) == 0) || (breathMode == kPressureThumb && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeNAF) && bitRead(holeCovered,8) == invert[mode])) {
+  if (newState == 3 || (breathMode == kPressureBell && modeSelector[mode] != kModeUilleann && bitRead(holeCovered,0)  == invert[mode]) || (breathMode == kPressureThumb && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeNAF) && bitRead(holeCovered,8) == invert[mode])) {
     shift = shift + 12; //add an octave jump to the transposition if necessary.
   }
 

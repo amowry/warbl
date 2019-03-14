@@ -661,7 +661,7 @@ void saveCalibration() {
     EEPROM.update(((i + 9) * 2) + 1, lowByte(toneholeCovered[i]));
     EEPROM.update((721 + i), lowByte(toneholeBaseline[i])); //the baseline readings can be stored in a single byte because they should be close to zero.
   }
-  EEPROM.update(36, hysteresis);
+  //EEPROM.update(36, hysteresis);
   calibration = 0;
   EEPROM.update(37, 3); //we write a 3 to address 37 to indicate that we have stored a set of calibrations.
   digitalWrite2(ledPin, LOW);
@@ -681,8 +681,7 @@ void loadCalibration() {
     toneholeCovered[i] = word(high, low);
     toneholeBaseline[i] = EEPROM.read(721 + i);
   }
-    hysteresis = EEPROM.read(36);
-    if (hardwareRevision == 21) {hysteresis = 15;} //for older hardware. This can be removed at some point.
+   // hysteresis = EEPROM.read(36);
 }
 
 
@@ -956,9 +955,9 @@ void receiveMIDI() {
         
         
 
-        if (rx.byte2 == 109) {
-          hysteresis = rx.byte3;
-        }
+       // if (rx.byte2 == 109) {
+        //  hysteresis = rx.byte3;
+       // }
 
       if (rx.byte2 == 106 && rx.byte3 >15) {
         if(rx.byte3 == 16){ //update custom
@@ -1034,7 +1033,7 @@ void receiveMIDI() {
           for (int i = 731; i < 741; i++) { //save baseline calibration as factory baseline
             EEPROM.update(i, EEPROM.read(i-10));
           }
-          EEPROM.update(38, EEPROM.read(36)); //hysteresis
+          //EEPROM.update(38, EEPROM.read(36)); //hysteresis
           }       
 
 
@@ -1109,7 +1108,7 @@ void saveSettings(byte i) {
         }
     }
     
-    EEPROM.update(36, hysteresis);
+   // EEPROM.update(36, hysteresis);
     
 }
 
@@ -1204,7 +1203,7 @@ void saveFactorySettings() {
   }
   
 
-  EEPROM.update(38, EEPROM.read(36)); //do the same for hysteresis, which is stored in a different place.
+  //EEPROM.update(38, EEPROM.read(36)); //do the same for hysteresis, which is stored in a different place.
 
   EEPROM.update(44, 3); //indicates settings have been saved
 }
@@ -1239,7 +1238,7 @@ if(hardwareRevision > 21){
 
     }
 
-   EEPROM.update(36,EEPROM.read(38)); //hysteresis
+   //EEPROM.update(36,EEPROM.read(38)); //hysteresis
     
   loadFingering();
   loadCalibration();
@@ -1274,7 +1273,7 @@ void sendSettings() {
   sendUSBMIDI(CC, 7, 106, 46 + invert); //send invert option
   sendUSBMIDI(CC, 7, 106, 16 + custom); //send custom option
   sendUSBMIDI(CC, 7, 106, 39 + useLearnedPressure); //send calibration option
-  sendUSBMIDI(CC, 7, 109, hysteresis); //send hysteresis
+  //sendUSBMIDI(CC, 7, 109, hysteresis); //send hysteresis
   sendUSBMIDI(CC, 7, 104, 34); //indicate that LSB of learned pressure is about to be sent
   sendUSBMIDI(CC, 7, 105, learnedPressure & 0x7F); //send LSB of learned pressure 
   sendUSBMIDI(CC, 7, 104, 35); //indicate that MSB of learned pressure is about to be sent
