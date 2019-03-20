@@ -243,6 +243,8 @@ bool prevBellSensor = 0; //the previous reading of the bell sensor detection pin
 unsigned long initialTime = 0; //for testing
 unsigned long finalTime = 0; //for testing
 byte program = 0; //current MIDI program change value. This always starts at 0 but can be increased/decreased with assigned buttons.
+bool dronesState = 0; //keeps track of whether we're above or below the pressure threshold for turning drones on.
+bool debugSent = 0; //used if we only want to send debug info once. 
 
 //variables for reading pressure sensor
 volatile unsigned int tempSensorValue = 0; //for holding the pressure sensor value inside the ISR
@@ -487,13 +489,17 @@ void loop() {
    
   counter++;
   if(counter == 10) { //we do some things only every 10 ticks
-
-
-//Serial.println((ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE]));
-//Serial.println(modeSelector[0]);
+    
+/*
+if (!debugSent && communicationMode){ //can use this to send debug message to debug web tool one time at startup. Sending a constant stream will crash the web browser.
+for (byte i = 0; i < 9; i++) { 
+  debug_log(toneholeCovered[i]);
+  }
+debugSent = 1;}
+*/
 
 //for (byte i = 0; i < 9; i++) { 
-  //Serial.println(toneholeRead[i]);
+ //Serial.println(toneholeRead[i]);
 //}
 //Serial.println(ED[mode][DRONES_CONTROL_MODE]);
   //Serial.println("");

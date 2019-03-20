@@ -310,11 +310,15 @@ void get_state() {
   interrupts();
 
   if(ED[mode][DRONES_CONTROL_MODE] == 3) { //use pressure to control drones if that option has been selected. There's a small amount of hysteresis added.
-    if (!dronesOn && sensorValue2 > 5 + (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
-      startDrones();
+   
+    if (!dronesState && sensorValue2 > 5 + (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
+      dronesState = 1;
+      if(!dronesOn) {startDrones();}
+
     }
-        if (dronesOn && sensorValue2 < (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
-      stopDrones();
+        if (dronesState && sensorValue2 < (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
+       dronesState = 0;
+       if(dronesOn) {stopDrones();}
     }
   }
   
@@ -1518,7 +1522,7 @@ void handleButtons() {
 
 
   //presses of individual buttons (as opposed to releases) are special cases used only if we're using buttons to send MIDI on/off messages and "momentary" is selected. We'll handle these in a separate function.
-  if (justPressed[0] && ((!secret && ED[mode][DRONES_CONTROL_MODE] != 1) || (holeCovered >> 1 != 0b00001000 && holeCovered >> 1 != 0b00000100 && holeCovered >> 1 != 0b00000010 && momentary[mode][0]))) { //do action for button 0 press.
+  if (justPressed[0] && ((!secret) || (holeCovered >> 1 != 0b00001000 && holeCovered >> 1 != 0b00000100 && holeCovered >> 1 != 0b00000010 && momentary[mode][0]))) { //do action for button 0 press.
     justPressed[0] = 0;
     handleMomentary(0);
   }
@@ -1664,14 +1668,14 @@ void performAction(byte action) {
 
 
     case 9: //toggle drones
+      blinkNumber = 1;
+      ledTimer = millis();
       if(!dronesOn){
           startDrones();
       }
       else{
          stopDrones();
       }
-      blinkNumber = 1;
-      ledTimer = millis();
       break;
       
     default:
@@ -1772,13 +1776,13 @@ byte findleftmostunsetbit(uint16_t n) {
 
 }
 
-// Send a debug MIDI message on channel 8
-void debug_log(byte msg){
-    sendUSBMIDI(CC,8,42,msg);
-}
+// Send a debug MIDI message with a value up 16383 (14 bits)
 void debug_log(int msg){
-    sendUSBMIDI(CC,8,msg>>8,msg&0xFF);
-
+  sendUSBMIDI(CC, 7, 106, 48); //indicate that LSB is about to be sent
+  sendUSBMIDI(CC, 7, 119, msg & 0x7F); //send LSB
+  sendUSBMIDI(CC, 7, 106, 49); //indicate that MSB is about to be sent
+  sendUSBMIDI(CC, 7, 119, msg >> 7); //send MSB
+    sendUSBMIDI(CC, 7, 106, 51); //indicates end of two-byte message
 }
 
 
