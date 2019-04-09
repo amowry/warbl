@@ -344,10 +344,10 @@ void setup() {
   //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
 //the four lines below can be uncommented to make a version of the software that will resave factory settings the first time it is loaded.
- // if(EEPROM.read(901) != VERSION){ //a new software version has been loaded
- // EEPROM.update(901, VERSION); //update the stored software version
- // EEPROM.update(44, 255); //change this, which will force the factory settings to be resaved.
- // }
+  //if(EEPROM.read(901) != VERSION){ //a new software version has been loaded
+  //EEPROM.update(901, VERSION); //update the stored software version
+  //EEPROM.update(44, 255); //change this, which will force the factory settings to be resaved.
+  //}
 
   if(EEPROM.read(900) == 21){ //old sensors
   hardwareRevision = 21;}
@@ -365,7 +365,7 @@ void setup() {
     
   loadPrefs(); //load the correct user settings based on current instrument.
 
-/*
+
   if(hardwareRevision == 21){ //old sensors
    hysteresis = 15;
    ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear ADC prescaler bits
@@ -373,14 +373,14 @@ void setup() {
    Timer1.initialize(170); //number of microseconds between sensor readings
    Timer1.attachInterrupt(readSensors); // timer ISR to read tonehole sensors at a regular interval
   }
-*/  
+ 
 
- // else{ //new sensors
+  else{ //new sensors
     Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
     Timer1.attachInterrupt(timerDelay);
     Timer1.stop(); //stop the timer because we don't need it until we've read all the sensors once.
      ADC_init(); //initialize the ADC and start conversions
- // }
+  }
   
 }
 
