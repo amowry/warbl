@@ -11,11 +11,11 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 ### How to modify, compile, and upload the code using the Arduino IDE:
 
-•	Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
+*	Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
 
 
 
-•	Next download the folder containing the latest WARBL code in Arduino format, and put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default.
+*	Next download the folder containing the latest WARBL code in Arduino format, and put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default.
 
 
 
@@ -23,7 +23,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 
-•	Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
+*	Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
 
 C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12
 
@@ -37,7 +37,7 @@ itsybitsy32u4_3V.build.usb_product="WARBL"
 
 
 
-•	It is also necessary to configure the USBCore to request only 20mA of power. Otherwise iOS devices will say that the device uses too much power, even though it doesn’t. It only matters how much it requests.
+*	It is also necessary to configure the USBCore to request only 20mA of power. Otherwise iOS devices will say that the device uses too much power, even though it doesn’t. It only matters how much it requests.
 
 So, find this file:
 
@@ -50,7 +50,7 @@ At the end of line 270, change the power consumption request to: USB_CONFIG_POWE
 
 
 
-•	Next, in Arduino IDE, you’ll need to install three libraries that aren’t installed by default. They are:
+*	Next, in Arduino IDE, you’ll need to install three libraries that aren’t installed by default. They are:
  
 TimerOne
 DIO2
@@ -60,19 +60,19 @@ To install them, go to Sketch > Include Library > Manage Libraries, then search 
 
 
 
-•	Now open the WARBL sketch that you saved to in your sketchbook folder. Four tabs should open. 
+*	Now open the WARBL sketch that you saved to in your sketchbook folder. Four tabs should open. 
  
  
  
-•	Next, tell it which board you have by going Tools > Board and select Adafruit ItsyBitsy 32u4 3V 8MHz.
+*	Next, tell it which board you have by going Tools > Board and select Adafruit ItsyBitsy 32u4 3V 8MHz.
 
 
 
-•	Then turn on “show verbose output during upload” under File > Preferences. Now, if all went well, you should be able to click the upload button. It will compile first. 
+*	Then turn on “show verbose output during upload” under File > Preferences. Now, if all went well, you should be able to click the upload button. It will compile first. 
 
 
 
-•	Then, when it tries to upload, you should see this output repeating in the messages at the bottom of the screen:
+*	Then, when it tries to upload, you should see this output repeating in the messages at the bottom of the screen:
 
 PORTS {} / {} => {}
 PORTS {} / {} => {}
@@ -82,11 +82,11 @@ PORTS {} / {} => {}
 
 
 
-•	Now, use a toothpick to double-click the WARBL reset button. The LED should pulse and the code should upload. If the LED doesn’t light or stays solid instead if pulsing, try again. If the IDE stops trying to upload, click “Upload” again, and try double-clicking again. It can take a few tries to get the timing right.
+*	Now, use a toothpick to double-click the WARBL reset button. The LED should pulse and the code should upload. If the LED doesn’t light or stays solid instead if pulsing, try again. If the IDE stops trying to upload, click “Upload” again, and try double-clicking again. It can take a few tries to get the timing right.
 
 
 
-**A few additional notes:**
+### A few additional notes:
 By default, the serial CDC class on WARBL is turned off, which makes it a USB MIDI class-compliant device. This also means that you can’t use the serial monitor in Arduino IDE. To turn serial on you can comment out the following line in the USBCore.cpp tab: 
 #define CDCCON_DISABLE 
 Then you will be able to print to the serial monitor for debugging. Doing this may also make it so that you don’t have to double-click the reset button to upload code (though it doesn’t always work). 
