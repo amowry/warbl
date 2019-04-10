@@ -27,7 +27,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
  C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12
 
-  I use the free NotePad++ app to edit this. You’ll change lines 296 and 297 to these to use the WARBL USB VID and PID:
+     I use the free NotePad++ app to edit this. You’ll change lines 296 and 297 to these to use the WARBL USB VID and PID:
 
  itsybitsy32u4_3V.build.vid=0x04D8
  itsybitsy32u4_3V.build.pid=0xEE87
@@ -52,9 +52,7 @@ At the end of line 270, change the power consumption request to: USB_CONFIG_POWE
 
 *	Next, in Arduino IDE, you’ll need to install three libraries that aren’t installed by default. They are:
  
-TimerOne
-DIO2
-MIDIUSB
+TimerOne, DIO2, and MIDIUSB
  
 To install them, go to Sketch > Include Library > Manage Libraries, then search for the name of each, one at a time. Then it will give you an option to install each one.
 
