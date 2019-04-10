@@ -10,10 +10,11 @@ For updating the software, typical users would just install the .hex file using 
 Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses some special settings for USB MIDI that make the initial IDE setup more complicated than with a normal Arduino. However, you only have to follow most of the steps once.
 
 ### How to modify, compile, and upload the code using the Arduino IDE:
+
 •	Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
 
 
-•	Next download the folder containing the latest WARBL code in Arduino format, and put in your Arduino “sketch” folder, which is in PC is Documents/Arduino by default. WARBL runs on 3.3V and at 8Mhz, which is nonstandard for Arduino boards with the same processor. I use the Adafruit ItsyBitsy 32u4-3.3V for prototyping WARBL, so the easiest way to set up the IDE is to install the Adafruit boards package, [following the instructions here](https://learn.adafruit.com/introducting-itsy-bitsy-32u4?view=all#arduino-ide-setup) **Windows 7 only:** You will also have to install the drivers, following the link partway down the above page.
+•	Next download the folder containing the latest WARBL code in Arduino format, and put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default. WARBL runs on 3.3V and at 8Mhz, which is nonstandard for Arduino boards with the same processor. I used the Adafruit ItsyBitsy 32u4-3.3V for prototyping WARBL, so the easiest way to set up the IDE is to install the Adafruit boards package, [following the instructions here](https://learn.adafruit.com/introducting-itsy-bitsy-32u4?view=all#arduino-ide-setup) **Windows 7 only:** You will also have to install the drivers, following the link partway down the above page.
 
 
 •	Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
