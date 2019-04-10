@@ -70,11 +70,13 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 *	Then, when it tries to upload, you should see this output repeating in the messages at the bottom of the screen:
 
+    ```
+    PORTS {} / {} => {}   
+    PORTS {} / {} => {}    
+    PORTS {} / {} => {}    
+    PORTS {} / {} => {}    
     PORTS {} / {} => {}
-    PORTS {} / {} => {}
-    PORTS {} / {} => {}
-    PORTS {} / {} => {}
-    PORTS {} / {} => {}
+    ```
 
 
 
