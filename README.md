@@ -37,23 +37,22 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 
-*	It is also necessary to configure the USBCore to request only 20mA of power. Otherwise iOS devices will say that the device uses too much power, even though it doesn’t. It only matters how much it requests.
+*	It is also necessary to configure the USBCore to request only 20mA of power. Otherwise iOS devices will say that the device uses too much power, even though it doesn’t. It only matters how much it requests. 
+    So, find this file:
   
-  So, find this file:
+    C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBCore.h
   
-  C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBCore.h
+    **Please note:** You may want to make a backup copy of this file before changing it. Changing it will affect all USB boards that you program with the IDE. The setting that we’re changing probably won’t make a difference in most cases, but it’s important to know this. 
   
-  **Please note:** You may want to make a backup copy of this file before changing it. Changing it will affect all USB boards that you program with the IDE. The setting that we’re changing probably won’t make a difference in most cases, but it’s important to know this. 
-  
-  At the end of line 270, change the power consumption request to: USB_CONFIG_POWER_MA(20) 
+    At the end of line 270, change the power consumption request to: USB_CONFIG_POWER_MA(20) 
 
 
 
 *	Next, in Arduino IDE, you’ll need to install three libraries that aren’t installed by default. They are:
  
-TimerOne, DIO2, and MIDIUSB
+    TimerOne, DIO2, and MIDIUSB
  
-To install them, go to Sketch > Include Library > Manage Libraries, then search for the name of each, one at a time. Then it will give you an option to install each one.
+    To install them, go to Sketch > Include Library > Manage Libraries, then search for the name of each, one at a time. Then it will give you an option to install each one.
 
 
 
@@ -71,11 +70,11 @@ To install them, go to Sketch > Include Library > Manage Libraries, then search 
 
 *	Then, when it tries to upload, you should see this output repeating in the messages at the bottom of the screen:
 
-PORTS {} / {} => {}
-PORTS {} / {} => {}
-PORTS {} / {} => {}
-PORTS {} / {} => {}
-PORTS {} / {} => {}
+    PORTS {} / {} => {}
+    PORTS {} / {} => {}
+    PORTS {} / {} => {}
+    PORTS {} / {} => {}
+    PORTS {} / {} => {}
 
 
 
