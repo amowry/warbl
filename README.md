@@ -9,7 +9,7 @@ For updating the software, typical users would just install the .hex file using 
  
 Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses some special settings for USB MIDI that make the initial IDE setup more complicated than with a normal Arduino. However, you only have to follow most of the steps once.
 
-### How to modify, compile, and upload the code using the Arduino IDE:
+### How to use WARBL with the Arduino IDE:
 
 *	Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
 
