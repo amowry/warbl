@@ -35,6 +35,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
   itsybitsy32u4_3V.build.pid=0xEE87
  
   Then change the product name on line 301:
+  
   itsybitsy32u4_3V.build.usb_product="WARBL"
 
 
