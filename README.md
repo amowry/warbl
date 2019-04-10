@@ -25,7 +25,8 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 * Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
   
-  C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12
+
+  C:\Users\\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12
 
   I use the free NotePad++ app to edit this. You’ll change lines 296 and 297 to these to use the WARBL USB VID and PID:
 
