@@ -124,7 +124,6 @@ byte mode = 0; // The current mode (instrument), from 0-2.
 int8_t octaveShift = 0; //octave transposition
 int8_t noteShift = 0; //note transposition, for changing keys. All fingering patterns are initially based on the key of D, and transposed with this variable to the desired key.
 byte pitchBendMode = kPitchBendSlideVibrato; //0 means slide and vibrato are on. 1 means only vibrato is on. 2 is all pitchbend off.
-byte offset = 15; 
 byte senseDistance = 10;   //the sensor value above which the finger is sensed for bending notes. Needs to higher than the baseline sensor readings, otherwise vibrato will be turned on erroneously.
 byte breathMode = kPressureBreath; //the desired presure sensor behavior: single register, overblow, thumb register control, bell register control.
 unsigned int vibratoDepth = 1024; //vibrato depth from 0 (no vibrato) to 8191 (one semitone)
@@ -231,7 +230,6 @@ unsigned long finalTime = 0; //for testing
 unsigned long cycles = 0; //for testing
 byte program = 0; //current MIDI program change value. This always starts at 0 but can be increased/decreased with assigned buttons.
 bool dronesState = 0; //keeps track of whether we're above or below the pressure threshold for turning drones on.
-bool debugSent = 0; //used if we only want to send debug info once. 
 
 //variables for reading pressure sensor
 volatile unsigned int tempSensorValue = 0; //for holding the pressure sensor value inside the ISR
@@ -239,6 +237,7 @@ int sensorValue = 0;  // first value read from the pressure sensor
 int sensorValue2 = 0; // second value read from the pressure sensor, for measuring rate of change in pressure
 int prevSensorValue = 0; // previous sensor reading, used to tell if the pressure has changed and should be sent.
 int sensorCalibration = 0; //the sensor reading at startup, used as a base value
+byte offset = 15; 
 int sensorThreshold[] = {260, 0}; //the pressure sensor thresholds for initial note on and shift from register 1 to register 2, before some transformations.
 int upperBound = 255; //this represents the pressure transition between the first and second registers. It is calculated on the fly as: (sensorThreshold[1] + ((newNote - 60) * multiplier))
 byte newState; //the note/octave state based on the sensor readings (1=not enough force to sound note, 2=enough force to sound first octave, 3 = enough force to sound second octave)
@@ -365,7 +364,6 @@ void setup() {
     
   loadPrefs(); //load the correct user settings based on current instrument.
 
-
   if(hardwareRevision == 21){ //old sensors
    hysteresis = 15;
    ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear ADC prescaler bits
@@ -373,7 +371,6 @@ void setup() {
    Timer1.initialize(170); //number of microseconds between sensor readings
    Timer1.attachInterrupt(readSensors); // timer ISR to read tonehole sensors at a regular interval
   }
- 
 
   else{ //new sensors
     Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
@@ -415,7 +412,7 @@ void loop() {
 
   
   for (byte i=0; i< 9; i++) {
-    if(hardwareRevision > 21 && calibration == 0){ //if we're not calibrating, compensate for baseline sensor offset (the stored sensor reading without the hole covered)
+    if(hardwareRevision > 21 && calibration == 0){ //if we're not calibrating, compensate for baseline sensor offset (the stored sensor reading with the hole completely uncovered)
       toneholeRead[i] = toneholeRead[i] - toneholeBaseline[i];   
     }
     if (toneholeRead[i] < 0){ //in rare case the adjusted readings can end up being negative.
@@ -423,23 +420,20 @@ void loop() {
     }
   }
    
-  tempNewNote = get_note(); //get the next MIDI note from the fingering pattern
-  
+  tempNewNote = get_note(); //get the next MIDI note from the fingering pattern  
 
-  if(!customEnabled && pitchBendMode != kPitchBendNone){
-    if(newNote != tempNewNote && tempNewNote != -1) { //If a new note has been triggered,
+  if(tempNewNote != -1 && newNote != tempNewNote) { //If a new note has been triggered
+    if(!customEnabled && pitchBendMode != kPitchBendNone){
      holeLatched = holeCovered; //remember the pattern that triggered it (it will be used later for vibrato)
      for (byte i=0; i< 9; i++) {
      iPitchBend[i] = 0; //and reset pitchbend
      pitchBendOn[i] = 0;}
-      if(pitchBendMode == kPitchBendSlideVibrato){
-        findStepsDown();
-      }
-    }
-  }
-  
-  if (tempNewNote != -1) {
-    newNote = tempNewNote;} //update the next note if the fingering pattern is valid
+     if(pitchBendMode == kPitchBendSlideVibrato){
+       findStepsDown();
+     }
+  } 
+    newNote = tempNewNote; //update the next note if the fingering pattern is valid
+  } 
   
   if (sensorDataReady) {
     get_state();//get the breath state from the pressure sensor if there's been a reading.
@@ -453,14 +447,14 @@ void loop() {
     }
   }
   
-  if ((millis() - pitchBendTimer) >= 15){ //check pitchbend every so often
+  if ((millis() - pitchBendTimer) >= 15){ //check pitchbend and send pressure data every so often
     pitchBendTimer = millis();
     
    if(ED[mode][EXPRESSION_ON] && !switches[mode][BAGLESS]) {getExpression();} //calculate pitchbend based on pressure reading
     
    if(!customEnabled && pitchBendMode != kPitchBendNone){handlePitchBend();} 
 
-   if (customEnabled) { 
+   else if (customEnabled) { 
          if (vibratoEnable == 0b000010){
             handleCustomPitchBend();}
     }
@@ -480,46 +474,15 @@ void loop() {
         prevBellSensor = bellSensor;
         if(communicationMode){sendUSBMIDI(CC,7,102,120 + bellSensor);}} //if it's changed, tell the configuration tool.  
 
-
-
 //This is a good place to send occasional debug info. 
-      
-/*
-if (!debugSent && communicationMode){ //can use this to send debug message to debug web tool one time at startup. Sending a constant stream will crash the web browser.
-for (byte i = 0; i < 9; i++) { 
-  debug_log(toneholeCovered[i]);
-  }
-debugSent = 1;}
-*/
-/*
-if (!debugSent && communicationMode){
-  for (int i = 1 ; i < EEPROM.length()+1 ; i++) {
-      debug_log(EEPROM.read(i));
-      delay(3);
-  }
-  debugSent = 1;}
-*/
-
 //for (byte i = 0; i < 9; i++) { 
- //Serial.println(EEPROM.read(165 + i));
-//}
-//Serial.println(pressureReceiveMode);
-
-//Serial.println(switches[mode][VENTED]);
  // Serial.println("");
-  //pitchBendTimer = millis();
- 
-    //FREERAM_PRINT; //uncomment to show free ram (also uncomment library include at top)
-    //MEMORY_PRINT_STACKSIZE;
-
-
-
 
     
    }
   }
 
-
+ sendNote();
 
 /*
  finalTime = micros() - initialTime; //for testing only    
@@ -529,48 +492,6 @@ unsigned long timingTest = finalTime; //for testing only
  Serial.println(timingTest); //for testing only
   initialTime = micros(); //for testing only
 */
-
-     
-  
-  if (     //several conditions to tell if we need to turn on a new note.
-      (!noteon || (newNote != (notePlaying - shift))) && //if there wasn't any note playing or the current note is different than the previous one
-      ((newState > 1 && !switches[mode][BAGLESS]) || (switches[mode][BAGLESS] && play)) && //and the state machine has determined that a note should be playing, or we're in bagless mode and the sound is turned on
-      !(prevNote==62 && (newNote + shift) == 86 && !sensorDataReady) &&  // and if we're currently on a middle D in state 3 (all finger holes covered), we wait until we get a new state reading before switching notes. This it to prevent erroneous octave jumps to a high D.
-      !(modeSelector[mode] == kModeNorthumbrian && newNote == 60) && //and if we're in Northumbrian mode don't play a note if all holes are covered. That simulates the closed pipe.
-      !(modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { // and if we're in uilleann mode, don't play a note if the bell sensor is covered and all holes are covered. Again, simulating a closed pipe.
-        
-        if(noteon){sendUSBMIDI(NOTE_OFF, 1, notePlaying, velocity); //always turn off the previous note before turning on the new one.
-        if(!customEnabled && pitchBendMode != kPitchBendNone){
-          handlePitchBend();
-          pitchBendTimer = millis();}  //check to see if we need to update pitchbend before changing to a new note. 
-          } 
-  
-         sendUSBMIDI(NOTE_ON, 1, newNote + shift, velocity);
-         notePlaying = newNote + shift;
-         prevNote = newNote;
-         noteon = 1; //keep track of the fact that there's a note turned on
-         if (ED[mode][DRONES_CONTROL_MODE] == 2 && !dronesOn) { //start drones if drones are being controlled with chanter on/off
-            startDrones();
-          }
-
-        }
-
-        
-
-  if(noteon){  //several conditions to turn a note off  
-    if (                                                                               
-      ((newState == 1 && !switches[mode][BAGLESS]) || (switches[mode][BAGLESS] && !play)) ||   //if the state drops to 1 (off) or we're in bagless mode and the sound has been turned off
-       (modeSelector[mode] == kModeNorthumbrian && newNote == 60) ||                         //or closed Northumbrian pipe
-       (modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { //or closed uilleann pipe
-           sendUSBMIDI(NOTE_OFF, 1, notePlaying, 127); //turn the note off if the breath pressure drops or if we're in uilleann mode, the bell sensor is covered, and all the finger holes are covered.
-           noteon = 0; //keep track
-           prevPitchBend = -5000; //if we turn a note off we set pitchbend to a weird (negative) number so that we know to resend a newly calculted value when we turn a note back on.
-           if (ED[mode][DRONES_CONTROL_MODE] == 2 && dronesOn) { //stop drones if drones are being controlled with chanter on/off
-              stopDrones();
-           }
-      }
-   }
-
 
    
 }

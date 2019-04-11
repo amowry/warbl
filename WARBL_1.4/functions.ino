@@ -203,52 +203,55 @@ int get_note() {
     sendUSBMIDI(CC, 7, 114, a);
     sendUSBMIDI(CC, 7, 115, lowByte(holeCovered));
   }
-      
 
-  // MAE FOOFOO 17 Nov 2018 - Added full key map and vibrato flags
-  if (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic) {
 
-    uint8_t tempCovered = (0b011111100 & holeCovered) >> 2; //use bitmask and bitshift to ignore thumb sensor, R4 sensor, and bell sensor when using tinwhistle fingering. The R4 value will be checked later to see if a note needs to be flattened.
+  uint8_t tempCovered = 0;
+
+ switch (modeSelector[mode]){ //now we'll determine the note based on teh fingering pattern
+  
+  case kModeWhistle: //these first two are the same
+  
+  case kModeChromatic:
+
+    tempCovered = (0b011111100 & holeCovered) >> 2; //use bitmask and bitshift to ignore thumb sensor, R4 sensor, and bell sensor when using tinwhistle fingering. The R4 value will be checked later to see if a note needs to be flattened.
     ret = pgm_read_byte(&tinwhistle_explicit[tempCovered].midi_note);
-    if (modeSelector[mode] == kModeChromatic && bitRead(holeCovered, 1) == 1){ret--;
-    
-    } //lower a semitone if R4 hole is covered and we're using the chromatic pattern
+    if (modeSelector[mode] == kModeChromatic && bitRead(holeCovered, 1) == 1){
+      ret--;    //lower a semitone if R4 hole is covered and we're using the chromatic pattern
+    }
     vibratoEnable = pgm_read_byte(&tinwhistle_explicit[tempCovered].vibrato);
     return ret;
-  }
+  
 
-  // MAE FOOFOO 17 Nov 2018 - Added full key map and vibrato flags
-  if (modeSelector[mode] == kModeUilleann) { //uilleann pipe mode
+ 
+  case kModeUilleann:
 
     //If back D open, always play the D and allow finger vibrato
     if ((holeCovered & 0b100000000) == 0){
-    vibratoEnable = 0b000010;
-     return 74;
-    }
-    
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
+      vibratoEnable = 0b000010;
+      return 74;
+    }   
+    tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
       ret = pgm_read_byte(&uilleann_explicit[tempCovered].midi_note);
       vibratoEnable = pgm_read_byte(&uilleann_explicit[tempCovered].vibrato);
       return ret;
-  }
+ 
 
   
 
-  if (modeSelector[mode] == kModeGHB) { //GHB/Scottish smallpipe mode
+  case kModeGHB:
 
      //If back A open, always play the A
     if ((holeCovered & 0b100000000) == 0){
      return 74;
     }
-
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
+    tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
           ret = pgm_read_byte(&GHB_explicit[tempCovered].midi_note);
         return ret;
-  }
+ 
 
 
 
-  if (modeSelector[mode] == kModeRecorder) { //Recorder mode
+  case kModeRecorder:
 
      //If back thumb is open
       if ((holeCovered & 0b100000000) == 0){
@@ -257,65 +260,59 @@ int get_note() {
         }
         return 75; //if hole L1 is closed play a C#
     }
-
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
+    tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
       ret = pgm_read_byte(&recorder_explicit[tempCovered].midi_note);
       return ret;
-  }
+  
 
   
 
-  if (modeSelector[mode] == kModeNorthumbrian) { //Northumbriam smallpipe mode
+  case kModeNorthumbrian:
 
-    uint16_t tempCovered = holeCovered >> 1; //bitshift once to ignore bell sensor reading
-
+    tempCovered = holeCovered >> 1; //bitshift once to ignore bell sensor reading
     bitWrite(tempCovered, 8, 1); //we set a bit above the highest hole, which will allow us to see if the highest hole is uncovered.
-
     tempCovered = findleftmostunsetbit(tempCovered);  //here we find the index of the leftmost uncovered hole, which will be used to determine the note from the general chart.
-
     for (uint8_t i = 0; i < 9; i++) {
       if (tempCovered == pgm_read_byte(&northumbrian_general[i].keys)) {
         ret = pgm_read_byte(&northumbrian_general[i].midi_note);
         return ret;
       }
     }
-  }
+  
 
 
-  if (modeSelector[mode] == kModeGaita) { //Gaita mode
+  case kModeGaita:
 
-    uint16_t tempCovered = holeCovered >> 1; //bitshift once to ignore bell sensor reading
+    tempCovered = holeCovered >> 1; //bitshift once to ignore bell sensor reading
     ret = pgm_read_byte(&gaita_explicit[tempCovered].midi_note);
     if(ret == 0){ret = -1;}
     return ret;
-  }
+  
 
 
-  if (modeSelector[mode] == kModeNAF) { //Native American Flute mode
+  case kModeNAF:
 
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
+    tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
       ret = pgm_read_byte(&naf_explicit[tempCovered].midi_note);
       return ret;
-  }
+  
 
 
-      if (modeSelector[mode] == kModeKaval) { //Kaval mode
+   case kModeKaval:
 
      //If back thumb is open, always play the B
-      if ((holeCovered & 0b100000000) == 0){
-     return 71;
-    }
-
-    uint8_t tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
+     if ((holeCovered & 0b100000000) == 0){
+       return 71;
+     }
+    tempCovered = (0b011111110 & holeCovered) >> 1; //ignore thumb hole and bell sensor
       ret = pgm_read_byte(&kaval_explicit[tempCovered].midi_note);
       return ret;
-  }
-
-
-
-
   
-  return ret; //if for some reason we've fallen through...
+
+ 
+  default: 
+  return ret;
+ }
 }
 
 
@@ -351,9 +348,6 @@ void get_shift() {
 
       if(bitRead(holeCovered,8) == switches[mode][INVERT]) {
         shift = shift + 12;   //add an octave jump to the transposition if necessary.
-        if (modeSelector[mode] == kModeKaval){ 
-           shift = shift + 7;
-        }
       }
     }
 
@@ -431,10 +425,10 @@ void get_state() {
   if (sensorValue2 <= sensorThreshold[0]) {
     newState = 1;
   }
-  else if (((breathMode != kPressureBreath) && sensorValue2 > sensorThreshold[0]) || (!jump && !drop  && (breathMode > kPressureSingle) && sensorValue2 > sensorThreshold[0] && (sensorValue2 <= upperBound))) {
+  else if ((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound))) { //single register mode or within the bounds for state 2
     newState = 2;
   }
-  else if (!drop  && breathMode == kPressureBreath && (sensorValue2 > upperBound)) {
+  else if (!drop && (sensorValue2 > upperBound)) { //we're in two-register mode and above the upper bound for state 2
     newState = 3;
   }
   
@@ -485,20 +479,30 @@ void getExpression() {
 
 
 //find how many steps down to the next lower note on the scale. Doing this in a function because the fingering charts can't be read from the main page, due to compilation order.
-void findStepsDown() { 
-   if(modeSelector[mode] == kModeGaita){ 
-     stepsDown = pgm_read_byte(&steps[tempNewNote-60]);} //read stepsDown from the chart.
-   else if(modeSelector[mode] == kModeRecorder){
-      stepsDown = pgm_read_byte(&steps[tempNewNote-57]);}
-   else if(modeSelector[mode] == kModeGHB){
-      stepsDown = pgm_read_byte(&steps[tempNewNote-52]);}
-   else if(modeSelector[mode] == kModeKaval){
-      stepsDown = 1;} //this chart has a half step between every note on the scale.  
-   else {stepsDown = pgm_read_byte(&steps[tempNewNote-59]);}
+void findStepsDown() {
 
+  switch (modeSelector[mode]){
+   case kModeGaita: 
+     stepsDown = pgm_read_byte(&steps[tempNewNote-60]); //read stepsDown from the chart.
+     break;
+   case kModeRecorder:
+     stepsDown = pgm_read_byte(&steps[tempNewNote-61]);
+     break;
+   case kModeGHB:
+      stepsDown = pgm_read_byte(&steps[tempNewNote-52]);
+      break;
+   case kModeKaval:
+      stepsDown = 1; //this chart has a half step between every note on the scale.
+      break;  
+   default:
+      stepsDown = pgm_read_byte(&steps[tempNewNote-59]);
+  }
+  
    slideHole = findleftmostunsetbit(holeCovered); //we also determine which is the highest uncovered hole,to use for sliding
     //if(slideHole == 127) {slideHole = 8;} //can turn this on to include the thumb hole as a slide hole.
 }
+
+
 
 
 
@@ -533,41 +537,28 @@ void handleCustomPitchBend() {
   pitchBend = 0;
 
 
-  if ((modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic) && (vibratoEnable == 0b000010)) 
-  
+  if ((modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic) && (vibratoEnable == 0b000010)) {
 
-  {
-  
-    // Are both fingers contributing to the vibrato?
-    if (((toneholeRead[3] > senseDistance) && (bitRead(holeCovered, 3) != 1)) && ((toneholeRead[2] > senseDistance) && (bitRead(holeCovered, 2) != 1))) {
 
-        // Each contributes half of the bend
-        pitchBend = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2; 
-      
-        pitchBend += ((toneholeRead[2] - senseDistance) * vibratoScale[2]) >> 2; 
-        
-    }
-    else
-    
-    {
-      
-      // Only one finger contributing
-      if ((toneholeRead[3] > senseDistance) && (bitRead(holeCovered, 3) != 1)) {
-        pitchBend = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2; 
-      }
-      
-      if ((toneholeRead[2] > senseDistance) && (bitRead(holeCovered, 2) != 1)) {
+    if ((toneholeRead[3] > senseDistance) && (bitRead(holeCovered, 3) != 1)) { //if hole 3 is contributing, bend down
+        pitchBend = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2;
+
+      if ((toneholeRead[2] > senseDistance) && (bitRead(holeCovered, 2) != 1)) { //if hole 2 is contributing, add that in.
         pitchBend += ((toneholeRead[2] - senseDistance) * vibratoScale[2]) >> 2; 
       }
-    
+    }   
+
+    else if ((toneholeRead[2] > senseDistance) && (bitRead(holeCovered, 2) != 1)) { //if only hole 2 is contributing.
+        pitchBend = ((toneholeRead[2] - senseDistance) * vibratoScale[2]) >> 2; 
     }
-     
+    
+
+   
     if (pitchBend > vibratoDepth) {
       pitchBend = vibratoDepth; //cap at max vibrato depth if they combine to add up to more than that (changed by AM in v. 8.5 to fix an unwanted oscillation when both fingers were contributing.)
     }
 
-
-    
+  
     
   }
   else
@@ -596,7 +587,7 @@ void handleCustomPitchBend() {
             pitchBend = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2; 
           }
           
-          if ((toneholeRead[3] < senseDistance) || (bitRead(holeCovered, 3) == 1)) {
+          else if ((toneholeRead[3] < senseDistance) || (bitRead(holeCovered, 3) == 1)) {
             pitchBend = 0; // If the finger is removed or the hole is fully covered, there's no pitchbend contributed by that hole.
           }
      
@@ -614,7 +605,7 @@ void handleCustomPitchBend() {
 
   if (prevPitchBend != pitchBend) {
     
-    if (noteon && pitchBendMode < kPitchBendNone) {
+    if (noteon) {
       sendUSBMIDI(PITCH_BEND, 1, pitchBend & 0x7F, pitchBend >> 7);
       prevPitchBend = pitchBend;
     }
@@ -635,26 +626,32 @@ void handlePitchBend() {
 
 
   if (pitchBendMode == kPitchBendSlideVibrato){
-    if(toneholeRead[i] > senseDistance && i == slideHole && (bitRead(holeCovered, i)!=1)){
-      if (stepsDown == 1)  {iPitchBend[i] = ((toneholeRead[i]-senseDistance) * toneholeScale[i])>>3;} //bend down toward the next lowest note in the scale, assuming it's a half step away
-      else {iPitchBend[i] = ((toneholeRead[i]-senseDistance) * toneholeScale[i])>>2;} //If there are two half steps down to the next note on the scale, we have to bend twice as rapidly as we approach it.     
+    if(toneholeRead[i] > senseDistance){
+      if (i == slideHole && (bitRead(holeCovered, i)!=1)){
+        iPitchBend[i] = ((toneholeRead[i]-senseDistance) * toneholeScale[i])>>(4 - stepsDown); //bend down toward the next lowest note in the scale, the amount of bend depending on the number of steps down.   
+      }
     }
-  
-      if (toneholeRead[i] < senseDistance) {
-        pitchBendOn[i] = 0;
-        iPitchBend[i] = 0;
+    else {
+      pitchBendOn[i] = 0;
+      iPitchBend[i] = 0;
       }
   }
 
-  if (toneholeRead[i] < senseDistance && bitRead(holeLatched, i) == 1){(bitWrite(holeLatched, i, 0));} //we "unlatch" (enable for vibrato) a hole if it was covered when the note was triggered but now the finger has been compltely removed.
+  if (bitRead(holeLatched, i) == 1 && toneholeRead[i] < senseDistance){(bitWrite(holeLatched, i, 0));} //we "unlatch" (enable for vibrato) a hole if it was covered when the note was triggered but now the finger has been compltely removed.
 
-  if (bitRead(vibratoHoles, i) == 1 && bitRead(holeLatched, i) == 0 && (pitchBendMode == kPitchBendVibrato || (pitchBendMode == kPitchBendSlideVibrato && i != slideHole))) { //if this is a vibrato hole and we're in a mode that uses vibrato, and the hole is unlatched       
-      if(toneholeRead[i] > senseDistance && (bitRead(holeCovered, i)!=1)){
+  if (bitRead(vibratoHoles, i) == 1 && bitRead(holeLatched, i) == 0 && (pitchBendMode == kPitchBendVibrato || i != slideHole)) { //if this is a vibrato hole and we're in a mode that uses vibrato, and the hole is unlatched       
+      if(toneholeRead[i] > senseDistance) {
+        if (bitRead(holeCovered, i)!=1){    
          iPitchBend[i] = (((toneholeRead[i]-senseDistance) * vibratoScale[i])>>2); //bend downward
-         pitchBendOn[i] = 1;}
-      if ((toneholeRead[i] < senseDistance) || (bitRead(holeCovered, i) == 1)) {iPitchBend[i] = 0;}
-      if (toneholeRead[i] < senseDistance) {pitchBendOn[i] = 0;}
-
+         pitchBendOn[i] = 1;
+        }
+      }
+      else {
+        pitchBendOn[i] = 0;
+      if (bitRead(holeCovered, i) == 1) {
+        iPitchBend[i] = 0;
+        }
+      }
 
     if(pitchBendOn[i] == 1 && (bitRead(holeCovered, i)==1)) {iPitchBend[i] = vibratoDepth;} //set vibrato to max downward bend if a hole was being used to bend down and now is covered 
    }
@@ -674,11 +671,61 @@ if (pitchBend < 0) {
   }
 
 if(prevPitchBend != pitchBend){
-   if (pitchBendMode < kPitchBendNone && noteon) {sendUSBMIDI(PITCH_BEND,1,pitchBend & 0x7F,pitchBend >> 7);
+   if (noteon) {sendUSBMIDI(PITCH_BEND,1,pitchBend & 0x7F,pitchBend >> 7);
    prevPitchBend = pitchBend;}
    }
        
 }
+
+
+
+
+
+//send MIDI NoteOn/NoteOff events when necessary
+void sendNote(){
+
+
+   if (     //several conditions to tell if we need to turn on a new note.
+      (!noteon || (newNote != (notePlaying - shift))) && //if there wasn't any note playing or the current note is different than the previous one
+      ((newState > 1 && !switches[mode][BAGLESS]) || (switches[mode][BAGLESS] && play)) && //and the state machine has determined that a note should be playing, or we're in bagless mode and the sound is turned on
+      !(prevNote==62 && (newNote + shift) == 86 && !sensorDataReady) &&  // and if we're currently on a middle D in state 3 (all finger holes covered), we wait until we get a new state reading before switching notes. This it to prevent erroneous octave jumps to a high D.
+      !(modeSelector[mode] == kModeNorthumbrian && newNote == 60) && //and if we're in Northumbrian mode don't play a note if all holes are covered. That simulates the closed pipe.
+      !(modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { // and if we're in uilleann mode, don't play a note if the bell sensor is covered and all holes are covered. Again, simulating a closed pipe.
+        
+        if(noteon){sendUSBMIDI(NOTE_OFF, 1, notePlaying, velocity); //always turn off the previous note before turning on the new one.
+        if(!customEnabled && pitchBendMode != kPitchBendNone){
+          handlePitchBend();
+          pitchBendTimer = millis();}  //check to see if we need to update pitchbend before changing to a new note. 
+          } 
+  
+         sendUSBMIDI(NOTE_ON, 1, newNote + shift, velocity);
+         notePlaying = newNote + shift;
+         prevNote = newNote;
+         noteon = 1; //keep track of the fact that there's a note turned on
+         if (ED[mode][DRONES_CONTROL_MODE] == 2 && !dronesOn) { //start drones if drones are being controlled with chanter on/off
+            startDrones();
+          }
+
+        }
+
+        
+
+  if(noteon){  //several conditions to turn a note off  
+    if (                                                                               
+      ((newState == 1 && !switches[mode][BAGLESS]) || (switches[mode][BAGLESS] && !play)) ||   //if the state drops to 1 (off) or we're in bagless mode and the sound has been turned off
+       (modeSelector[mode] == kModeNorthumbrian && newNote == 60) ||                         //or closed Northumbrian pipe
+       (modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { //or closed uilleann pipe
+           sendUSBMIDI(NOTE_OFF, 1, notePlaying, 127); //turn the note off if the breath pressure drops or if we're in uilleann mode, the bell sensor is covered, and all the finger holes are covered.
+           noteon = 0; //keep track
+           prevPitchBend = -5000; //if we turn a note off we set pitchbend to a weird (negative) number so that we know to resend a newly calculted value when we turn a note back on.
+           if (ED[mode][DRONES_CONTROL_MODE] == 2 && dronesOn) { //stop drones if drones are being controlled with chanter on/off
+              stopDrones();
+           }
+      }
+   }
+}
+
+
 
 
 
@@ -841,15 +888,24 @@ void receiveMIDI() {
             blinkNumber = 3;
           }
 
-          if (rx.byte3 == 127) { //begin auto-calibration if directed.
+          else if (rx.byte3 == 127) { //begin auto-calibration if directed.
             blinkNumber = 0;
             calibration = 1;
           }
 
-          if (rx.byte3 == 126) { //when communication is established, send all current settings to tool.
+          else if (rx.byte3 == 126) { //when communication is established, send all current settings to tool.
             communicationMode = 1;
             blinkNumber = 0;
             sendSettings();
+          }
+
+
+          else if (rx.byte3 == 122) { // dump EEPROM
+            for (int i = 0 ; i < EEPROM.length() ; i++) {
+              debug_log(EEPROM.read(i));
+              delay(3);
+              blinkNumber = 3;
+            }
           }
          
           
@@ -919,7 +975,7 @@ void receiveMIDI() {
                 momentary[mode][i] = 0;
                 noteOnOffToggle[i] = 0;
               }
-              if (rx.byte3 == 118) {
+             else if (rx.byte3 == 118) {
                 momentary[mode][i] = 1;
                 noteOnOffToggle[i] = 0;
               }
@@ -930,40 +986,38 @@ void receiveMIDI() {
           if (rx.byte3 == 123) { //save settings as the defaults for the current instrument
             saveSettings(mode);
   			    blinkNumber = 3;
-  			    ledTimer = millis();
           }
           
 
-          if (rx.byte3 == 124) { //Save settings as the defaults for all instruments
+         else if (rx.byte3 == 124) { //Save settings as the defaults for all instruments
             for (byte k = 0; k < 3; k++) {
             	saveSettings(k);            
   				    loadFingering();
   				    loadSettingsForAllModes();
+              loadPrefs();
   				    blinkNumber = 3;
-  				    ledTimer = millis();
             }
           }
 
-          if (rx.byte3 == 125) { //restore all factory settings
+         else if (rx.byte3 == 125) { //restore all factory settings
             restoreFactorySettings();
             blinkNumber = 3;
           }
         }
 
 
-        if (rx.byte2 == 103) {
+       else if (rx.byte2 == 103) {
           senseDistanceSelector[mode] = rx.byte3;
           loadPrefs();
         }
 
 
-        if (rx.byte2 == 117) {
+       else if (rx.byte2 == 117) {
           unsigned long v = rx.byte3 * 8191UL / 100;
           vibratoDepthSelector[mode] = v; //scale vibrato depth in cents up to pitchbend range of 0-8191
           loadPrefs();
         }
         
-
 
        for (byte i = 0; i < 3; i++) { //update noteshift
         if (rx.byte2 == 111 + i) {
@@ -979,11 +1033,11 @@ void receiveMIDI() {
               pressureReceiveMode = rx.byte3-1;        
           }
         
-        if (rx.byte2 == 105) {
+       else if (rx.byte2 == 105) {
           if(pressureReceiveMode < 12){
-          pressureSelector[mode][pressureReceiveMode] = rx.byte3;  //advanced pressure values
-          loadPrefs();
-        }
+            pressureSelector[mode][pressureReceiveMode] = rx.byte3;  //advanced pressure values
+            loadPrefs();
+          }
       
       		else if(pressureReceiveMode < 33){
       	  	ED[mode][pressureReceiveMode-12] = rx.byte3; //expression and drones settings
@@ -1004,10 +1058,8 @@ void receiveMIDI() {
           else if(pressureReceiveMode <45) {
             switches[mode][pressureReceiveMode-39] = rx.byte3; //switches in the slide/vibrato and register control panels
             loadPrefs();
-          }
-       	
-        	
-        	}
+          }      	
+       }
         
         
 
@@ -1019,22 +1071,22 @@ void receiveMIDI() {
           loadPrefs();
           }
 
-        if(rx.byte3 > 29 && rx.byte3 < 39){
+       else if(rx.byte3 > 29 && rx.byte3 < 39){
           bitClear(vibratoHolesSelector[mode],rx.byte3-30);
           loadPrefs();
           }
           
-        if(rx.byte3 == 39){
+       else if(rx.byte3 == 39){
           useLearnedPressureSelector[mode] = 0;
           loadPrefs();
           }  
 
-        if(rx.byte3 == 40){
+       else if(rx.byte3 == 40){
           useLearnedPressureSelector[mode] = 1;
           loadPrefs();
           }
 
-        if(rx.byte3 == 41){
+       else if(rx.byte3 == 41){
           learnedPressureSelector[mode] = sensorValue;
           sendUSBMIDI(CC, 7, 104, 34); //indicate that LSB of learned pressure is about to be sent
           sendUSBMIDI(CC, 7, 105, learnedPressureSelector[mode] & 0x7F); //send LSB of learned pressure 
@@ -1043,13 +1095,13 @@ void receiveMIDI() {
           loadPrefs();
           }
 
-        if(rx.byte3 == 42){  //autocalibrate bell sensor only                       
+       else if(rx.byte3 == 42){  //autocalibrate bell sensor only                       
           calibration = 2;
           blinkNumber = 0;
           }
 
 
-        if(rx.byte3 == 43){
+       else if(rx.byte3 == 43){
           int tempPressure = sensorValue;
           ED[mode][DRONES_PRESSURE_LOW_BYTE] = tempPressure & 0x7F;
           ED[mode][DRONES_PRESSURE_HIGH_BYTE] = tempPressure >> 7;
@@ -1060,7 +1112,7 @@ void receiveMIDI() {
           }
         
 
-        if(rx.byte3 == 45){  //save current sensor calibration as factory calibration
+       else if(rx.byte3 == 45){  //save current sensor calibration as factory calibration
           for (byte i = 0; i < 18; i++) {
             EEPROM.update(i, EEPROM.read(i+18));
           }
@@ -1068,10 +1120,7 @@ void receiveMIDI() {
             EEPROM.update(i, EEPROM.read(i-10));
           }
           }       
-
-
-         
-      }
+    }
   
 
 
@@ -1080,10 +1129,10 @@ void receiveMIDI() {
             if (rx.byte2 == 106 && rx.byte3 < 16) {
               buttonPrefs[mode][i][2] = rx.byte3;
             }
-            if (rx.byte2 == 107) {
+           else if (rx.byte2 == 107) {
               buttonPrefs[mode][i][3] = rx.byte3;
             }
-            if (rx.byte2 == 108) {
+           else if (rx.byte2 == 108) {
               buttonPrefs[mode][i][4] = rx.byte3;
             }
           }
@@ -1189,8 +1238,7 @@ void loadSettingsForAllModes() {
     for (byte m = 0; m < 12; m++) {
     pressureSelector[i][m] =  EEPROM.read(260 + m + (i * 20));
      }
-
-    sensorThreshold[1] = sensorThreshold[0] + (offset  << 2);
+    
     for (byte h = 0; h < 3; h++) {
       momentary[i][h] = EEPROM.read(250 + (i * 3) + h);
     }
@@ -1394,8 +1442,9 @@ void handleButtons() {
   //then, a few hard-coded actions that can't be changed by the configuration tool:
   //_______________________________________________________________________________
 
+ if (justPressed[0] && !pressed[2] && !pressed[1]) {
   if (ED[mode][DRONES_CONTROL_MODE] == 1) {
-    if (justPressed[0] && !pressed[2] && !pressed[1] && !(calibration>0) && holeCovered >> 1 == 0b00001000) { //turn drones on/off if button 0 is pressed and fingering pattern is 0 0001000.
+    if (holeCovered >> 1 == 0b00001000) { //turn drones on/off if button 0 is pressed and fingering pattern is 0 0001000.
       justPressed[0] = 0;
       specialPressUsed[0] = 1;
       if(!dronesOn){
@@ -1408,39 +1457,18 @@ void handleButtons() {
   }
 
   if (switches[mode][SECRET]) {
-     if (justPressed[0] && !pressed[2] && !pressed[1] && !(calibration>0) && holeCovered >> 1 == 0b00010000) { //change pitchbend mode if button 0 is pressed and fingering pattern is 0 0000010.
-        justPressed[0] = 0;
-        specialPressUsed[0] = 1;
-        pitchBendMode++;//set vibrato mode
-      if (pitchBendMode == kPitchBendNModes) {
-        pitchBendMode = kPitchBendSlideVibrato;
-      }
-      if (pitchBendMode == kPitchBendNone) {
-        pitchBend = 8191;
-        sendUSBMIDI(PITCH_BEND, 1, pitchBend & 0x7F, pitchBend >> 7);
-      } //turn off any pitch bend if vibrato is off, so there's no carryover.
-      blinkNumber = abs(pitchBendMode) + 1;
-      ledTimer = millis();
-      if (communicationMode) {
-        sendUSBMIDI(CC, 7, 102, 70 + pitchBendMode); //send current pitchbend mode to communications tool.
-      }
-    }
+        if(holeCovered >> 1 == 0b00010000) { //change pitchbend mode if button 0 is pressed and fingering pattern is 0 0000010.
+          justPressed[0] = 0;
+          specialPressUsed[0] = 1;
+          changePitchBend();
+        }
 
-    if (justPressed[0] && !pressed[2] && !pressed[1] && !(calibration>0) && holeCovered >> 1 == 0b00000010) { //change instrument if button 0 is pressed and fingering pattern is 0 0000001.
-      justPressed[0] = 0;
-      specialPressUsed[0] = 1;
-      mode++; //set instrument
-      if (mode == 3) {
-        mode = 0;
-      }
-      play = 0;
-      loadPrefs(); //load the correct user settings for offset, pitchBendMode, senseDistance, and breathMode, based on current instrument.
-      blinkNumber = abs(mode) + 1;
-      ledTimer = millis();
-      if (communicationMode) {
-        sendSettings(); //tell configuration tool to switch mode and send all settings for current mode.
-      }
-    }
+        else if (holeCovered >> 1 == 0b00000010) { //change instrument if button 0 is pressed and fingering pattern is 0 0000001.
+          justPressed[0] = 0;
+          specialPressUsed[0] = 1;
+          changeInstrument();
+        }
+     }
   }
 
 
@@ -1553,30 +1581,11 @@ void performAction(byte action) {
       break;
 
     case 2:  //set vibrato/slide mode
-      pitchBendModeSelector[mode] ++;
-      if (pitchBendModeSelector[mode] == kPitchBendNModes) {
-        pitchBendModeSelector[mode] = kPitchBendSlideVibrato;     
-      }
-      loadPrefs();
-      blinkNumber = abs(pitchBendMode) + 1;
-      ledTimer = millis();     
-      if (communicationMode) {
-        sendUSBMIDI(CC, 7, 102, 70 + pitchBendMode); //send current pitchbend mode to configuration tool.
-      }
+      changePitchBend();
       break;
 
     case 3:
-      mode++; //set instrument
-      if (mode == 3) {
-        mode = 0;
-      }
-      play = 0;
-      loadPrefs(); //load the correct user settings based on current instrument.
-      blinkNumber = abs(mode) + 1;
-      ledTimer = millis();
-      if (communicationMode) {
-        sendSettings(); //tell communications tool to switch mode and send all settings for current instrument.
-      }
+      changeInstrument();
       break;
 
     case 4:
@@ -1639,6 +1648,48 @@ void performAction(byte action) {
   }
 }
 
+
+
+
+
+//cycle through pitchbend modes
+void changePitchBend(){
+      pitchBendModeSelector[mode] ++;
+      if (pitchBendModeSelector[mode] == kPitchBendNModes) {
+        pitchBendModeSelector[mode] = kPitchBendSlideVibrato;     
+      }
+      loadPrefs();
+      blinkNumber = abs(pitchBendMode) + 1;
+      ledTimer = millis();     
+      if (communicationMode) {
+        sendUSBMIDI(CC, 7, 102, 70 + pitchBendMode); //send current pitchbend mode to configuration tool.
+      }
+}
+
+
+
+
+
+
+//cycle through instruments
+void changeInstrument(){
+      mode++; //set instrument
+      if (mode == 3) {
+        mode = 0;
+      }
+      play = 0;
+      loadPrefs(); //load the correct user settings based on current instrument.
+      blinkNumber = abs(mode) + 1;
+      ledTimer = millis();
+      if (communicationMode) {
+        sendSettings(); //tell communications tool to switch mode and send all settings for current instrument.
+      }
+}
+
+
+
+
+
 void handleMomentary(byte button) {
 
 
@@ -1648,6 +1699,7 @@ void handleMomentary(byte button) {
   }
 
 }
+
 
 
 
@@ -1727,7 +1779,6 @@ byte findleftmostunsetbit(uint16_t n) {
   return pos;
 
 }
-
 
 
 
