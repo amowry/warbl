@@ -693,12 +693,10 @@ void sendNote(){
       !(modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { // and if we're in uilleann mode, don't play a note if the bell sensor is covered and all holes are covered. Again, simulating a closed pipe.
         
         if(noteon){sendUSBMIDI(NOTE_OFF, 1, notePlaying, velocity); //always turn off the previous note before turning on the new one.
-        if(!customEnabled && pitchBendMode != kPitchBendNone){
-          handlePitchBend();
-          pitchBendTimer = millis();}  //check to see if we need to update pitchbend before changing to a new note. 
           } 
   
-         sendUSBMIDI(NOTE_ON, 1, newNote + shift, velocity);
+         sendUSBMIDI(NOTE_ON, 1, newNote + shift, velocity);      
+         pitchBendTimer = millis(); //for some reason it sounds best if we don't send pitchbend right away after starting a new note.
          notePlaying = newNote + shift;
          prevNote = newNote;
          noteon = 1; //keep track of the fact that there's a note turned on
@@ -717,7 +715,6 @@ void sendNote(){
        (modeSelector[mode] == kModeUilleann && newNote == 62 && (bitRead(holeCovered,0) == 1))) { //or closed uilleann pipe
            sendUSBMIDI(NOTE_OFF, 1, notePlaying, 127); //turn the note off if the breath pressure drops or if we're in uilleann mode, the bell sensor is covered, and all the finger holes are covered.
            noteon = 0; //keep track
-           prevPitchBend = -5000; //if we turn a note off we set pitchbend to a weird (negative) number so that we know to resend a newly calculted value when we turn a note back on.
            if (ED[mode][DRONES_CONTROL_MODE] == 2 && dronesOn) { //stop drones if drones are being controlled with chanter on/off
               stopDrones();
            }
@@ -861,16 +858,10 @@ void receiveMIDI() {
     interrupts();
     if (rx.header != 0) {
 
-       //Serial.println(rx.byte1 &0x0f);
-      // Serial.println(rx.byte2);
-      // Serial.println(rx.byte3);
-     //  Serial.println("");
-
       if (rx.byte2 < 119) { //Chrome sends CC 121 and 123 on all channels when it connects, so ignore these.  
 
       if ((rx.byte1 & 0x0f) == 6) { //if we're on channel 7, we may be receiving messages from the configuration tool.
           blinkNumber = 1; //blink once, indicating a received message. Some commands below will change this to three (or zero) blinks.
-          ledTimer = millis();
         if (rx.byte2 == 102) {  //many settings are controlled by a value in CC 102 (always channel 7).
           if (rx.byte3 > 0 && rx.byte3 <= 18){ //handle sensor calibration commands from the configuration tool.
           if ((rx.byte3 & 1) == 0) {
@@ -1268,8 +1259,6 @@ void saveFactorySettings() {
   mode = 0; //switch back to mode 0
 
     blinkNumber = 3;
-    ledTimer = millis();
-  
 
   for (int i = 40; i < 320; i++) { //then we read every byte in EEPROM from 40 to 319
     byte reading = EEPROM.read(i);
@@ -1564,7 +1553,6 @@ void performAction(byte action) {
        }
        sendUSBMIDI(PROGRAM_CHANGE, buttonPrefs[mode][action][2], program);
        blinkNumber = 1;
-       ledTimer = millis();
       }
 
       if (buttonPrefs[mode][action][1] == 4) { //decrease program change
@@ -1575,7 +1563,6 @@ void performAction(byte action) {
         }
        sendUSBMIDI(PROGRAM_CHANGE, buttonPrefs[mode][action][2], program);
         blinkNumber = 1;
-        ledTimer = millis();
         }
 
       break;
@@ -1598,7 +1585,6 @@ void performAction(byte action) {
         loadPrefs();
       }
       blinkNumber = abs(octaveShift);
-      ledTimer = millis();
       break;
 
     case 6:
@@ -1607,7 +1593,6 @@ void performAction(byte action) {
         loadPrefs();
       }
       blinkNumber = abs(octaveShift);
-      ledTimer = millis();
       break;
 
     case 7:
@@ -1625,7 +1610,6 @@ void performAction(byte action) {
       loadPrefs();
       play = 0;
       blinkNumber = abs(breathMode) + 1;
-      ledTimer = millis();
       if (communicationMode) {
         sendUSBMIDI(CC, 7, 102, 80 + breathMode); //send current breathMode
       }
@@ -1634,7 +1618,6 @@ void performAction(byte action) {
 
     case 9: //toggle drones
       blinkNumber = 1;
-      ledTimer = millis();
       if(!dronesOn){
           startDrones();
       }
@@ -1659,8 +1642,7 @@ void changePitchBend(){
         pitchBendModeSelector[mode] = kPitchBendSlideVibrato;     
       }
       loadPrefs();
-      blinkNumber = abs(pitchBendMode) + 1;
-      ledTimer = millis();     
+      blinkNumber = abs(pitchBendMode) + 1;    
       if (communicationMode) {
         sendUSBMIDI(CC, 7, 102, 70 + pitchBendMode); //send current pitchbend mode to configuration tool.
       }
@@ -1680,7 +1662,6 @@ void changeInstrument(){
       play = 0;
       loadPrefs(); //load the correct user settings based on current instrument.
       blinkNumber = abs(mode) + 1;
-      ledTimer = millis();
       if (communicationMode) {
         sendSettings(); //tell communications tool to switch mode and send all settings for current instrument.
       }
@@ -1691,7 +1672,6 @@ void changeInstrument(){
 
 
 void handleMomentary(byte button) {
-
 
   if (momentary[mode][button] && buttonPrefs[mode][button][1] == 0) {
     sendUSBMIDI(NOTE_ON, buttonPrefs[mode][button][2], buttonPrefs[mode][button][3], buttonPrefs[mode][button][4]);
@@ -1728,7 +1708,6 @@ void loadPrefs() {
 
       pitchBend = 8191;
       expression = 0;
-      pitchBendTimer = millis();
       sendUSBMIDI(PITCH_BEND, 1, pitchBend & 0x7F, pitchBend >> 7);
       
       for (byte i=0; i< 9; i++) {
