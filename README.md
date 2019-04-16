@@ -31,6 +31,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
   I use the free NotePad++ app to edit this. You’ll change lines 296 and 297 to these to use the WARBL USB VID and PID:
 
   itsybitsy32u4_3V.build.vid=0x04D8
+  
   itsybitsy32u4_3V.build.pid=0xEE87
   
   Next, make the same changes to lines 311 and 312:
