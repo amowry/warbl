@@ -66,10 +66,10 @@ const u8 STRING_MANUFACTURER[] PROGMEM = USB_MANUFACTURER;
 
 #define DEVICE_CLASS 0x02
 
-//Modified to use WARBL VID and PID
+
 const DeviceDescriptor USB_DeviceDescriptorIAD =
-	D_DEVICE(0xEF,0x02,0x01,64,0x04D8,0xEE87,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
-//#endif
+  D_DEVICE(0xEF,0x02,0x01,64,USB_VID,USB_PID,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
+
 
 //==================================================================
 //==================================================================
