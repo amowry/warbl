@@ -57,34 +57,18 @@ const u16 STRING_LANGUAGE[2] = {
 
 const u8 STRING_PRODUCT[] PROGMEM = USB_PRODUCT;
 
-#if USB_VID == 0x2341
-#  if defined(USB_MANUFACTURER)
-#    undef USB_MANUFACTURER
-#  endif
-#  define USB_MANUFACTURER "Arduino LLC"
-#elif USB_VID == 0x1b4f
-#  if defined(USB_MANUFACTURER)
-#    undef USB_MANUFACTURER
-#  endif
-#  define USB_MANUFACTURER "SparkFun"
-#elif !defined(USB_MANUFACTURER)
-// Fall through to unknown if no manufacturer name was provided in a macro
-#  define USB_MANUFACTURER "Unknown"
-#endif
+
+#  define USB_MANUFACTURER "Mowry Stringed Instruments"
+
 
 const u8 STRING_MANUFACTURER[] PROGMEM = USB_MANUFACTURER;
 
 
 #define DEVICE_CLASS 0x02
 
-
-//	DEVICE DESCRIPTOR
-//#if defined(CDCCON_DISABLE)
-//const DeviceDescriptor USB_DeviceDescriptorIAD =
-	//D_DEVICE(0x00,0x00,0x00,64,USB_VID,USB_PID,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
-//#else
+//Modified to use WARBL VID and PID
 const DeviceDescriptor USB_DeviceDescriptorIAD =
-	D_DEVICE(0xEF,0x02,0x01,64,USB_VID,USB_PID,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
+	D_DEVICE(0xEF,0x02,0x01,64,0x04D8,0xEE87,0x100,IMANUFACTURER,IPRODUCT,ISERIAL,1);
 //#endif
 
 //==================================================================

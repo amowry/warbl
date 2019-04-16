@@ -266,7 +266,7 @@ volatile int tempToneholeRead[] = {0,0,0,0,0,0,0,0,0}; //temporary storage for t
 int toneholeRead[] = {0,0,0,0,0,0,0,0,0}; //storage for tonehole sensor readings, transferred from the above volatile variable
 volatile int tempToneholeReadA[] = {0,0,0,0,0,0,0,0,0}; //temporary storage for ambient light tonehole sensor readings, written during the timer ISR
 unsigned int holeCovered = 0; //whether each hole is covered-- each bit corresponds to a tonehole.
-unsigned int prevHoleCovered = 0; //so we can track changes.
+unsigned int prevHoleCovered = 1; //so we can track changes.
 unsigned int hysteresis = 4;
 volatile int tempNewNote = 0;
 byte prevNote;
@@ -335,7 +335,7 @@ void setup() {
   
   for (byte i = 0; i < 9; i++) //Initialize the tonehole sensor IR LEDs.
     {pinMode2f(pins[i], OUTPUT);} 
-  
+
   pinMode2f(DP15, INPUT_PULLUP); //set buttons as inputs and enable internal pullup
   pinMode2f(DP16, INPUT_PULLUP); 
   pinMode2f(DP14, INPUT_PULLUP); 
@@ -343,10 +343,10 @@ void setup() {
   //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
 //the four lines below can be uncommented to make a version of the software that will resave factory settings the first time it is loaded.
-  if(EEPROM.read(901) != VERSION){ //a new software version has been loaded
-  EEPROM.update(901, VERSION); //update the stored software version
-  EEPROM.update(44, 255); //change this, which will force the factory settings to be resaved.
-  }
+ // if(EEPROM.read(901) != VERSION){ //a new software version has been loaded
+ // EEPROM.update(901, VERSION); //update the stored software version
+//  EEPROM.update(44, 255); //change this, which will force the factory settings to be resaved.
+//  }
 
   if(EEPROM.read(900) == 21){ //old sensors
   hardwareRevision = 21;}
