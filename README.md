@@ -28,7 +28,11 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
   C:\Users\\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12
 
-  I use the free NotePad++ app to edit this. You’ll change lines 296 and 297 to these to use the WARBL USB VID and PID:
+  I use the free NotePad++ app to edit this. First, change line 286 to change the name that shows up in Arduino:
+  
+  itsybitsy32u4_3V.name=WARBL
+    
+  Then change lines 296 and 297 to these to use the WARBL USB VID and PID:
 
   itsybitsy32u4_3V.build.vid=0x04D8
   
