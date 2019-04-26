@@ -19,7 +19,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 
-* WARBL runs on 3.3V and at 8Mhz, which is nonstandard for Arduino boards with the same processor. I used the Adafruit ItsyBitsy 32u4-3.3V for prototyping WARBL, so the easiest way to set up the IDE is to install the Adafruit boards package, [following the instructions here](https://learn.adafruit.com/introducting-itsy-bitsy-32u4?view=all#arduino-ide-setup) **Windows 7 only:** You will also have to install the drivers, following the link partway down the above page.
+* WARBL runs on 3.3V and at 8Mhz, which is nonstandard for Arduino boards with the same processor. I used the Adafruit ItsyBitsy 32u4-3.3V for prototyping WARBL, so the easiest way to set up the IDE is to install the Adafruit boards package, [following the instructions here](https://learn.adafruit.com/introducting-itsy-bitsy-32u4?view=all#arduino-ide-setup). **Windows 7 only:** You will also have to install the drivers, following the link partway down the above page.
 
 
 
