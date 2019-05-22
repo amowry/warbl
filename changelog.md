@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.6] - 2019-05-22
+### Added
+
+- Added XOXXXX Bb and OXOXXX C to tin whistle/Irish flute fingering chart
+- Modified default settings for the vented mouthpiece slightly
+
+## [Released]
+
 ## [1.5] - 2019-05-21
 ### Added
 
