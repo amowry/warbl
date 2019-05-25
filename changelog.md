@@ -9,8 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Added XOXXXX Bb and OXOXXX C to tin whistle/Irish flute fingering chart
-- Modified default settings for the vented mouthpiece slightly
+- Fingering for Chinese Xiao
 - Added the ability for the bell sensor to close off the pipe using any fingering pattern instead of just uilleann. Now, with any fingering pattern, closing all holes and the bell sensor will stop the sound, unless the bell sensor is instead being used to control the register.
+
+### Changed
+
+- Modified default settings for the vented mouthpiece slightly
+
 
 ##
 
