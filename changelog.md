@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Modified default settings for the vented mouthpiece slightly
+- Changed NoteOn velocity calculation slightly, add some weight to the velocity on the initial note after silence (tonguing a note). This brings it closer to the subsequent velocity used for legato notes. 
 
 
 ##
