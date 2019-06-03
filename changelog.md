@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.6] - 2019-05-25
+## [1.6] - 2019-06-03
 ### Added
 
 - Added custom GHB vibrato, designed for closed fingering systems. Turning on the "Custom" switch with GHB fingering will now assign holes R2 and R3 for vibrato use, and raising either or both fingers from their closed position will sharpen the note, assuming that raising them doesn't also trigger a different note in the fingering chart.
