@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.6] - 2019-05-25
 ### Added
 
-- Added custom GHB vibrato, designed for closed fingering systems. Turning on the "Custom" switch will now assign holes R2 and R3 for vibrato use, and raising either or both fingers from their closed position will sharpen the note, assuming that raising them doesn't also trigger a different note in the fingering chart.
+- Added custom GHB vibrato, designed for closed fingering systems. Turning on the "Custom" switch with GHB fingering will now assign holes R2 and R3 for vibrato use, and raising either or both fingers from their closed position will sharpen the note, assuming that raising them doesn't also trigger a different note in the fingering chart.
 - Added XOXXXX Bb and OXOXXX C to tin whistle/Irish flute fingering chart
 - Fingering for Chinese Xiao
 - Added the ability for the bell sensor to close off the pipe using any fingering pattern instead of just uilleann. Now, with any fingering pattern, closing all holes and the bell sensor will stop the sound, unless the bell sensor is instead being used to control the register.
