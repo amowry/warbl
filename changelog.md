@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.6] - 2019-06-03
+## [1.6] - 2019-06-10
 ### Added
 
 - Added a modified saxophone fingering.
