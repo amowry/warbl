@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [1.6] - 2019-06-10
+## [1.6] - 2019-07-04
 ### Added
 
+- Added the ability to assign a button combination to beging autocalibration.
 - Added a modified saxophone fingering.
 - Added custom GHB and Northumbrian vibrato, designed for closed fingering systems. Turning on the "Custom" switch with GHB or Northumbrian fingering will now assign holes R2 and R3 for vibrato use, and raising either or both fingers from their closed position will sharpen the note, assuming that raising them doesn't also trigger a different note in the fingering chart.
-- Added XOXXXX Bb, OXOXXX C, and XXOXOX G# to tin whistle/Irish flute fingering chart
+- Added XOXXXX Bb, XOXXXO Bb, OXOXXX C, and XXOXOX G# to tin the whistle/Irish flute fingering chart
 - Fingering for Chinese Xiao
 - Added the ability for the bell sensor to close off the pipe using any fingering pattern instead of just uilleann. Now, with any fingering pattern, closing all holes and the bell sensor will stop the sound, unless the bell sensor is instead being used to control the register.
 
