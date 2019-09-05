@@ -3,13 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [Released]
 
-## [1.6] - 2019-07-04
+## [1.6] - 2019-09-05
 ### Added
 
 - Added the ability to assign a button combination to beging autocalibration.
-- Added a modified saxophone fingering.
 - Added custom GHB and Northumbrian vibrato, designed for closed fingering systems. Turning on the "Custom" switch with GHB or Northumbrian fingering will now assign holes R2 and R3 for vibrato use, and raising either or both fingers from their closed position will sharpen the note, assuming that raising them doesn't also trigger a different note in the fingering chart.
 - Added XOXXXX Bb, XOXXXO Bb, OXOXXX C, and XXOXOX G# to tin the whistle/Irish flute fingering chart
 - Added X XXO XX-- G# to recorder chart, where the "-" holes are ignored. Also added X OOO OOOO C#.
