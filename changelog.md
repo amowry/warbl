@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Uneleased]
+
+## [1.7] - 2020-3-14
+### Added
+
+- Added two "modified saxophone" fingering charts
+- Added Steiner EVI (trumpet) fingering chart
+- Added Japanese shakuhachi fingering chart
+- Added the ability to set a default instrument, i.e. the one that will be active when WARBL is powered on.
+- Added the ability to send aftertouch (channel pressure) messages based on pressure.
+
+### Changed
+- With recorder fingering you can now reach the third register by using overblowing while covering the back thumb hole.
+- Added these fingerings to the recorder chart: C3 O|XOO|XXOO, B2 O|XXO|XXOO, Bb2 O|XXO|XXXO, D3 O|XOX|XOXO, C#1 X|XXO|XXXX, C# (both registers OXO|XXOO, G# (both registers) XXO XXOO and XXO XXXO, 
+
 ## [Released]
 
 ## [1.6] - 2019-09-05
