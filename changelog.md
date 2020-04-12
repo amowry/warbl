@@ -16,7 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - With recorder fingering you can now reach the third register by using overblowing while covering the back thumb hole.
-- Added these fingerings to the recorder chart: C3 O|XOO|XXOO, B2 O|XXO|XXOO, Bb2 O|XXO|XXXO, D3 O|XOX|XOXO, C#1 X|XXO|XXXX, C# (both registers OXO|XXOO, G# (both registers) XXO|XXOO and XXO|XXXO, 
+- Added these fingerings to the recorder chart: C3 O|XOO|XXOO, B2 O|XXO|XXOO, Bb2 O|XXO|XXXO, D3 O|XOX|XOXO, C#1 X|XXO|XXXX, C# (both registers OXO|XXOO, G# (both registers) XXO|XXOO and XXO|XXXO
+- Changed the default MIDI Note On velocity back to 127. This forces the maximum velocity in most hosts and benefits most users.
 
 ## [Released]
 
