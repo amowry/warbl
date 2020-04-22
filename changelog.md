@@ -13,11 +13,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added Japanese shakuhachi fingering chart
 - Added the ability to set a default instrument, i.e. the one that will be active when WARBL is powered on.
 - Added the ability to send aftertouch (channel pressure) messages based on pressure.
+- There is now the option to "force max velocity", meaning that if pressure is not seing sent as velocity data, you can force WARBL to always send a Note On velocity of 127. That will maximize the volume of many MIDI apps. If this option isn't selected, the default velocity will be 64.
 
 ### Changed
 - With recorder fingering you can now reach the third register by using overblowing while covering the back thumb hole.
 - Added these fingerings to the recorder chart: C3 O|XOO|XXOO, B2 O|XXO|XXOO, Bb2 O|XXO|XXXO, D3 O|XOX|XOXO, C#1 X|XXO|XXXX, C# (both registers OXO|XXOO, G# (both registers) XXO|XXOO and XXO|XXXO
-- Changed the default MIDI Note On velocity back to 127. This forces the maximum velocity in most hosts and benefits most users.
 
 ## [Released]
 
