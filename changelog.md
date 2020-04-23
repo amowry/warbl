@@ -16,8 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - There is now the option to "force max velocity", meaning that if pressure is not seing sent as velocity data, you can force WARBL to always send a Note On velocity of 127. That will maximize the volume of many MIDI apps. If this option isn't selected, the default velocity will be 64.
 
 ### Changed
-- With recorder fingering you can now reach the second register by uncovering the thumb hole, and the third register by using overblowing while uncovering the thumb hole.
-- Added these fingerings to the recorder chart: C3 O|XOO|XXOO, B2 O|XXO|XXOO, Bb2 O|XXO|XXXO, D3 O|XOX|XOXO, C#1 X|XXO|XXXX, C# (both registers OXO|XXOO, G# (both registers) XXO|XXOO and XXO|XXXO
+- With recorder fingering you can now reach the second register by uncovering the thumb hole, and the third register by using overblowing while uncovering the thumb hole. Some alternate fingerings have been added to avoid conflicts between the registers (see the fingering chart for more info).
 
 ## [Released]
 
