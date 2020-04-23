@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Added two "modified saxophone" fingering charts
-- Added Steiner EVI (trumpet) fingering chart
+- Added EVI (trumpet) fingering chart
 - Added Japanese shakuhachi fingering chart
 - Added the ability to set a default instrument, i.e. the one that will be active when WARBL is powered on.
 - Added the ability to send aftertouch (channel pressure) messages based on pressure.
