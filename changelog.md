@@ -3,9 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [Released]
 
-## [1.7] - 2020-3-14
+## [1.7] - 2020-4-24
 ### Added
 
 - Added two "modified saxophone" fingering charts
