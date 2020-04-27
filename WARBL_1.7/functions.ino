@@ -496,7 +496,12 @@ void get_state() {
   if (sensorValue2 <= sensorThreshold[0]) {
     newState = 1;
   }
-  else if ((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound))) { //single register mode or within the bounds for state 2
+   // else if (((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
+   // newState = 2;
+ // }
+  
+  //added very small amount of hysteresis for state 2, 4/25/20
+  else if (sensorValue2 > sensorThreshold[0] + 1 && ((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
     newState = 2;
   }
   else if (!drop && (sensorValue2 > upperBound)) { //we're in two-register mode and above the upper bound for state 2
