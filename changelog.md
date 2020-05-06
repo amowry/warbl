@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Fixed (hopefully) a bug causing settings in EEPROM to be corrupted in certain instances
 
+
+## [Released]
+
 ## [1.7] - 2020-4-24
 ### Added
 
