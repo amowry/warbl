@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Released]
 
+## [1.8] - 2020-5-6
+### Changed
+
+- Fixed (hopefully) a bug causing settings in EEPROM to be corrupted in certain instances
+
 ## [1.7] - 2020-4-24
 ### Added
 
