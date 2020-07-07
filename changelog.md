@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.8] - 2020-5-6
 ### Changed
 
-- Fixed (hopefully) a bug causing settings in EEPROM to be corrupted in certain instances
+- Fixed a bug causing settings in EEPROM to be corrupted in certain instances
+- This version will restore factory settings, helping to avoid possible bugs from copying over the old settings.
 
 
 ## [Released]
