@@ -22,7 +22,7 @@
 //It can be commented out to use Serial.print and to make it unnecessary to double-click the reset button for programming.
 
 
-#define CDCCON_DISABLE  
+//#define CDCCON_DISABLE  
 
 
 #include "USBAPI.h"

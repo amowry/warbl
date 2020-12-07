@@ -1,20 +1,20 @@
 
 /*
-  Copyright (C) 2018 Andrew Mowry warbl.xyz
+    Copyright (C) 2018 Andrew Mowry warbl.xyz
 
-  Many thanks to Michael Eskin for his additions and debugging help.
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+    Many thanks to Michael Eskin for his additions and debugging help.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see http://www.gnu.org/licenses/
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see http://www.gnu.org/licenses/
 */
 
 
@@ -68,7 +68,8 @@
 #define kPitchBendSlideVibrato 0
 #define kPitchBendVibrato 1
 #define kPitchBendNone 2
-#define kPitchBendNModes 3
+#define kPitchBendLegatoSlideVibrato 3
+#define kPitchBendNModes 4
 
 // Pressure modes
 #define kPressureSingle 0
@@ -140,6 +141,8 @@ byte senseDistance = 10;   //the sensor value above which the finger is sensed f
 byte breathMode = kPressureBreath; //the desired presure sensor behavior: single register, overblow, thumb register control, bell register control.
 unsigned int vibratoDepth = 1024; //vibrato depth from 0 (no vibrato) to 8191 (one semitone)
 bool useLearnedPressure = 0; //whether we use learned pressure for note on threshold, or we use calibration pressure from startup
+byte midiBendRange = 2; // +/- semitones that the midi bend range represents
+byte mainMidiChannel = 1; // current MIDI channel to send notes on
 
 //These are containers for the above variables, storing the value used by the three different instruments.  First variable in array is for instrument 0, etc.
 byte modeSelector[] = {kModeWhistle, kModeUilleann, kModeGHB}; //the fingering patterns chosen in the configuration tool, for the three instruments.
@@ -153,93 +156,104 @@ int learnedPressureSelector[] = {0, 0, 0};
 byte LSBlearnedPressure; //used to reconstruct learned pressure from two MIDI bytes.
 unsigned int vibratoHolesSelector[] = {0b011111111, 0b011111111, 0b011111111};
 unsigned int vibratoDepthSelector[] = {1024, 1024, 1024};
+byte midiBendRangeSelector[] = {2, 2, 2};
+byte midiChannelSelector[] = {1, 1, 1};
 
 bool momentary[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}} ; //whether momentary click behavior is desired for MIDI on/off message sent with a button. Dimension 0 is mode (instrument), dimension 1 is button 0,1,2.
 
 byte switches[3][8] = //the settings for the five switches in the vibrato/slide and register control panels
-  //instrument 0
-{ { 0,  // vented mouthpiece on or off (there are different pressure settings for the vented mouthpiece)
-    0,  // bagless mode off or on
-    0,  // secret button command mode off or on
-    0,  // whether the functionality for using the right thumb or the bell sensor for increasing the register is inverted.
-    0,  // off/on for Michael Eskin's custom vibrato approach
-    0, // send pressure as NoteOn velocity off or on
-    0, // send pressure as aftertouch (channel pressure) off or on
-    1,
-  }, // force maximum velocity (127)
+    //instrument 0
+{
+    {
+        0,  // vented mouthpiece on or off (there are different pressure settings for the vented mouthpiece)
+        0,  // bagless mode off or on
+        0,  // secret button command mode off or on
+        0,  // whether the functionality for using the right thumb or the bell sensor for increasing the register is inverted.
+        0,  // off/on for Michael Eskin's custom vibrato approach
+        0, // send pressure as NoteOn velocity off or on
+        0, // send pressure as aftertouch (channel pressure) off or on, and/or poly aftertouch (2nd bit)
+        1,
+    }, // force maximum velocity (127)
 
-  //same for instrument 1
-  {0, 0, 0, 0, 0, 0, 0, 1},
+    //same for instrument 1
+    {0, 0, 0, 0, 0, 0, 0, 1},
 
-  //same for instrument 2
-  {0, 1, 0, 0, 1, 0, 0, 1}
+    //same for instrument 2
+    {0, 1, 0, 0, 1, 0, 0, 1}
 };
 
 byte ED[3][21] = //an array that holds all the settings for the Expression and Drones Control panels in the Configuration Tool.
-  //instrument 0
-{ { 0,  //EXPRESSION_ON
-    3,    //EXPRESSION_DEPTH (can have a value of 1-8)
-    0,    //SEND_PRESSURE
-    0,    //CURVE (0 is linear)
-    1,    //PRESSURE_CHANNEL
-    7,    //PRESSURE_CC
-    0,    //INPUT_PRESSURE_MIN range is from 0-100, to be scaled later up to maximum input values
-    100,  //INPUT_PRESSURE_MAX range is from 0-100, to be scaled later
-    0,    //OUTPUT_PRESSURE_MIN range is from 0-127, to be scaled later
-    127,  //OUTPUT_PRESSURE_MAX range is from 0-127, to be scaled later
-    0,    //DRONES_ON_COMMAND
-    1,    //DRONES_ON_CHANNEL
-    51,    //DRONES_ON_BYTE2
-    36,    //DRONES_ON_BYTE3
-    0,    //DRONES_OFF_COMMAND
-    1,    //DRONES_OFF_CHANNEL
-    51,    //DRONES_OFF_BYTE2
-    36,    //DRONES_OFF_BYTE3
-    0,    //DRONES_CONTROL_MODE (0 is no drone control, 1 is use secret button, 2 is use bagless button, 3 is use pressure.
-    0,    //DRONES_PRESSURE_LOW_BYTE
-    0
-  },    //DRONES_PRESSURE_HIGH_BYTE
+    //instrument 0
+{
+    {
+        0,  //EXPRESSION_ON
+        3,    //EXPRESSION_DEPTH (can have a value of 1-8)
+        0,    //SEND_PRESSURE
+        0,    //CURVE (0 is linear)
+        1,    //PRESSURE_CHANNEL
+        7,    //PRESSURE_CC
+        0,    //INPUT_PRESSURE_MIN range is from 0-100, to be scaled later up to maximum input values
+        100,  //INPUT_PRESSURE_MAX range is from 0-100, to be scaled later
+        0,    //OUTPUT_PRESSURE_MIN range is from 0-127, to be scaled later
+        127,  //OUTPUT_PRESSURE_MAX range is from 0-127, to be scaled later
+        0,    //DRONES_ON_COMMAND
+        1,    //DRONES_ON_CHANNEL
+        51,    //DRONES_ON_BYTE2
+        36,    //DRONES_ON_BYTE3
+        0,    //DRONES_OFF_COMMAND
+        1,    //DRONES_OFF_CHANNEL
+        51,    //DRONES_OFF_BYTE2
+        36,    //DRONES_OFF_BYTE3
+        0,    //DRONES_CONTROL_MODE (0 is no drone control, 1 is use secret button, 2 is use bagless button, 3 is use pressure.
+        0,    //DRONES_PRESSURE_LOW_BYTE
+        0
+    },    //DRONES_PRESSURE_HIGH_BYTE
 
-  //same for instrument 1
-  {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0},
+    //same for instrument 1
+    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0},
 
-  //same for instrument 2
-  {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0}
+    //same for instrument 2
+    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0}
 };
 
 byte pressureSelector[3][12] = //a selector array for all the pressure settings variables that can be changed in the Configuration Tool
-  //instrument 0
-{ { 15, 15, 15, 15, 30, 30, //closed mouthpiece: offset, multiplier, jump, drop, jump time, drop time
-    3, 7, 10, 7, 9, 9
-  }, //vented mouthpiece: offset, multiplier, jump, drop, jump time, drop time
-  //instrument 1
-  { 15, 15, 15, 15, 30, 30,
-    3, 7, 10, 7, 9, 9
-  },
-  //instrument 2
-  { 15, 15, 15, 15, 30, 30,
-    3, 7, 10, 7, 9, 9
-  }
+    //instrument 0
+{
+    {
+        15, 15, 15, 15, 30, 30, //closed mouthpiece: offset, multiplier, jump, drop, jump time, drop time
+        3, 7, 10, 7, 9, 9
+    }, //vented mouthpiece: offset, multiplier, jump, drop, jump time, drop time
+    //instrument 1
+    {
+        15, 15, 15, 15, 30, 30,
+        3, 7, 10, 7, 9, 9
+    },
+    //instrument 2
+    {
+        15, 15, 15, 15, 30, 30,
+        3, 7, 10, 7, 9, 9
+    }
 };
 
 uint8_t buttonPrefs[3][8][5] = //The button configuration settings. Dimension 1 is the three instruments. Dimension 2 is the button combination: click 1, click 2, click3, hold 2 click 1, hold 2 click 3, longpress 1, longpress2, longpress3
-  //Dimension 3 is the desired action: Action, MIDI command type (noteon/off, CC, PC), MIDI channel, MIDI byte 2, MIDI byte 3.
-  //instrument 0                              //the actions are: 0 none, 1 send MIDI message, 2 change pitchbend mode, 3 instrument, 4 play/stop (bagless mode), 5 octave shift up, 6 octave shift down, 7 MIDI panic, 8 change register control mode, 9 drones on/off, 10 semitone shift up, 11 semitone shift down
-{ { {2, 0, 0, 0, 0}, //for example, this means that clicking button 0 will send a CC message, channel 1, byte 2 = 0, byte 3 = 0.
-    {8, 0, 0, 0, 0}, //for example, this means that clicking button 1 will change pitchbend mode.
-    {0, 0, 0, 0, 0},
-    {5, 0, 0, 0, 0},
-    {6, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0}
-  },
+    //Dimension 3 is the desired action: Action, MIDI command type (noteon/off, CC, PC), MIDI channel, MIDI byte 2, MIDI byte 3.
+    //instrument 0                              //the actions are: 0 none, 1 send MIDI message, 2 change pitchbend mode, 3 instrument, 4 play/stop (bagless mode), 5 octave shift up, 6 octave shift down, 7 MIDI panic, 8 change register control mode, 9 drones on/off, 10 semitone shift up, 11 semitone shift down
+{
+    {   {2, 0, 0, 0, 0}, //for example, this means that clicking button 0 will send a CC message, channel 1, byte 2 = 0, byte 3 = 0.
+        {8, 0, 0, 0, 0}, //for example, this means that clicking button 1 will change pitchbend mode.
+        {0, 0, 0, 0, 0},
+        {5, 0, 0, 0, 0},
+        {6, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0}
+    },
 
-  //same for instrument 1
-  {{2, 0, 0, 0, 0}, {8, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}},
+    //same for instrument 1
+    {{2, 0, 0, 0, 0}, {8, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}},
 
-  //same for instrument 2
-  {{4, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {9, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}}
+    //same for instrument 2
+    {{4, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {9, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}}
 };
 
 //other misc. variables
@@ -309,9 +323,15 @@ volatile byte timerCycle = 0; //the number of times we've entered the timer ISR 
 //pitchbend variables
 unsigned long pitchBendTimer = 0; //to keep track of the last time we sent a pitchbend message
 byte pitchBendOn[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //whether pitchbend is currently turned for for a specific hole
-int pitchBend = 8191; //total current pitchbend value
-int prevPitchBend = 8191; //a record of the previous pitchBend value, so we don't send the same one twice
-int iPitchBend[] = {8191, 8191, 8191, 8191, 8191, 8191, 8191, 8191, 8191}; //current pitchbend value for each tonehole
+int pitchBend = 8192; //total current pitchbend value
+int prevPitchBend = 8192; //a record of the previous pitchBend value, so we don't send the same one twice
+int iPitchBend[] = {8192, 8192, 8192, 8192, 8192, 8192, 8192, 8192, 8192}; //current pitchbend value for each tonehole
+int pitchBendPerSemi = 4096;
+int prevChanPressure = 0;
+int prevCCPressure = 0;
+int prevPolyPressure = 0;
+unsigned long pressureTimer = 0; //to keep track of the last time we sent a pressure message
+unsigned long noteOnTimestamp = 0; // ms timestamp the note was activated
 byte slideHole; //the hole above the current highest uncovered hole. Used for detecting slides between notes.
 byte stepsDown = 1; //the number of half steps down from the slideHole to the next lowest note on the scale, used for calculating pitchbend values.
 byte vibratoEnable = 0; // if non-zero, send vibrato pitch bend
@@ -356,57 +376,57 @@ byte pressureReceiveMode = 100; //which pressure variable we're currently receiv
 byte counter = 0; // We use this to know when to send a new pressure reading to the configuration tool. We increment it every time we send a pitchBend message, to use as a simple timer wihout needing to set another actual timer.
 byte fingeringReceiveMode = 0; // indicates the mode (instrument) for which a fingering pattern is going to be sent
 
-void setup() {
+void setup()
+{
 
-  DIDR0 = 0xff;   // disable digital input circuits for analog pins
-  DIDR2 = 0xf3;
+    DIDR0 = 0xff;   // disable digital input circuits for analog pins
+    DIDR2 = 0xf3;
 
-  pinMode2(ledPin, OUTPUT); // Initialize the LED pin as an output (using the fast DIO2 library).
-  pinMode2(17, INPUT_PULLUP); //this pin is used to detect when the bell sensor is plugged in (high when plugged in).
+    pinMode2(ledPin, OUTPUT); // Initialize the LED pin as an output (using the fast DIO2 library).
+    pinMode2(17, INPUT_PULLUP); //this pin is used to detect when the bell sensor is plugged in (high when plugged in).
 
-  for (byte i = 0; i < 9; i++) //Initialize the tonehole sensor IR LEDs.
-  {
-    pinMode2f(pins[i], OUTPUT);
-  }
+    for (byte i = 0; i < 9; i++) { //Initialize the tonehole sensor IR LEDs.
+        pinMode2f(pins[i], OUTPUT);
+    }
 
-  pinMode2f(DP15, INPUT_PULLUP); //set buttons as inputs and enable internal pullup
-  pinMode2f(DP16, INPUT_PULLUP);
-  pinMode2f(DP14, INPUT_PULLUP);
+    pinMode2f(DP15, INPUT_PULLUP); //set buttons as inputs and enable internal pullup
+    pinMode2f(DP16, INPUT_PULLUP);
+    pinMode2f(DP14, INPUT_PULLUP);
 
-  //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
-
-
-  if (EEPROM.read(901) != VERSION) { //if a new software version has been loaded, update newer settings
-    EEPROM.update(901, VERSION); //update the stored software version
-    saveFactorySettings(); //rewrite factory settings to EEPROM.
-  }
-
-  //  EEPROM.update(44, 255); //this line can be uncommented to make a version of the software that will resave factory settings the first time it is loaded.
-
-  if (EEPROM.read(44) != 3) {
-    saveFactorySettings(); //If we're running the software for the first time, copy all settings to EEPROM.
-  }
-  if (EEPROM.read(37) == 3) {
-    loadCalibration(); //If there has been a calibration saved, reload it at startup.
-  }
-
-  loadFingering();
-  loadSettingsForAllModes();
-  mode = defaultMode;  //set the startup instrument
-
-  analogRead(A4); // the first analog readings are sometimes nonsense, so we read a few times and throw them away.
-  analogRead(A4);
-  sensorCalibration = analogRead(A4);
-  sensorValue = sensorCalibration; //an initial reading to "seed" subsequent pressure readings
-
-  loadPrefs(); //load the correct user settings based on current instrument.
+    //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
 
-  //prepare sensors
-  Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
-  Timer1.attachInterrupt(timerDelay);
-  Timer1.stop(); //stop the timer because we don't need it until we've read all the sensors once.
-  ADC_init(); //initialize the ADC and start conversions
+    if (EEPROM.read(901) != VERSION) { //if a new software version has been loaded, update newer settings
+        EEPROM.update(901, VERSION); //update the stored software version
+        saveFactorySettings(); //rewrite factory settings to EEPROM.
+    }
+
+    //  EEPROM.update(44, 255); //this line can be uncommented to make a version of the software that will resave factory settings the first time it is loaded.
+
+    if (EEPROM.read(44) != 3) {
+        saveFactorySettings(); //If we're running the software for the first time, copy all settings to EEPROM.
+    }
+    if (EEPROM.read(37) == 3) {
+        loadCalibration(); //If there has been a calibration saved, reload it at startup.
+    }
+
+    loadFingering();
+    loadSettingsForAllModes();
+    mode = defaultMode;  //set the startup instrument
+
+    analogRead(A4); // the first analog readings are sometimes nonsense, so we read a few times and throw them away.
+    analogRead(A4);
+    sensorCalibration = analogRead(A4);
+    sensorValue = sensorCalibration; //an initial reading to "seed" subsequent pressure readings
+
+    loadPrefs(); //load the correct user settings based on current instrument.
+
+
+    //prepare sensors
+    Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
+    Timer1.attachInterrupt(timerDelay);
+    Timer1.stop(); //stop the timer because we don't need it until we've read all the sensors once.
+    ADC_init(); //initialize the ADC and start conversions
 
 
 }
@@ -414,133 +434,131 @@ void setup() {
 
 
 
-void loop() {
+void loop()
+{
 
-  //cycles ++; //for testing
+    //cycles ++; //for testing
 
-  receiveMIDI();
+    receiveMIDI();
 
-  if ((millis() - buttonReadTimer) >= 5) {//read the state of the control buttons every so often
-    checkButtons();
-    buttonReadTimer = millis();
-  }
-
-  if (buttonUsed) {
-    handleButtons(); //if a button had been used, process the command. We only do this when we need to, so we're not wasting time.
-  }
-
-  if (blinkNumber > 0) {
-    blink();  //blink the LED if necessary (indicating control changes, etc.)
-  }
-
-  if (calibration > 0) {
-    calibrate();  //calibrate/continue calibrating if the command has been received.
-  }
-
-  noInterrupts();
-  for (byte i = 0; i < 9; i++) {
-    toneholeRead[i] = tempToneholeRead[i]; //transfer sensor readings to a variable that won't get modified in the ISR
-  }
-  interrupts();
-
-
-  for (byte i = 0; i < 9; i++) {
-    if (calibration == 0) { //if we're not calibrating, compensate for baseline sensor offset (the stored sensor reading with the hole completely uncovered)
-      toneholeRead[i] = toneholeRead[i] - toneholeBaseline[i];
-    }
-    if (toneholeRead[i] < 0) { //in rare cases the adjusted readings can end up being negative.
-      toneholeRead[i] = 0;
-    }
-  }
-
-  get_fingers(); //find which holes are covered
-
-
-  if (prevHoleCovered != holeCovered) {
-    fingersChanged = 1;
-
-    tempNewNote = get_note(holeCovered); //get the next MIDI note from the fingering pattern if it has changed
-    send_fingers(); //send new fingering pattern to the Configuration Tool
-    prevHoleCovered = holeCovered;
-    if (pitchBendMode == kPitchBendSlideVibrato) {
-      findStepsDown();
+    if ((millis() - buttonReadTimer) >= 5) { //read the state of the control buttons every so often
+        checkButtons();
+        buttonReadTimer = millis();
     }
 
+    if (buttonUsed) {
+        handleButtons(); //if a button had been used, process the command. We only do this when we need to, so we're not wasting time.
+    }
 
-    if (tempNewNote != -1 && newNote != tempNewNote) { //If a new note has been triggered
-      if (pitchBendMode != kPitchBendNone) {
-        holeLatched = holeCovered; //remember the pattern that triggered it (it will be used later for vibrato)
-        for (byte i = 0; i < 9; i++) {
-          iPitchBend[i] = 0; //and reset pitchbend
-          pitchBendOn[i] = 0;
+    if (blinkNumber > 0) {
+        blink();  //blink the LED if necessary (indicating control changes, etc.)
+    }
+
+    if (calibration > 0) {
+        calibrate();  //calibrate/continue calibrating if the command has been received.
+    }
+
+    noInterrupts();
+    for (byte i = 0; i < 9; i++) {
+        toneholeRead[i] = tempToneholeRead[i]; //transfer sensor readings to a variable that won't get modified in the ISR
+    }
+    interrupts();
+
+
+    for (byte i = 0; i < 9; i++) {
+        if (calibration == 0) { //if we're not calibrating, compensate for baseline sensor offset (the stored sensor reading with the hole completely uncovered)
+            toneholeRead[i] = toneholeRead[i] - toneholeBaseline[i];
         }
-      }
-    }
-    newNote = tempNewNote; //update the next note if the fingering pattern is valid
-  }
-
-
-  if (sensorDataReady) {
-    get_state();//get the breath state from the pressure sensor if there's been a reading.
-  }
-
-  if (switches[0][SEND_VELOCITY]) { //if we're sending NoteOn velocity based on pressure
-    if (prevState == 1 && newState != 1) {
-      velocityDelayTimer = millis(); //reset the delay timer used for calculating velocity when a note is turned on after silence.
-    }
-    prevState = newState;
-  }
-
-  get_shift(); //shift the next note up or down based on register, key, and characteristics of the current fingering pattern.
-
-  if ((millis() - pitchBendTimer) >= 15) { //check pitchbend and send pressure data every so often
-    pitchBendTimer = millis();
-
-    if (ED[mode][EXPRESSION_ON] && !switches[mode][BAGLESS]) {
-      getExpression(); //calculate pitchbend based on pressure reading
-    }
-
-    if (!customEnabled && pitchBendMode != kPitchBendNone) {
-      handlePitchBend();
-    }
-
-    else if (customEnabled) {
-      handleCustomPitchBend();
-    }
-
-    if (abs(prevSensorValue - sensorValue) > 2) { //if pressure has changed more than a little, send it.
-      sendPressure();
-      prevSensorValue = sensorValue;
-    }
-
-    counter++;
-
-    if (counter == 10) { //we check every 10 ticks to see if the bell sensor has been plugged/unplugged.
-
-      counter = 0;
-      bellSensor = (digitalRead2(17)); //check if the bell sensor is plugged in
-      if (prevBellSensor != bellSensor) {
-        prevBellSensor = bellSensor;
-        if (communicationMode) {
-          sendUSBMIDI(CC, 7, 102, 120 + bellSensor); //if it's changed, tell the configuration tool.
+        if (toneholeRead[i] < 0) { //in rare cases the adjusted readings can end up being negative.
+            toneholeRead[i] = 0;
         }
-      }
+    }
 
-      //This is a good place to send occasional debug info.
-      //for (byte i = 0; i < 9; i++) {
-      //Serial.println((EEPROM.read(44)));
+    get_fingers(); //find which holes are covered
 
-      //}
-      //Serial.println(EEPROM.read(63));
-      //Serial.println(EEPROM.read(71));
-      //Serial.println(EEPROM.read(76));
-      //Serial.println("");
-      //Serial.println(buttonPrefs[mode][0][0]);
 
+    if (prevHoleCovered != holeCovered) {
+        fingersChanged = 1;
+
+        tempNewNote = get_note(holeCovered); //get the next MIDI note from the fingering pattern if it has changed
+        send_fingers(); //send new fingering pattern to the Configuration Tool
+        prevHoleCovered = holeCovered;
+        if (pitchBendMode == kPitchBendSlideVibrato || pitchBendMode == kPitchBendLegatoSlideVibrato) {
+            findStepsDown();
+        }
+
+
+        if (tempNewNote != -1 && newNote != tempNewNote) { //If a new note has been triggered
+            if (pitchBendMode != kPitchBendNone) {
+                holeLatched = holeCovered; //remember the pattern that triggered it (it will be used later for vibrato)
+                for (byte i = 0; i < 9; i++) {
+                    iPitchBend[i] = 0; //and reset pitchbend
+                    pitchBendOn[i] = 0;
+                }
+            }
+        }
+        newNote = tempNewNote; //update the next note if the fingering pattern is valid
+    }
+
+
+    if (sensorDataReady) {
+        get_state();//get the breath state from the pressure sensor if there's been a reading.
+    }
+
+    unsigned long nowtime = millis();
+
+    if (switches[mode][SEND_VELOCITY]) { //if we're sending NoteOn velocity based on pressure
+        if (prevState == 1 && newState != 1) {
+            velocityDelayTimer = nowtime; //reset the delay timer used for calculating velocity when a note is turned on after silence.
+        }
+        prevState = newState;
+    }
+
+    get_shift(); //shift the next note up or down based on register, key, and characteristics of the current fingering pattern.
+
+    if ((nowtime - pressureTimer) >= ((nowtime - noteOnTimestamp) < 20 ? 2 : 5)) {
+        pressureTimer = nowtime;
+        if (abs(prevSensorValue - sensorValue) > 1) { //if pressure has changed more than a little, send it.
+            sendPressure(false);
+            prevSensorValue = sensorValue;
+        }
 
     }
-  }
 
-  sendNote(); //send the MIDI note
+    if ((nowtime - pitchBendTimer) >= 9) { //check pitchbend and send pressure data every so often
+        pitchBendTimer = nowtime;
+
+        calculateAndSendPitchbend();
+
+
+        counter++;
+
+        if (counter == 10) { //we check every 10 ticks to see if the bell sensor has been plugged/unplugged.
+
+            counter = 0;
+            bellSensor = (digitalRead2(17)); //check if the bell sensor is plugged in
+            if (prevBellSensor != bellSensor) {
+                prevBellSensor = bellSensor;
+                if (communicationMode) {
+                    sendUSBMIDI(CC, 7, 102, 120 + bellSensor); //if it's changed, tell the configuration tool.
+                }
+            }
+
+            //This is a good place to send occasional debug info.
+            //for (byte i = 0; i < 9; i++) {
+            //Serial.println((EEPROM.read(44)));
+
+            //}
+            //Serial.println(EEPROM.read(63));
+            //Serial.println(EEPROM.read(71));
+            //Serial.println(EEPROM.read(76));
+            //Serial.println("");
+            //Serial.println(buttonPrefs[mode][0][0]);
+
+
+        }
+    }
+
+    sendNote(); //send the MIDI note
 
 }
