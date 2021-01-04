@@ -807,7 +807,9 @@ void sendPitchbend()
                 Serial.print(" newnote: ");
                 Serial.print(newNote);
                 Serial.print(" pb: ");
-                Serial.println(pitchBend);
+                Serial.print(pitchBend);
+                Serial.print(" bps: ");
+                Serial.println(pitchBendPerSemi);
             */
             sendUSBMIDI(PITCH_BEND, mainMidiChannel, pitchBend & 0x7F, pitchBend >> 7);
             prevPitchBend = pitchBend;
@@ -825,7 +827,6 @@ void calculateAndSendPitchbend()
     if (!customEnabled && pitchBendMode != kPitchBendNone) {
         handlePitchBend();
     }
-
     else if (customEnabled) {
         handleCustomPitchBend();
     }
@@ -852,8 +853,8 @@ void sendNote()
         int notewason = noteon;
         int notewasplaying = notePlaying;
 
-        if (notewason && switches[mode][SEND_AFTERTOUCH]) {
-            // send prior noteoff now if we are sending aftertouch
+        if (notewason && (pitchBendModeSelector[mode] == kPitchBendLegatoSlideVibrato || pitchBendModeSelector[mode] == kPitchBendSlideVibrato)) {
+            // send prior noteoff now if we are using one of the slide bending modes
             sendUSBMIDI(NOTE_OFF, mainMidiChannel, notePlaying, 64);
             notewason = 0;
         }
@@ -871,7 +872,9 @@ void sendNote()
         sendUSBMIDI(NOTE_ON, mainMidiChannel, newNote + shift, velocity); //send the new note
 
         if (notewason) {
-            sendUSBMIDI(NOTE_OFF, mainMidiChannel, notewasplaying, 64); //turn off the previous note after turning on the new one. We do it after to signal to synths that the notes are legato (not all synths will respond to this).
+            // turn off the previous note after turning on the new one (if it wasn't already done above)
+            // We do it after to signal to synths that the notes are legato (not all synths will respond to this).
+            sendUSBMIDI(NOTE_OFF, mainMidiChannel, notewasplaying, 64); 
         }
 
         pitchBendTimer = millis(); //for some reason it sounds best if we don't send pitchbend right away after starting a new note.
