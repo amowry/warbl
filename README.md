@@ -11,11 +11,11 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 ### How to use WARBL with the Arduino IDE:
 
-*	Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
+* Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
 
 
 
-*	Next download the folder containing the latest WARBL code in Arduino format, and put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default.
+* Next you can copy the 'warble_firmware' folder to put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default.
 
 
 

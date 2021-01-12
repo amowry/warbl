@@ -1,0 +1,814 @@
+/*
+* jQuery Mobile v1.4.5
+* http://jquerymobile.com
+*
+* Copyright 2010, 2014 jQuery Foundation, Inc. and other contributors
+* Released under the MIT license.
+* http://jquery.org/license
+*
+*/
+
+
+
+
+
+
+/* Some unsets */
+.ui-mobile,
+.ui-mobile body {
+	height: 99.9%;
+}
+.ui-mobile fieldset,
+.ui-page {
+	padding: 0;
+	margin: 0;
+}
+.ui-mobile a img,
+.ui-mobile fieldset {
+	border-width: 0;
+}
+/* Fixes for fieldset issues on IE10 and FF (see #6077) */
+.ui-mobile fieldset {
+	min-width: 0;
+}
+@-moz-document url-prefix() {
+	.ui-mobile fieldset {
+		display: table-column;
+		vertical-align: middle;
+	}
+}
+
+/* Viewport */
+.ui-mobile-viewport {
+	margin: 0;
+	overflow-x: visible;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust:none;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+/* Issue #2066 */
+body.ui-mobile-viewport,
+div.ui-mobile-viewport {
+	overflow-x: hidden;
+}
+/* "page" containers - full-screen views, one should always be in view post-pageload */
+.ui-mobile [data-role=page],
+.ui-mobile [data-role=dialog],
+.ui-page {
+	top: 0;
+	left: 0;
+	width: 100%;
+	min-height: 100%;
+	position: absolute;
+	display: none;
+	border: 0;
+}
+/* On ios4, setting focus on the page element causes flashing during transitions when there is an outline, so we turn off outlines */
+.ui-page {
+	outline: none;
+}
+.ui-mobile .ui-page-active {
+	display: block;
+	overflow: visible;
+	overflow-x: hidden;
+}
+@media screen and (orientation: portrait) {
+	.ui-mobile .ui-page {
+		min-height: 420px;
+	}
+}
+@media screen and (orientation: landscape) {
+	.ui-mobile .ui-page {
+		min-height: 300px;
+	}
+}
+
+/* Fouc */
+.ui-mobile-rendering > * {
+	visibility: hidden;
+}
+
+/* Non-js content hiding */
+.ui-nojs {
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px,1px,1px,1px);
+}
+
+/* Loading screen */
+.ui-loading .ui-loader {
+	display: block;
+}
+.ui-loader {
+	display: none;
+	z-index: 9999999;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	border:0;
+}
+.ui-loader-default {
+	background: none;
+	filter: Alpha(Opacity=18);
+	opacity: .18;
+	width: 2.875em;
+	height: 2.875em;
+	margin-left: -1.4375em;
+	margin-top: -1.4375em;
+}
+.ui-loader-verbose {
+	width: 12.5em;
+	filter: Alpha(Opacity=88);
+	opacity: .88;
+	box-shadow: 0 1px 1px -1px #fff;
+	height: auto;
+	margin-left: -6.875em;
+	margin-top: -2.6875em;
+	padding: .625em;
+}
+.ui-loader-default h1 {
+	font-size: 0;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+}
+.ui-loader-verbose h1 {
+	font-size: 1em;
+	margin: 0;
+	text-align: center;
+}
+.ui-loader .ui-icon-loading {
+	background-color: #000;
+	display: block;
+	margin: 0;
+	width: 2.75em;
+	height: 2.75em;
+	padding: .0625em;
+	-webkit-border-radius: 2.25em;
+	border-radius: 2.25em;
+}
+.ui-loader-verbose .ui-icon-loading {
+	margin: 0 auto .625em;
+	filter: Alpha(Opacity=75);
+	opacity: .75;
+}
+.ui-loader-textonly {
+	padding: .9375em;
+	margin-left: -7.1875em;
+}
+.ui-loader-textonly .ui-icon-loading {
+	display: none;
+}
+.ui-loader-fakefix {
+	position: absolute;
+}
+
+/* Headers, content panels */
+.ui-bar,
+.ui-body {
+	position: relative;
+	padding: .4em 1em;
+	overflow: hidden;
+	display: block;
+	clear: both;
+}
+.ui-bar h1,
+.ui-bar h2,
+.ui-bar h3,
+.ui-bar h4,
+.ui-bar h5,
+.ui-bar h6 {
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
+	display: inline-block;
+}
+.ui-header,
+.ui-footer {
+	border-width: 1px 0;
+	border-style: solid;
+	position: relative;
+}
+.ui-header:empty,
+.ui-footer:empty {
+	min-height: 2.6875em;
+}
+.ui-header .ui-title,
+.ui-footer .ui-title {
+	font-size: 1em;
+	min-height: 1.1em;
+	text-align: center;
+	display: block;
+	margin: 0 30%;
+	padding: .7em 0;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	outline: 0 !important;
+}
+.ui-footer .ui-title {
+	margin: 0 1em;
+}
+.ui-content {
+	border-width: 0;
+	overflow: visible;
+	overflow-x: hidden;
+	padding: 1em;
+}
+/* Corner styling for dialogs and popups */
+.ui-corner-all > .ui-header:first-child,
+.ui-corner-all > .ui-content:first-child,
+.ui-corner-all > .ui-footer:first-child {
+	-webkit-border-top-left-radius: inherit;
+	border-top-left-radius: inherit;
+	-webkit-border-top-right-radius: inherit;
+	border-top-right-radius: inherit;
+}
+.ui-corner-all > .ui-header:last-child,
+.ui-corner-all > .ui-content:last-child,
+.ui-corner-all > .ui-footer:last-child {
+	-webkit-border-bottom-left-radius: inherit;
+	border-bottom-left-radius: inherit;
+	-webkit-border-bottom-right-radius: inherit;
+	border-bottom-right-radius: inherit;
+}
+
+/* Buttons and icons */
+.ui-btn {
+	font-size: 16px;
+	margin: .5em 0;
+	padding: .7em 1em;
+	display: block;
+	position: relative;
+	text-align: center;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.ui-btn-icon-notext,
+.ui-header button.ui-btn.ui-btn-icon-notext,
+.ui-footer button.ui-btn.ui-btn-icon-notext {
+	padding: 0;
+	width: 1.75em;
+	height: 1.75em;
+	text-indent: -9999px;
+	white-space: nowrap !important;
+}
+.ui-mini {
+	font-size: 12.5px;
+}
+.ui-mini .ui-btn {
+	font-size: inherit;
+}
+/* Make buttons in toolbars default to mini and inline. */
+.ui-header .ui-btn,
+.ui-footer .ui-btn {
+	font-size: 12.5px;
+	display: inline-block;
+	vertical-align: middle;
+}
+.ui-header .ui-controlgroup .ui-btn-icon-notext,
+.ui-footer .ui-controlgroup .ui-btn-icon-notext {
+    font-size: 12.5px;
+}
+
+/* To ensure same top and left/right position when ui-btn-left/right are added to something other than buttons. */
+.ui-header .ui-btn-left,
+.ui-header .ui-btn-right {
+	font-size: 12.5px;
+}
+.ui-mini.ui-btn-icon-notext,
+.ui-mini .ui-btn-icon-notext,
+.ui-header .ui-btn-icon-notext,
+.ui-footer .ui-btn-icon-notext {
+	font-size: 16px;	
+	padding: 0;
+}
+.ui-btn-inline {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: .625em;
+}
+.ui-btn-icon-left {
+	padding-left: 2.5em;
+}
+.ui-btn-icon-right {
+	padding-right: 2.5em;
+}
+.ui-btn-icon-top {
+	padding-top: 2.5em;
+}
+.ui-btn-icon-bottom {
+	padding-bottom: 2.5em;
+}
+.ui-header .ui-btn-icon-top,
+.ui-footer .ui-btn-icon-top,
+.ui-header .ui-btn-icon-bottom,
+.ui-footer .ui-btn-icon-bottom {
+	padding-left: .3125em;
+	padding-right: .3125em;
+}
+.ui-btn-icon-left:after,
+.ui-btn-icon-right:after,
+.ui-btn-icon-top:after,
+.ui-btn-icon-bottom:after,
+.ui-btn-icon-notext:after {
+	content: "";
+	position: absolute;
+	display: block;
+	width: 22px;
+	height: 22px;
+}
+.ui-btn-icon-notext:after,
+.ui-btn-icon-left:after,
+.ui-btn-icon-right:after {
+	top: 50%;
+	margin-top: -11px;
+}
+.ui-btn-icon-left:after {
+	left: .5625em;
+}
+.ui-btn-icon-right:after {
+	right: .5625em;
+}
+.ui-mini.ui-btn-icon-left:after,
+.ui-mini .ui-btn-icon-left:after,
+.ui-header .ui-btn-icon-left:after,
+.ui-footer .ui-btn-icon-left:after {
+	left: .37em;
+}
+.ui-mini.ui-btn-icon-right:after,
+.ui-mini .ui-btn-icon-right:after,
+.ui-header .ui-btn-icon-right:after,
+.ui-footer .ui-btn-icon-right:after {
+	right: .37em;
+}
+.ui-btn-icon-notext:after,
+.ui-btn-icon-top:after,
+.ui-btn-icon-bottom:after {
+	left: 50%;
+	margin-left: -11px;
+}
+.ui-btn-icon-top:after {
+	top: .5625em;
+}
+.ui-btn-icon-bottom:after {
+	top: auto;
+	bottom: .5625em;
+}
+/* Buttons in header position classes */
+.ui-header .ui-btn-left,
+.ui-header .ui-btn-right,
+.ui-btn-left > [class*="ui-"],
+.ui-btn-right > [class*="ui-"] {
+	margin: 0;
+}
+.ui-btn-left,
+.ui-btn-right {
+	position: absolute;
+	top: .24em;
+}
+.ui-btn-left {
+	left: .4em;
+}
+.ui-btn-right {
+	right: .4em;
+}
+.ui-btn-icon-notext.ui-btn-left {
+	top: .3125em;
+	left: .3125em;
+}
+.ui-btn-icon-notext.ui-btn-right {
+	top: .3125em;
+	right: .3125em;
+}
+
+/* Button elements */
+button.ui-btn,
+.ui-controlgroup-controls button.ui-btn-icon-notext {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	width: 100%;
+}
+button.ui-btn-inline,
+.ui-header button.ui-btn,
+.ui-footer button.ui-btn {
+	width: auto;
+}
+/* Firefox adds a 1px border in a button element. We negate this to make sure they have the same height as other buttons in controlgroups. */
+button.ui-btn::-moz-focus-inner {
+	border: 0;
+}
+button.ui-btn-icon-notext,
+.ui-controlgroup-horizontal .ui-controlgroup-controls button.ui-btn {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	width: 1.75em;
+}
+
+/* Form labels */
+.ui-mobile label,
+.ui-controlgroup-label {
+	display: block;
+	margin: 0 0 .4em;
+}
+
+/* Accessible content hiding */
+/* ui-hide-label deprecated in 1.4. TODO: Remove in 1.5 */
+.ui-hide-label > label,
+.ui-hide-label .ui-controlgroup-label,
+.ui-hide-label .ui-rangeslider label,
+.ui-hidden-accessible {
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px,1px,1px,1px);
+}
+
+/* Used for hiding elements by the filterable widget. You can also use this class to hide list items or buttons in controlgroups; this ensures correct corner styling. */
+.ui-screen-hidden {
+	display: none !important;
+}
+
+
+.ui-rangeslider {
+	margin: .5em 0;
+}
+.ui-rangeslider:before,
+.ui-rangeslider:after {
+	content: "";
+	display: table;
+}
+.ui-rangeslider:after {
+	clear: both;
+}
+.ui-rangeslider .ui-slider-input.ui-rangeslider-last {
+	float: right;
+}
+.ui-rangeslider .ui-rangeslider-sliders {
+	position: relative;
+	overflow: visible;
+	//height: 30px;
+	margin: 0 68px;
+}
+.ui-rangeslider .ui-rangeslider-sliders .ui-slider-track {
+	position: absolute;
+	top: 20px;
+	right: 0;
+	left: 0;
+	margin: 0;
+}
+.ui-rangeslider.ui-mini .ui-rangeslider-sliders .ui-slider-track {
+	top: 8px;
+}
+.ui-rangeslider .ui-slider-track:first-child .ui-slider-bg {
+	display: none;
+}
+.ui-rangeslider .ui-rangeslider-sliders .ui-slider-track:first-child {
+	background-color: transparent;
+	background: none;
+	border-width: 0;
+	height: 0;
+}
+
+/* this makes ie6 and ie7 set height to 0 to fix z-index problem */
+html >/**/body .ui-rangeslider .ui-rangeslider-sliders .ui-slider-track:first-child {
+	height: 15px;
+	border-width: 0px;
+}
+html >/**/body .ui-rangeslider.ui-mini .ui-rangeslider-sliders .ui-slider-track:first-child {
+	height: 12px;
+}
+
+/* Hide the second label (the first is moved outside the div) */
+div.ui-rangeslider label {
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px,1px,1px,1px);
+}
+.ui-field-contain .ui-rangeslider input.ui-slider-input,
+.ui-field-contain .ui-rangeslider.ui-mini input.ui-slider-input,
+.ui-field-contain .ui-rangeslider .ui-rangeslider-sliders,
+.ui-field-contain .ui-rangeslider.ui-mini .ui-rangeslider-sliders {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+
+div.ui-slider {
+	height: 30px;
+	margin: .5em 0;
+	padding: 0;
+	-ms-touch-action: pan-y pinch-zoom double-tap-zoom;
+}
+div.ui-slider:before,
+div.ui-slider:after {
+	content: "";
+	display: table;
+}
+div.ui-slider:after {
+	clear: both;
+}
+input.ui-slider-input {
+	display: block;
+	position: relative;
+	float: left;
+	font-size: 14px;
+	font-weight: bold;
+	margin-left: 5px;
+	margin-right: 5px;
+	top: -1px;
+	padding: 4px;
+	width: 40px;
+	height: 20px;
+	line-height: 20px;
+	border-width: 0px;
+	border-style: solid;
+	outline: 0;
+	text-align: center;
+	vertical-align: text-bottom;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+.ui-slider-input::-webkit-outer-spin-button,
+.ui-slider-input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+.ui-slider-track {
+	position: relative;
+	overflow: visible;
+	border-width: 1px;
+	border-style: solid;
+	height: 15px;
+	margin: 0 15px 0 68px;
+	top: 6px;
+}
+.ui-slider-track.ui-mini {
+	//height: 12px;
+	top: 8px;
+	
+		height: 8px;  /* Added AM */
+	
+}
+.ui-slider-track .ui-slider-bg {
+	height: 100%;
+}
+/* High level of specificity to override button margins in grids */
+.ui-slider-track .ui-btn.ui-slider-handle {
+	position: absolute;
+	z-index: 1;
+	top: 50%;
+	width: 28px;
+	height: 28px;
+	margin: -15px 0 0 -15px;
+	outline: 0;
+	padding: 0;
+}
+.ui-slider-track.ui-mini .ui-slider-handle {
+
+	margin: -10px 0 0 -8px;
+	
+	    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: var(--primary-color) ;
+	
+	
+}
+select.ui-slider-switch {
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
+	clip: rect(1px,1px,1px,1px);
+}
+div.ui-slider-switch {
+	display: inline-block;
+	height: 32px;
+	width: 5.8em;
+	top: 0;
+}
+/* reset the clearfix */
+div.ui-slider-switch:before,
+div.ui-slider-switch:after {
+	display: none;
+	clear: none;
+}
+div.ui-slider-switch.ui-mini {
+	height: 29px;
+	top: 0;
+}
+.ui-slider-inneroffset {
+	margin: 0 16px;
+	position: relative;
+	z-index: 1;
+}
+.ui-slider-switch.ui-mini .ui-slider-inneroffset {
+	margin: 0 15px 0 14px;
+}
+.ui-slider-switch .ui-btn.ui-slider-handle {
+	margin: 1px 0 0 -15px;
+}
+.ui-slider-switch.ui-mini .ui-slider-handle {
+	width: 25px;
+	height: 25px;
+	margin: 1px 0 0 -13px;
+	padding: 0;
+}
+.ui-slider-handle-snapping {
+	-webkit-transition: left 70ms linear;
+	-moz-transition: left 70ms linear;
+	transition: left 70ms linear;
+}
+.ui-slider-switch .ui-slider-label {
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	overflow: hidden;
+	font-size: 16px;
+	top: 0;
+	line-height: 2;
+	min-height: 100%;
+	white-space: nowrap;
+	cursor: pointer;
+}
+.ui-slider-switch.ui-mini .ui-slider-label {
+	font-size: 14px;
+}
+.ui-slider-switch .ui-slider-label-a {
+	z-index: 1;
+	left: 0;
+	text-indent: -1.5em;
+}
+.ui-slider-switch .ui-slider-label-b {
+	z-index: 0;
+	right: 0;
+	text-indent: 1.5em;
+}
+/* The corner radii for ui-slider-switch/track can be specified in theme CSS. The bg and handle inherits. */
+.ui-slider-track .ui-slider-bg,
+.ui-slider-switch .ui-slider-label,
+.ui-slider-switch .ui-slider-inneroffset,
+.ui-slider-handle {
+	-webkit-border-radius: inherit;
+	border-radius: inherit;
+}
+.ui-field-contain div.ui-slider-switch {
+	margin: 0;
+}
+/* ui-hide-label deprecated in 1.4. TODO: Remove in 1.5 */
+.ui-field-contain div.ui-slider-switch,
+.ui-field-contain.ui-hide-label div.ui-slider-switch,
+html .ui-popup .ui-field-contain div.ui-slider-switch {
+	display: inline-block;
+	width: 5.8em;
+}
+
+
+.ui-input-text,
+.ui-input-search {
+	margin: .5em 0;
+	border-width: 1px;
+	border-style: solid;
+}
+.ui-mini {
+	margin: .446em;
+}
+.ui-input-text input,
+.ui-input-search input,
+textarea.ui-input-text {
+	padding: .4em;
+	line-height: 1.4em;
+	display: block;
+	width: 100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	outline: 0;
+}
+.ui-input-text input,
+.ui-input-search input {
+	margin: 0;
+	min-height: 2.2em;
+	text-align: left; /* Opera aligns type="date" right by default */
+	border: 0;
+	background: transparent none;
+	-webkit-appearance: none;
+	-webkit-border-radius: inherit;
+	border-radius: inherit;
+}
+textarea.ui-input-text {
+	overflow: auto;
+	resize: vertical;
+}
+.ui-mini .ui-input-text input,
+.ui-mini .ui-input-search input,
+.ui-input-text.ui-mini input,
+.ui-input-search.ui-mini input,
+.ui-mini textarea.ui-input-text,
+textarea.ui-mini {
+	font-size: 14px;
+}
+/* Same margin for mini textareas as other mini sized widgets (12.5/14 * 0.5em) */
+.ui-mini textarea.ui-input-text,
+textarea.ui-mini {
+	margin: .446em 0;
+}
+.ui-input-has-clear,
+.ui-input-search {
+	position: relative;
+}
+/* Padding on the div instead of input because of browser spinners etc. */
+.ui-input-has-clear {
+	padding-right: 2.375em;
+}
+.ui-mini.ui-input-has-clear {
+	padding-right: 2.923em;
+}
+.ui-input-has-clear input {
+	padding-right: 0;
+	/* Autofill on Chrome has bg color so we unset corners right as well. */
+	-webkit-border-top-right-radius: 0;
+	border-top-right-radius: 0;
+	-webkit-border-bottom-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+/* Search icon */
+.ui-input-search input {
+	padding-left: 1.75em;
+}
+.ui-input-search:after {
+	position: absolute;
+	left: .3125em;
+	top: 50%;
+	margin-top: -7px;
+	content: "";
+	background-position: center center;
+	background-repeat: no-repeat;
+	width: 14px;
+	height: 14px;
+	filter: Alpha(Opacity=50);
+	opacity: .5;
+}
+.ui-input-search.ui-input-has-clear .ui-btn.ui-input-clear,
+.ui-input-text.ui-input-has-clear .ui-btn.ui-input-clear {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	margin: -14px .3125em 0;
+	border: 0;
+	background-color: transparent;
+}
+.ui-input-search .ui-input-clear-hidden,
+.ui-input-text .ui-input-clear-hidden {
+	display: none;
+}
+/* Resolves issue #5166: Added to support issue introduced in Firefox 15. We can likely remove this in the future. */
+.ui-input-text input::-moz-placeholder,
+.ui-input-search input::-moz-placeholder,
+textarea.ui-input-text::-moz-placeholder {
+	color: #aaa;
+}
+/* Same for IE10 */
+.ui-input-text input:-ms-input-placeholder,
+.ui-input-search input:-ms-input-placeholder,
+textarea.ui-input-text:-ms-input-placeholder {
+	color: #aaa;
+}
+
+/* Resolves issue #5131: Width of textinput depends on its type,
+for Android 4.1 */
+.ui-input-text input[type=number]::-webkit-outer-spin-button {
+	margin: 0;
+}
+/* Resolves issue #5756: Textinput in IE10 has a default clear button */
+.ui-input-text input::-ms-clear,
+.ui-input-search input::-ms-clear {
+	display: none;
+}
+.ui-input-text input:focus,
+.ui-input-search input:focus {
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
