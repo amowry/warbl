@@ -11,12 +11,12 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 ### How to use WARBL with the Arduino IDE:
 
-*	Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
+* Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
 
 
+* Next you can copy the 'warble_firmware' folder to put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default.
 
-*	Next download the folder containing the latest WARBL code in Arduino format, and put in your Arduino “sketch” folder, which on a PC is Documents/Arduino by default.
-
+* If you plan to do editing, please note that we are using 4-space indentation with a specific formatting style. To use this style in the Arduino editor, go to the Arduino preferences, and at the bottom where it says `More preferences can be edited directly in the file`, open and edit the preferences.txt file mentioned there, and add or change the `editor.tabs.size=4` line as shown. Also, copy the file **formatter.conf** from this repository to the same directory that the preferences.txt is, this will let you use the Auto Format feature in the Arduino Tools menu to properly format the code.
 
 
 * WARBL runs on 3.3V and at 8Mhz, which is nonstandard for Arduino boards with the same processor. I used the Adafruit ItsyBitsy 32u4-3.3V for prototyping WARBL, so the easiest way to set up the IDE is to install the Adafruit boards package, [following the instructions here](https://learn.adafruit.com/introducting-itsy-bitsy-32u4?view=all#arduino-ide-setup). **Windows 7 only:** You will also have to install the drivers, following the link partway down the above page.
@@ -24,40 +24,41 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 * Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
-  
 
-  C:\Users\\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12
+  `C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12` 
 
-  I use the free NotePad++ app to edit this. First, change lines 296 and 297 to these to use the WARBL USB VID and PID:
+    I use the free NotePad++ app to edit this. First, change lines 296 and 297 to these to use the WARBL USB VID and PID:
 
-  itsybitsy32u4_3V.build.vid=0x04D8
+       itsybitsy32u4_3V.build.vid=0x04D8
   
-  itsybitsy32u4_3V.build.pid=0xEE87
+       itsybitsy32u4_3V.build.pid=0xEE87
   
-  Next, make the same changes to lines 311 and 312:
+    Next, make the same changes to lines 311 and 312:
   
-  itsybitsy32u4_3V.vid.0=0x04D8
+       itsybitsy32u4_3V.vid.0=0x04D8
   
-  itsybitsy32u4_3V.pid.0=0xEE87
+       itsybitsy32u4_3V.pid.0=0xEE87
  
-  Then change the product name on line 301:
+    Then change the product name on line 301:
   
-  itsybitsy32u4_3V.build.usb_product="WARBL"
+       itsybitsy32u4_3V.build.usb_product="WARBL"
   
-  And finally the manufacturer on line 302:
+    And finally the manufacturer on line 302:
   
-  itsybitsy32u4_3V.build.usb_manufacturer="Mowry Stringed Instruments"
+       itsybitsy32u4_3V.build.usb_manufacturer="Mowry Stringed Instruments"
 
 
 
 *	It is also necessary to configure the USBCore to request only 20mA of power. Otherwise iOS devices will say that the device uses too much power, even though it doesn’t. It only matters how much it requests. 
     So, find this file:
   
-    C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBCore.h
+    `C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBCore.h`
   
-    **Please note:** You may want to make a backup copy of this file before changing it. Changing it will affect all USB boards that you program with the IDE. The setting that we’re changing probably won’t make a difference in most cases, but it’s important to know this. 
-  
-    At the end of line 270, change the power consumption request to: USB_CONFIG_POWER_MA(20) 
+    > **Please note:** You may want to make a backup copy of this file before changing it. Changing it will affect all USB boards that you program with the IDE. The setting that we’re changing probably won’t make a difference in most cases, but it’s important to know this. 
+
+    At the end of line 270, change the power consumption request to: 
+     
+        USB_CONFIG_POWER_MA(20) 
 
 
 
@@ -73,7 +74,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
  
  
  
-*	Next, tell it which board you have by going Tools > Board and select Adafruit ItsyBitsy 32u4 3V 8MHz.
+*	Next, tell it which board you have by going Tools > Board and select `Adafruit ItsyBitsy 32u4 3V 8MHz`.
 
 
 
@@ -98,9 +99,12 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 ### A few additional notes:
-By default, the serial CDC class on WARBL is turned off, which makes it a USB MIDI class-compliant device. This also means that you can’t use the serial monitor in Arduino IDE. To turn serial on you can comment out the following line in the USBCore.cpp tab: 
-#define CDCCON_DISABLE 
+By default, the serial CDC class on WARBL is turned off, which makes it a USB MIDI class-compliant device. This also means that you can’t use the serial monitor in Arduino IDE. To turn serial on you can comment out the following line in the USBCore.cpp tab:
+ 
+    #define CDCCON_DISABLE 
+
 Then you will be able to print to the serial monitor for debugging. Doing this may also make it so that you don’t have to double-click the reset button to upload code (though it doesn’t always work). 
+
 Turning on the CDC class will also make so that Windows 7 will require the drivers to be installed for normal MIDI operation to work, and may interfere with MIDI modules (I’m not sure about this).
 
 Have fun!

@@ -1,0 +1,752 @@
+
+:root {
+
+	
+
+
+    --main-text-color: #496663; 
+  --modal-text-color: #496663; 
+   --bg-color: #d9d1c0; 
+     --footer-bg-color: #304240;
+	  --footer-bar-color: #1d2928;	
+	--button-color: #496663;
+	--button-text-color:  #fff;
+		--dark-bg-button-color:  #d9d1c0;
+			--dark-bg-button-text-color:  #304240;
+	--links: #ccc;
+	--light-link: #496663;
+
+
+
+
+	
+}
+
+
+.woodbg { 
+position: fixed;
+bottom: 0;
+width: 100%;
+height: 100%;
+  background: url('../img/wood1.jpg'); 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+   background-repeat: no-repeat;;
+  flex-shrink: 0;
+  z-index:-1;
+  transform: translate3d(0,0,0);  
+}
+
+
+
+	body {
+
+	color: var(--main-text-color);
+	background: transparent;	
+	overflow: auto;	
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+	font-style: normal;
+	font-size: medium;
+	padding-bottom: 0;
+	//font-weight: 300;
+
+
+}
+
+  html, body {
+  height: 100%;
+}
+
+
+
+.bodybg {
+background-color: var(--bg-color);	
+}
+
+
+.video {
+	max-width: 90%;
+	margin-bottom: 100px;
+}
+
+.home-video {
+	max-width: 90%;
+}
+
+
+.text-strong{
+	color: var(--footer-bg-color);
+}
+
+
+.rounded-circle{
+	margin-bottom: 40px !important;
+}
+
+
+
+*:hover,
+*:focus,
+*:active
+ {
+  outline: none;
+  box-shadow: none !important;
+  -webkit-appearance: none;
+}
+
+
+
+
+
+.home-card{
+background: transparent;
+padding: 50px !important;}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+
+.clearfix {
+    display: inline-block;
+}
+
+html[xmlns] .clearfix {
+    display: block;
+}
+
+* html .clearfix {
+    height: 1%;
+}
+
+
+
+.pagewrapper {
+	position:relative;
+	width: 100%;
+	display:block;
+	margin-bottom:100px;
+	background-color:white;
+	//z-index:-999;
+	-webkit-transform: translate3d(0,0,0);
+
+
+}
+
+
+.cart-card {
+	margin-bottom: 120px;
+}
+
+.example_image{
+	max-width: 90%;
+	margin-left:auto;
+		margin-right:auto;
+}
+
+.backimage {
+
+width:100%;
+ background-image: url('../img/background.jpg');
+ background-repeat: no-repeat;
+background-size: contain;
+margin-top: 0;
+padding-bottom: 50%;
+padding-top: 0px;
+border-style: none;
+position: relative;
+top: -49px; 
+ border-style: none;
+ z-index:-10;
+
+
+}
+
+
+
+
+.logo{
+
+position:absolute;
+		width: 25%;
+top: 30%;
+left: 0;
+right: 0;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;
+	  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+
+.intro{
+		position:absolute;
+		width: 80%;
+top: 55%;
+left: 0;
+right: 0;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: center;
+	  display: flex;
+  justify-content: center;
+  align-items: center; 
+  z-index: 99;
+  	font-size: large;
+	color: #fff;
+ 	
+}
+
+.features-container{
+	-webkit-justify-content: center;
+	justify-content: center;
+
+	
+}
+
+.card{
+border: none;	
+}
+
+
+
+@media only screen and (max-width: 1024px) {
+
+.backimage {background-image: url('../img/background_smallertmp.jpg');}
+
+.logo{top: 27%;}
+
+.intro{top: 50%;}
+
+}
+
+
+/* When the screen is less than 600 pixels wide, hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
+@media screen and (max-width: 767px) {
+  .topnav a:not(:first-child) {display: none;}
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+  
+
+  
+  .logo{top: 30%;}
+
+.intro{top: 50%;
+font-size: small;}
+
+.smalllogo{width: 35px;
+}
+
+
+
+
+
+.feature{
+
+
+
+	border-style: none;
+	border-radius: 10px;
+	background-color: #555;
+	font-size: small;
+
+	padding: 20px;
+	text-align: center;
+}
+
+
+.marketing{
+	display: block;
+margin-bottom: 100px;
+width: 100%;
+}
+
+
+
+.bottom {
+	text-align: center;
+	display: block;
+	margin-right: auto;
+	margin-bottom: 50px;
+	margin-left: auto;
+	float: none;
+	clear: both;
+	position: relative;
+	margin-top: 35px;
+	letter-spacing: 0.7px;
+	color: #000;
+	border: none;
+}
+.p1 {
+	padding-right: 0px;
+	padding-left: 0px;
+	line-height: 30px;
+	letter-spacing: normal;
+	margin-bottom: 40px;
+	word-spacing: 1px;
+	text-align: left;
+	font-family: Tahoma, Geneva, sans-serif;
+	color: #999;
+}
+
+
+
+.floatright {
+	display: block;
+	float: right;
+	margin-top: 85px;
+	margin-right: 0px;
+	margin-bottom: 30px;
+	margin-left: 60px;
+	padding: 0px;
+	border: medium solid #dddddd;
+	left: 40px;
+}
+
+
+h1 {
+	font-size: large;
+	font-style: italic;
+	margin-bottom: 50px;
+}
+
+}
+
+.play_pause_link {
+	font-size: x-small;
+	text-align: center;
+	display: block;
+	clear: both;
+	margin-top: 30px;
+	margin-right: 0px;
+	margin-bottom: 60px;
+	margin-left: 0px;
+}
+.music_wrapper {
+	display: block;
+	float: none;
+	clear: both;
+	margin-right: 270px;
+	margin-left: 180px;
+}
+.centered_image_wrapper {
+	//display: block;
+	border: medium none #dddddd;
+	margin-top: 40px;
+	//margin-right: auto;
+	margin-left: 50px;
+	text-align: left;
+
+}
+.p2 {
+	text-align: center;
+	display: block;
+	float: left;
+	padding-right: 50px;
+}
+.float_left {
+	display: block;
+	float: left;
+	border: medium solid #dddddd;
+}
+.blockquote2 {
+	font-style: italic;
+	line-height: 30px;
+	text-align: center;
+}
+.floatright_no_border {
+	display: block;
+	float: right;
+	margin-top: 20px;
+	margin-right: 5px;
+	margin-bottom: 50px;
+	margin-left: 40px;
+}
+.centered_slideshow {
+	padding: 0px;
+	margin-right: 130px;
+	margin-left: 130px;
+	clear: both;
+	width: 680px;
+}
+
+.floatleft_no_border {
+	display: block;
+	float: left;
+	margin-top: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	margin-left: 10px;
+}
+
+
+audio {
+	width: 500px;
+	display: block;
+	margin:20px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+
+
+.toplogo{
+	position:absolute;
+	top: 12px;
+	right: 50px;
+	z-index: 99999;
+	}
+	
+
+
+
+.topnav {
+position:relative;
+    overflow: hidden;
+	color: #f2f2f2;
+	z-index:9999;
+	flex-shrink: 0;
+
+}
+
+
+
+
+
+
+a {
+	color: var(--main-text-color);
+text-decoration: underline;
+
+
+}
+
+
+
+
+
+/* Style the links inside the navigation bar */
+.topnav a {
+    float: left;
+    display: block;
+    text-align: center;
+   // padding: 14px 16px;
+	   padding: 10px 12px;
+    text-decoration: none;
+    font-size: 14px;
+	z-index:9999;
+	color: var(--links);
+
+}
+
+
+.btn{
+	margin-top: 20px;
+	border: none !important;
+	background-color: var(--button-color);
+	color: var(--button-text-color);
+	white-space: normal;
+}
+
+
+.toplink {
+	color: #C0C0C0;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+    //background-color: #ddd;
+    color: white;
+}
+
+/* Add an active class to highlight the current page */
+.active {
+  //  background-color: #f7c839;
+    color: #f7c839 !important;
+}
+
+
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+    display: none;
+   
+
+}
+
+
+
+
+
+/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
+
+
+  .topnav.responsive {position: relative;
+  background-color: var(--footer-bg-color);}
+  .topnav.responsive .icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  .topnav.responsive a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
+}
+
+
+
+.btn:focus {
+      
+        box-shadow: none !important;
+       
+    }
+	
+	.footer{
+		
+	position: relative;
+
+	 bottom:0px;
+
+	}
+	
+.modal{
+	color: var(--modal-text-color);
+	
+}
+	
+	
+	
+	/*footer*/
+.col_white_amrc { color:#FFF;}
+
+footer {
+	 width:100%;
+background-color:var(--footer-bg-color);
+min-height:250px; padding:10px 0px 25px 0px ;
+}
+
+
+
+
+
+.pt2 { padding-top:40px ; margin-bottom:20px ;}
+footer p { font-size:13px; color:#CCC; padding-bottom:0px; margin-bottom:8px;}
+.mb10 { padding-bottom:15px ;}
+.footer_ul_amrc { margin:0px ; list-style-type:none ; font-size:14px; padding:0px 0px 10px 0px ; }
+.footer_ul_amrc li {padding:0px 0px 5px 0px;}
+.footer_ul_amrc li a{ color:#CCC;}
+.footer_ul_amrc li a:hover{ color:#fff; text-decoration:none;}
+.fleft { float:left;}
+.padding-right { padding-right:10px; }
+
+.footer_ul2_amrc {margin:0px; list-style-type:none; padding:0px;}
+.footer_ul2_amrc li p { display:table; }
+.footer_ul2_amrc li a:hover { text-decoration:none;}
+.footer_ul2_amrc li i { margin-top:5px;}
+
+
+
+.bottom_border { border-bottom:1px solid var(--footer-bar-color);
+ padding-bottom:20px;}
+
+
+.foote_bottom_ul_amrc {
+	list-style-type:none;
+	padding:0px;
+	display:table;
+	margin-top: 10px;
+	margin-right: auto;
+	margin-bottom: 10px;
+	margin-left: auto;
+}
+.foote_bottom_ul_amrc li { display:inline;}
+.foote_bottom_ul_amrc li a { color:#999; margin:0 12px;}
+
+.social_footer_ul { display:table; margin:15px auto 0 auto; list-style-type:none; padding-bottom: 40px; padding-left: 0px !important;}
+.social_footer_ul li { padding-left:10px; padding-right: 10px; ;padding-top:10px; float:left;
+  }
+.social_footer_ul li a { color:#CCC; border:1px solid #CCC; padding:8px;border-radius:50%;}
+.social_footer_ul li i {  width:20px; height:20px; text-align:center;}
+
+
+  .faq-button{
+  width: 100%;
+  padding: 15px;
+  background: transparent;
+  border: none;
+  color: var(--dark-bg-button-text-color);
+  text-align: left;
+  margin: 0;
+  white-space: normal; 
+  } 
+  
+  
+  
+  .faq-card{
+  background: transparent; 
+  }
+  
+  .card-body{
+	  background-color: var(--bg-color);  
+	  border-radius: 0px 0px 5px 5px;
+  }
+  
+  .faq{
+  display: flex;
+padding: 5%;
+justify-content: center;
+margin-left: auto;
+margin-right: auto;
+
+  }
+  
+  .accordion{
+	  width: 100%;
+	  background-color: var(--bg-color);
+	  background: transparent;
+	  border-radius:5px;
+	  padding: 5%;
+	  align-self: center;
+
+	  
+  }
+  
+ .card-header{
+	background-color: var(--dark-bg-button-color);
+  padding: 0;
+  margin-top: 20px;
+  
+  }
+  
+  
+ .purchase-header{
+	background-color: var(--dark-bg-button-color);
+  padding-bottom: 30px;
+  border-radius: 5px 5px 5px 5px !important;
+  margin: auto;
+  
+  }
+  
+  
+  .purchase-card{
+ 
+	background-color: var(--dark-bg-button-color);
+  padding: 80px;
+  border-radius: 5px 5px 5px 5px !important;
+  margin: auto;
+  
+  }
+  
+  
+    .purchase{
+  display: flex;
+padding: 5%;
+justify-content: center;
+margin-left: auto;
+margin-right: auto;
+
+  }
+
+  
+  .purchase a{
+  color: var(--light-link);
+  }
+  
+    .documentation a{
+  color: var(--button-text-color);
+  }
+  
+      .documentationLink{
+  color: var(--main-text-color) !important;
+  }
+
+.flex-body {
+  display: flex;
+  flex-direction: column;
+
+}
+.content {
+  flex: 1 0 auto;
+}
+.footer {
+  flex-shrink: 0;
+}
+
+.footer a:hover{ color:#fff; text-decoration:none;}
+
+
+@media only screen and (max-width: 600px) {
+
+.backimage {
+	background-image: url('../img/background_smaller.jpg');
+	padding-bottom: 210%;
+	
+	}
+
+.logo{
+width: 50%;
+top: 25vh;
+
+}
+
+.intro{
+top: 42vh;
+width: 120px;
+
+}
+
+}
+
+  .purchase-card{
+
+  padding: 40px;
+
+}
+
+
+.featurette-heading {
+	padding-bottom: 30px;
+}
+
+.documentation{
+	margin-top: 40px;
+	margin-bottom: 0px !important;
+	text-align: center;
+	
+}
+
+.docButton{
+	min-width: 200px;
+	max-width: 600px;
+	margin-left: auto;
+	margin-right: auto;
+	text-decoration: none !important;
+}
+
+.footer a{
+	text-decoration: none;
+	color: var(--links);
+}
+
+.darkLink{
+	margin-top: 40px;
+	margin-bottom: 0px !important;
+	text-align: center;
+	
+	
+}
+
+.darkLink a{
+	color: var(--main-text-color)!important;
+}

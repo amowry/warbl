@@ -1,0 +1,2165 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    
+    <meta charset="utf-8"/>
+    
+    <title>WARBL Configuration</title>
+    
+    <meta name="viewport" content="width=device-width">
+
+    <meta name="description" content="WARBL Configuration Tool" />
+    
+    <meta name="author" content="Andrew Mowry" />
+    
+    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet'/>
+
+    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+    
+    <link href="css/nouislider.css" rel="stylesheet" type="text/css">
+
+    <link href="css/config.css" rel="stylesheet" type="text/css">
+    
+    <style>
+
+      .topnav.responsive {background: transparent;}
+
+      .import-export {text-align:center;}
+
+    </style>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-129157937-1">
+    </script>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-129157937-1');
+    </script>
+    
+  </head>
+
+  <body>
+
+    <div class="toplogo">
+
+      <a href="index.html">
+
+        <img src="img/small_logo.png" width="50">
+
+      </a>
+
+    </div>
+
+    <div class="topnav" id="myTopnav">
+      
+      <a href="index.html">Home</a>
+
+      <a href="https://warbl.xyz/documentation.html">Documentation</a>
+      
+      <a class="toplink" href="https://warbl.xyz/videos.html">Videos</a>
+      
+      <a href="https://warbl.xyz/purchase.html">Purchase</a>
+      
+      <a href="https://warbl.xyz/FAQ.html">FAQ</a>
+      
+      <a href="https://warbl.xyz/contact.html">Contact</a>
+      
+      <a href="https://warbl.xyz/phpbb/">Forum</a>
+      
+      <a class="active" href="https://warbl.xyz/configure.html">Configure WARBL</a>
+      
+      <a href="javascript:void(0);" class="icon" onClick="topNavFunction()">
+
+          <i class="fa fa-bars"></i>
+
+      </a> 
+
+    </div>
+
+    <div class="pagewrapper">
+
+      <div class="topcontrolbox">
+        
+        <div class="topheader noTouch">
+
+          <h1>WARBL Configuration Tool
+
+            <button type="button" class="infocircle" onClick="modal(10)"><i class="fa fa-info-circle"></i></button>
+
+          </h1>
+
+          <button type="button" class="headerbuttons noTouch" id="connect" onClick="connect()">Connect to WARBL</button>
+
+          <span class="leddot" id="leddot1"></span>
+
+          <div class="volume">
+
+            <button type="button" id="on"><i class="fa fa-volume-off"></i></button>
+
+          </div>
+
+          <p id="status" class="noTouch">WARBL not detected.</p>
+
+          <p hidden id="refresh" class="noTouch">Refresh browser (F5) to update status.</p>
+
+          <p id="versionLabel" class="noTouch">WARBL firmware version:</p>
+
+          <p id="version" class="noTouch">Unknown</p>
+
+          <p id="current" class="noTouch">Your firmware is up to date.</p>
+
+        </div>
+
+        <div class="middleControlBox">
+
+          <div class="fingeringSelectLabel noTouch">Fingering pattern</div>
+
+          <button type="button" class="defaultInstrumentButton headerbuttons noTouch" id="defaultInstrument" onClick="defaultInstrument()">Set as Default</button>
+
+          <div class="fingeringSelectContainer">
+
+            <div class="styled-fingering-select blue semi-square" id="instrument0">
+
+              <select id="fingeringSelect0" onChange="sendFingeringSelect(0,value)">
+                <option value="0">Tin whistle/flute</option>
+                <option value="4">Tin whistle/flute, chromatic</option>
+                <option value="10">Uilleann pipes, standard</option>
+                <option value="1">Uilleann pipes, chromatic</option>
+                <option value="2">GHB/Scottish smallpipes</option>
+                <option value="3">Northumbrian smallpipes</option>
+                <option value="5">Gaita</option>
+                <option value="13">Gaita, extended</option>
+                <option value="6">Native American flute</option>
+                <option value="7">Kaval</option>
+                <option value="8">Soprano recorder</option>
+                <option value="11">Xiao</option>
+                <option value="12">Saxophone, extended</option>
+                <option value="14">Saxophone, basic</option>
+                <option value="15">Trumpet/EVI</option>
+                <option value="16">Shakuhachi</option>
+              </select>
+
+            </div>
+
+            <div class="styled-fingering-select blue semi-square" id="instrument1">
+
+              <select id="fingeringSelect1" onChange="sendFingeringSelect(1,value)">
+                <option value="0">Tin whistle/flute</option>
+                <option value="4">Tin whistle/flute, chromatic</option>
+                <option selected="selected" value="10">Uilleann pipes, standard</option>
+                <option value="1">Uilleann pipes, chromatic</option>
+                <option value="2">GHB/Scottish smallpipes</option>
+                <option value="3">Northumbrian smallpipes</option>
+                <option value="5">Gaita</option>
+                <option value="13">Gaita, extended</option>
+                <option value="6">Native American flute</option>
+                <option value="7">Kaval</option>
+                <option value="8">Soprano recorder</option>
+                <option value="11">Xiao</option>
+                <option value="12">Saxophone, extended</option>
+                <option value="14">Saxophone, basic</option>
+                <option value="15">Trumpet/EVI</option>
+                <option value="16">Shakuhachi</option>
+              </select>
+
+            </div>
+
+            <div class="styled-fingering-select blue semi-square" id="instrument2">
+
+              <select id="fingeringSelect2" onChange="sendFingeringSelect(2,value)">
+                <option value="0">Tin whistle/flute</option>
+                <option value="4">Tin whistle/flute, chromatic</option>
+                <option value="10">Uilleann pipes, standard</option>
+                <option value="1">Uilleann pipes, chromatic</option>
+                <option selected="selected" value="2">GHB/Scottish smallpipes</option>
+                <option value="3">Northumbrian smallpipes</option>
+                <option value="5">Gaita</option>
+                <option value="13">Gaita, extended</option>
+                <option value="6">Native American flute</option>
+                <option value="7">Kaval</option>
+                <option value="8">Soprano recorder</option>
+                <option value="11">Xiao</option>
+                <option value="12">Saxophone, extended</option>
+                <option value="14">Saxophone, basic</option>
+                <option value="15">Trumpet/EVI</option>
+                <option value="16">Shakuhachi</option>
+              </select>
+
+            </div>
+
+          </div>
+
+          <div class="keySelectLabel noTouch">Key</div>
+          
+          <div class="keySelectContainer">
+
+            <div class="styled-key-select blue semi-square" id="key0">
+
+              <select id="keySelect0" onChange="sendKey(0,value)">
+                <option value="113">C3</option>
+                <option value="114">C#</option>
+                <option value="115">D</option>
+                <option value="116">Eb</option>
+                <option value="117">E</option>
+                <option value="118">F</option>
+                <option value="119">F#</option>
+                <option value="120">G</option>
+                <option value="121">G#</option>
+                <option value="122">A</option>
+                <option value="123">Bb</option>
+                <option value="124">B</option>
+                <option value="125">C4</option>
+                <option value="126">C#</option>
+                <option selected="selected" value="0">D</option>
+                <option value="1">Eb</option>
+                <option value="2">E</option>
+                <option value="3">F</option>
+                <option value="4">F#</option>
+                <option value="5">G</option>
+                <option value="6">G#</option>
+                <option value="7">A</option>
+                <option value="8">Bb</option>
+                <option value="9">B</option>
+                <option value="10">C5</option>
+                <option value="11">C#</option>
+                <option value="12">D</option>
+              </select>
+
+            </div>
+
+            <div class="styled-key-select blue semi-square" id="key1">
+
+              <select id="keySelect1" onChange="sendKey(1,value)">
+                <option value="113">C3</option>
+                <option value="114">C#</option>
+                <option value="115">D</option>
+                <option value="116">Eb</option>
+                <option value="117">E</option>
+                <option value="118">F</option>
+                <option value="119">F#</option>
+                <option value="120">G</option>
+                <option value="121">G#</option>
+                <option value="122">A</option>
+                <option value="123">Bb</option>
+                <option value="124">B</option>
+                <option value="125">C4</option>
+                <option value="126">C#</option>
+                <option selected="selected" value="0">D</option>
+                <option value="1">Eb</option>
+                <option value="2">E</option>
+                <option value="3">F</option>
+                <option value="4">F#</option>
+                <option value="5">G</option>
+                <option value="6">G#</option>
+                <option value="7">A</option>
+                <option value="8">Bb</option>
+                <option value="9">B</option>
+                <option value="10">C5</option>
+                <option value="11">C#</option>
+                <option value="12">D</option>
+              </select>
+
+            </div>
+
+            <div class="styled-key-select blue semi-square" id="key2">
+
+              <select id="keySelect2" onChange="sendKey(2,value)">
+                <option value="113">C3</option>
+                <option value="114">C#</option>
+                <option value="115">D</option>
+                <option value="116">Eb</option>
+                <option value="117">E</option>
+                <option value="118">F</option>
+                <option value="119">F#</option>
+                <option value="120">G</option>
+                <option value="121">G#</option>
+                <option value="122">A</option>
+                <option value="123">Bb</option>
+                <option value="124">B</option>
+                <option value="125">C4</option>
+                <option value="126">C#</option>
+                <option value="0">D</option>
+                <option value="1">Eb</option>
+                <option value="2">E</option>
+                <option value="3">F</option>
+                <option value="4">F#</option>
+                <option value="5">G</option>
+                <option value="6">G#</option>
+                <option value="7">A</option>
+                <option selected="selected" value="8">Bb</option>
+                <option value="9">B</option>
+                <option value="10">C5</option>
+                <option value="11">C#</option>
+                <option value="12">D</option>
+              </select>
+
+            </div>
+
+          </div>
+          
+          <div class="notechannellabel noTouch">Note Channel</div>
+
+          <div class="noteChannelContainer">
+
+            <input class="channelInput" type="text" onChange="sendNoteChannel(value)" id="noteChannel" value="1">
+
+          </div>
+		  
+          <div class="fingeringRadio">
+
+            <div class="tab tab0">
+
+              <input type="radio" value="0" name="quality" id="fingering0" onChange="sendFingeringRadio(value)" checked>
+
+              <label for="fingering0"> <span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel1">Tin whistle/flute</div><div class="instrument" id=instrument1Label>Instrument 1:</div></label>
+
+            </div>
+
+            <div class="tab tab1">
+
+              <input type="radio" value="1" name="quality" id="fingering1" onChange="sendFingeringRadio(value)">
+
+              <label for="fingering1"><span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel2">Tin whistle/flute</div><div class="instrument" id=instrument2Label>Instrument 2:</div></label>
+
+            </div>
+
+            <div class="tab tab2">
+
+              <input type="radio" value="2" name="quality" id="fingering2" onChange="sendFingeringRadio(value)">
+
+              <label for="fingering2"><span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel3">Tin whistle/flute</div><div class="instrument" id=instrument3Label>Instrument 3:</div></label>
+
+            </div>
+
+          </div>
+
+          <div class="tabBorder"></div>
+          
+          <div class="tabBorder1"></div>
+          
+          <div class="headerbuttonwrapper">
+
+            <button type="button" class="headerbuttons noTouch" id="saveasdefaults" onClick="modal(2)">Save settings for current instrument</button>
+
+          </div>
+          
+          <div class="headerbuttonwrapper2">
+
+            <button type="button" class="headerbuttons noTouch" id="saveforallmodes" onClick="modal(3)">Apply settings to all instruments</button>
+
+          </div>
+          
+          <div class="headerbuttonwrapper3">
+
+            <button type="button" class="headerbuttons noTouch" id="restoreall" onClick="modal(4)">Restore all factory settings</button>
+
+          </div>
+          
+          <div class="leftsmallcontrolbox" id="box1">
+
+            <h2 class="controlboxtitle noTouch">Note Trigger and Register Control
+
+              <button type="button" class="infocircle" onClick="modal(6)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+
+            <div class="pressureLabel noTouch">Pressure (inH<sub>2</sub>0)</div>
+            
+            <div class="pressure noTouch" id="pressure"></div>
+
+            <div class="radiogroup">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" value="0" name="sensorradio" id="sensorradio0" onChange="sendBreathmodeRadio(value)">
+
+                  <label for="sensorradio0"><span><span></span></span>1. Single Register &nbsp; </label>
+
+                </div>
+
+                <div>
+
+                  <input type="radio" value="1" name="sensorradio" id="sensorradio1" onChange="sendBreathmodeRadio(value)" checked>
+
+                  <label for="sensorradio1"><span><span></span></span>2. Overblow</label>
+
+                </div>
+                
+                <div>
+
+                  <input type="radio" value="2" name="sensorradio" id="sensorradio2" onChange="sendBreathmodeRadio(value)">
+
+                  <label for="sensorradio2"><span><span></span></span>3. Thumb register</label>
+
+                </div>
+                
+                <div>
+
+                  <input type="radio" value="3" name="sensorradio" id="sensorradio3" onChange="sendBreathmodeRadio(value)">
+
+                  <label for="sensorradio3"><span><span></span></span>4. Bell register</label>
+
+                </div>
+                
+              </fieldset>
+
+            </div>
+
+            <div class="radiogroup4">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" value="0" name="calibrateradio" id="calibrateradio0" onChange="sendCalibrateRadio(value)" checked>
+
+                  <label for="calibrateradio0"><span><span></span></span>Calibrate at startup &nbsp; </label>
+
+                </div>
+                
+                <div>
+
+                  <input type="radio" value="1" name="calibrateradio" id="calibrateradio1" onChange="sendCalibrateRadio(value)">
+
+                  <label for="calibrateradio1"><span><span></span></span>Learn or enter pressure:</label>
+
+                </div>
+                
+              </fieldset>
+
+            </div>
+
+            <div class="invertLabel noTouch">Invert thumb/bell</div>
+            
+            <label class="switch" id="switch9">
+
+              <input type="checkbox" class="checkboxes" id="checkbox9" onChange="sendInvert(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <div class="ventedLabel noTouch">Vented mouthpiece</div>
+            
+            <label class="switch" id="switch4">
+
+              <input type="checkbox" class="checkboxes" id="checkbox4" onChange="sendVented(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <div class="baglessLabel noTouch">Bagless mode</div>
+            
+            <label class="switch" id="switch8">
+
+              <input type="checkbox" class="checkboxes" id="checkbox8" onChange="sendBagless(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <button type="button" class="smallbutton noTouch advanced" onClick="advanced()">Advanced...</button>
+            
+            <button type="button" class="smallbutton noTouch graph" onClick="pressureGraph()">Graph...</button>
+
+            <button type="button" class="smallbutton noTouch learn" onClick="learn()">Learn</button>
+
+            <div class="pressureUnitsLabel noTouch">inH<sub>2</sub>0</div>
+            
+            <div class="octavePressureInputContainer">
+
+              <input class="channelInput" type="text" onChange="sendOctavePressure(value)" id="octavePressureInput" value="">
+
+            </div>
+
+          </div>
+
+          <div class="leftsmallcontrolbox" id="box2">
+
+            <h2 class="controlboxtitle noTouch">Advanced Register Control Settings
+              
+              <button type="button" class="infocircle" onClick="modal(11)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+
+            <div class="slidecontainer" id="jumpfactorContainer">
+
+              <input type="range" min="1" max="75" value="25" class="ranger" id="jumpFactor1" onChange="sendJumpFactor(1, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor2Container">
+
+              <input type="range" min="1" max="25" value="15" class="ranger" id="jumpFactor2" onChange="sendJumpFactor(2, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor3Container">
+
+              <input type="range" min="1" max="75" value="15" class="ranger" id="jumpFactor3" onChange="sendJumpFactor(3, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor4Container">
+
+              <input type="range" min="1" max="50" value="15" class="ranger" id="jumpFactor4" onChange="sendJumpFactor(4, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor5Container">
+
+              <input type="range" min="1" max="125" value="30" class="ranger" id="jumpFactor5" onChange="sendJumpFactor(5, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor6Container">
+
+              <input type="range" min="1" max="125" value="60" class="ranger" id="jumpFactor6" onChange="sendJumpFactor(6, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor7Container">
+
+              <input type="range" min="1" max="75" value="3" class="ranger" id="jumpFactor7" onChange="sendJumpFactor(7, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor8Container">
+
+              <input type="range" min="1" max="25" value="7" class="ranger" id="jumpFactor8" onChange="sendJumpFactor(8, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor9Container">
+
+              <input type="range" min="1" max="75" value="10" class="ranger" id="jumpFactor9" onChange="sendJumpFactor(9, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor10Container">
+
+              <input type="range" min="1" max="50" value="7" class="ranger" id="jumpFactor10" onChange="sendJumpFactor(10, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor11Container">
+
+              <input type="range" min="1" max="125" value="9" class="ranger" id="jumpFactor11" onChange="sendJumpFactor(11, value)">
+
+            </div>
+
+            <div class="slidecontainer" id="jumpfactor12Container">
+
+              <input type="range" min="1" max="125" value="9" class="ranger" id="jumpFactor12" onChange="sendJumpFactor(12, value)">
+
+            </div>
+
+            <div class="jumplabel noTouch jumplabel0">Closed</div>
+
+            <div class="jumplabel noTouch jumplabel1">Vented</div>
+
+            <div class="jumplabel noTouch jumplabel2">Threshold</div>
+
+            <div class="jumplabel noTouch jumplabel3">Multiplier</div>
+
+            <div class="jumplabel noTouch jumplabel4">Jump</div>
+
+            <div class="jumplabel noTouch jumplabel5">Drop</div>
+
+            <div class="jumplabel noTouch jumplabel6">Jump Time</div>
+
+            <div class="jumplabel noTouch jumplabel7">Drop Time</div>
+
+            <div class="jumpvalues noTouch jumpvalue">
+
+              <p><span id="demo1"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue2">
+
+              <p><span id="demo2"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue3">
+
+              <p><span id="demo3"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue4">
+
+              <p><span id="demo4"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue5">
+
+              <p><span id="demo5"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue6">
+
+              <p><span id="demo6"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue7">
+
+              <p><span id="demo7"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue8">
+
+              <p><span id="demo8"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue9">
+
+              <p><span id="demo9"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue10">
+
+              <p><span id="demo10"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue11">
+
+              <p><span id="demo11"></span></p>
+
+            </div>
+
+            <div class="jumpvalues noTouch jumpvalue12">
+
+              <p><span id="demo12"></span></p>
+
+            </div>
+
+            <div class="pressureLabelAdvanced noTouch">
+
+              Pressure (inH<sub>2</sub>0)
+
+            </div>
+            
+            <div class="pressureAdvanced noTouch" id="pressure1"></div>
+
+            <button type="button" class="smallbutton noTouch advancedOkay" onClick="advancedOkay()">OK</button>
+
+            <button type="button" class="smallbutton noTouch advancedDefaults" onClick="advancedDefaults()">Breath Defaults</button>
+
+            <button type="button" class="smallbutton noTouch advancedBagDefaults" onClick="advancedBagDefaults()">Bag defaults</button>
+
+          </div>
+
+          <div class="leftsmallcontrolbox" id="pressuregraph">
+
+            <h2 class="controlboxtitle noTouch">Pressure Graph
+              
+              <button type="button" class="infocircle" onClick="modal(16)"><i class="fa fa-info-circle"></i></button>
+
+              <div id="d3PressureGraph"></div>
+
+              <button type="button" class="smallbutton noTouch pressureOkay" onClick="pressureOkay()">OK</button>
+
+            </h2>
+
+          </div>
+
+          <div class="rightsmallcontrolbox">
+
+            <h2 class="controlboxtitle noTouch">Vibrato and Slide
+
+              <button type="button" class="infocircle" onClick="modal(7)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+
+            <div class="slidecontainer2" id="pitchBendContainer">
+
+              <input type="range" min="-75" max="-10" value="-10" class="ranger" id="senseDistance" onChange="sendSenseDistance(value)">
+
+            </div>
+
+            <div class="pitchbendlabel noTouch">Finger-sensing distance</div>
+
+            <div class="slidecontainer2" id="depthContainer">
+
+              <input type="range" min="1" max="50" value="12" class="ranger" id="depth" onChange="sendDepth(value)">
+
+            </div>
+
+            <div class="depthlabel noTouch">Vibrato depth (cents)</div>
+
+            <div class="jumpvalues jumpvalue14">
+
+              <p><span id="demo14"></span></p>
+
+            </div>
+
+            <div class="bendrangelabel noTouch">MIDI Bend Range</div>
+
+            <div class="midiBendRangeContainer">
+
+              <input class="expressionInput" type="text" onChange="sendBendRange(value)" id="midiBendRange" value="2">
+
+            </div>
+
+            <div class="radiogroup3">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" value="0" name="pitchbendradio" id="pitchbendradio0" onChange="sendPitchbendRadio(value)" checked>
+
+                  <label for="pitchbendradio0"> <span><span></span></span>1. Slide and vibrato</label>
+
+                </div>
+
+                <div>
+
+                  <input type="radio" value="1" name="pitchbendradio" id="pitchbendradio1" onChange="sendPitchbendRadio(value)">
+
+                  <label for="pitchbendradio1"><span><span></span></span>2. Vibrato only</label>
+
+                </div>
+
+                <div>
+
+                  <input type="radio" value="2" name="pitchbendradio" id="pitchbendradio2" onChange="sendPitchbendRadio(value)">
+
+                  <label for="pitchbendradio2"><span><span></span></span>3. No pitch bend</label>
+
+                </div>
+
+                <div>
+
+                  <input type="radio" value="3" name="pitchbendradio" id="pitchbendradio3" onChange="sendPitchbendRadio(value)">
+
+                  <label for="pitchbendradio3"><span><span></span></span>4. Legato Slide and Vibrato</label>
+
+                </div>
+
+              </fieldset>
+
+            </div>
+
+            <div class="customLabel noTouch">Custom vibrato</div>
+            
+            <label class="switch" id="switch5">
+
+              <input type="checkbox" class="checkboxes" id="checkbox5" onChange="sendCustom(this.checked)" disabled>
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <div class="vibratoHolesLabel noTouch">Select vibrato holes:</div>
+
+            <div class="vibratoHolesLT noTouch">L thumb</div>
+
+            <div class="vibratoHolesBell noTouch">Bell</div>
+
+            <label class="vibratoSwitch vibratoHoles hole8" id="vibratoHole8">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox8" onChange="sendVibratoHoles(8, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole7" id="vibratoHole7">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox7" onChange="sendVibratoHoles(7, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole6" id="vibratoHole6">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox6" onChange="sendVibratoHoles(6, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole5" id="vibratoHole5">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox5" onChange="sendVibratoHoles(5, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole4" id="vibratoHole4">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox4" onChange="sendVibratoHoles(4, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole3" id="vibratoHole3">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox3" onChange="sendVibratoHoles(3, this.checked)" checked>
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole2" id="vibratoHole2">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox2" onChange="sendVibratoHoles(2, this.checked)" checked>
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole1" id="vibratoHole1">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox1" onChange="sendVibratoHoles(1, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+
+            <label class="vibratoSwitch vibratoHoles hole0" id="vibratoHole0">
+
+              <input type="checkbox" class="vibratoCheckboxes" id="vibratoCheckbox0" onChange="sendVibratoHoles(0, this.checked)">
+
+              <span class="vibratoSlider round"></span>
+
+            </label>
+            
+          </div>
+
+          <div class="rightsmallcontrolbox expressionBox">
+
+            <h2 class="controlboxtitle noTouch">Expression
+
+              <button type="button" class="infocircle" onClick="modal(12)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+
+            <div class="slidecontainer2" id="ExpressionDepthContainer">
+
+              <input type="range" min="1" max="8" value="3" class="ranger" id="expressionDepth" onChange="sendExpressionDepth(value)">
+
+            </div>
+
+            <div id="forceVelocityLabel" class="forceVelocityLabel noTouch">
+              Force max velocity
+            </div>
+
+            <div class="expressionDepthLabel noTouch">Pitch expression depth</div>
+
+            <div class="expressionLabel noTouch">Send pitch expression</div>
+
+            <div id="sendPressureLabel" class="sendPressureLabel noTouch">Send pressure as CC</div>
+
+            <div id="velocityLabel" class="sendVelocityLabel noTouch">Send pressure as Velocity</div>
+
+            <div id="aftertouchLabel" class="sendAftertouchLabel noTouch">Send pressure as Aftertouch</div>
+
+            <div id="polyAftertouchLabel" class="sendPolyAftertouchLabel noTouch">Poly</div>
+
+            <div class="expressionChannelLabel noTouch">Channel</div>
+
+            <div class="highByteLabel noTouch">CC</div>
+
+            <label class="switch" id="switch12">
+
+              <input type="checkbox" class="checkboxes" id="checkbox12" onChange="sendForceVelocity(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+            
+            <label class="switch" id="switch6">
+
+              <input type="checkbox" class="checkboxes" id="checkbox6" onChange="sendExpression(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <label class="switch" id="switch7">
+
+              <input type="checkbox" class="checkboxes" id="checkbox7" onChange="sendRawPressure(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <label class="switch" id="switch10">
+
+              <input type="checkbox" class="checkboxes" id="checkbox10" onChange="sendVelocity(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <label class="switch" id="switch11">
+
+              <input type="checkbox" class="checkboxes" id="checkbox11" onChange="sendAftertouch(this.checked, document.getElementById('checkbox13').checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <label class="switch" id="switch13">
+
+              <input type="checkbox" class="checkboxes" id="checkbox13" onChange="sendAftertouch(document.getElementById('checkbox11').checked, this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+
+            <div class="radiogroup7">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" value="0" name="curveRadio" id="curveRadio0" onChange="sendCurveRadio(value)" checked>
+
+                  <label for="curveRadio0"> <span><span></span></span>Linear &nbsp; </label>
+
+                </div>
+
+              </fieldset>
+
+            </div>
+
+            <div class="radiogroup8">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" value="1" name="curveRadio" id="curveRadio1" onChange="sendCurveRadio(value)">
+
+                  <label for="curveRadio1"> <span><span></span></span>Curve 2 &nbsp; </label>
+
+                </div>
+
+              </fieldset>
+
+            </div>
+
+            <div class="radiogroup9">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" checked value="2" name="curveRadio" id="curveRadio2" onChange="sendCurveRadio(value)">
+
+                  <label for="curveRadio2"> <span><span></span></span>Curve 3 &nbsp; </label>
+
+                </div>
+
+              </fieldset>
+
+            </div>
+
+            <div class="expressionChannelInputContainer">
+
+              <input class="expressionInput" type="text" onChange="sendPressureChannel(value)" id="pressureChannel" value="1">
+
+            </div>
+
+            <div class="expressionHighByteInputContainer">
+
+              <input class="expressionInput" type="text" onChange="sendPressureCC(value)" id="pressureCC" value="2">
+
+            </div>
+
+            <div class="maxMinContainer" id="slider"></div>
+
+            <div class="maxMinContainer2" id="slider2"></div>
+
+            <div class="rangeLabel noTouch">Input pressure range</div>
+
+            <div class="rangeLabel2 noTouch">Output range</div>
+            
+          </div>
+
+          <div class="leftsmallcontrolbox dronescontrolBox" id="box3">
+
+            <h2 class="controlboxtitle noTouch">Drones Control
+
+              <button type="button" class="infocircle" onClick="modal(13)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+
+            <div class="onCommandLabel noTouch">Drone on command</div>
+
+            <div class="droneChannelLabel noTouch">Channel<br />(1-16)</div>
+
+            <div class="droneByte2Label noTouch">Byte 2<br />(0-127)</div>
+
+            <div class="droneByte3Label noTouch">Byte 3<br />(0-127)</div>
+
+            <div class="droneOnContainer">
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="dronesOnCommand" onChange="sendDronesOnCommand(value)">
+                  <option  selected="selected" value="0">Note on</option>
+                  <option value="1">Note off</option>
+                  <option value="2">CC</option>
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="droneChannelInputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesOnChannel(value)" id="dronesOnChannel" value="">
+
+            </div>
+
+            <div class="droneByte2InputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesOnByte2(value)" id="dronesOnByte2" value="">
+
+            </div>
+
+            <div class="droneByte3InputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesOnByte3(value)" id="dronesOnByte3" value="">
+
+            </div>
+
+            <div class="offCommandLabel noTouch">Drone off command</div>
+
+            <div class="droneOffContainer">
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="dronesOffCommand" onChange="sendDronesOffCommand(value)">
+                  <option value="0">Note on</option>
+                  <option  selected="selected" value="1">Note off</option>
+                  <option value="2">CC</option>
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="droneOffChannelInputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesOffChannel(value)" id="dronesOffChannel" value="">
+
+            </div>
+
+            <div class="droneOffByte2InputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesOffByte2(value)" id="dronesOffByte2" value="">
+
+            </div>
+
+            <div class="droneOffByte3InputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesOffByte3(value)" id="dronesOffByte3" value="">
+
+            </div>
+
+            <div class="radiogroup5">
+
+              <fieldset>
+
+                <div>
+
+                  <input type="radio" value="0" name="dronesradio" id="dronesRadio0" onChange="sendDronesRadio(value)" checked>
+
+                  <label for="dronesRadio0"> <span><span></span></span>No drone control</label>
+
+                </div>
+                
+                <div>
+
+                  <input type="radio" value="1" name="dronesradio" id="dronesRadio1" onChange="sendDronesRadio(value)">
+
+                  <label for="dronesRadio1"><span><span></span></span>Use "secret" button</label>
+
+                </div>
+                
+                <div>
+
+                  <input type="radio" value="2" name="dronesradio" id="dronesRadio2" onChange="sendDronesRadio(value)">
+
+                  <label for="dronesRadio2"><span><span></span></span>Turn on/off with chanter</label>
+
+                </div>
+                
+              </fieldset>
+              
+            </div>
+            
+            <div class="radiogroup6">
+
+              <fieldset>
+                
+                <div>
+
+                  <input type="radio" value="3" name="dronesradio" id="dronesRadio3" onChange="sendDronesRadio(value)">
+
+                  <label for="dronesRadio3"><span><span></span></span>Use pressure:</label>
+
+                </div>
+
+              </fieldset>
+
+            </div>
+
+            <button type="button" class="smallbutton noTouch learnDrones" onClick="learnDrones()">Learn</button>
+
+            <div class="dronePressureInputContainer">
+
+              <input class="channelInput" type="text" onChange="sendDronesPressure(value)" id="dronesPressureInput" value="">
+
+            </div>
+
+            <div class="dronesPressureUnitsLabel noTouch">inH<sub>2</sub>0</div>
+
+          </div>
+
+          <div class="controlbox2">
+
+            <h2 class="controlboxtitle noTouch">Button Behavior
+
+              <button type="button" class="infocircle" onClick="modal(8)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+            
+            <div class="consoleLabel noTouch">MIDI console:</div>
+            
+            <div class="console noTouch" id="console"></div>
+            
+            <div class="secretLabel noTouch">Use "secret" button commands</div>
+            
+            <label class="switch" id="switch3">
+
+              <input type="checkbox" class="checkboxes" id="checkbox3" onChange="sendSecret(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+            
+            <div class="momentaryLabel noTouch">Momentary</div>
+            
+            <label class="switch" id="switch0">
+
+              <input type="checkbox" class="checkboxes" id="checkbox0" onChange="sendMomentary(0)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <label class="switch" id="switch1">
+
+              <input type="checkbox"  class="checkboxes" id="checkbox1" onChange="sendMomentary(1)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <label class="switch" id="switch2">
+
+              <input type="checkbox"  class="checkboxes" id="checkbox2" onChange="sendMomentary(2)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <div class="selectLabelContainer">
+
+              <div class="selectLabel noTouch">Click 1</div>
+
+              <div class="selectLabel noTouch">Click 2</div>
+
+              <div class="selectLabel noTouch">Click 3</div>
+
+              <div class="selectLabel noTouch">Hold 2, click 1</div>
+
+              <div class="selectLabel noTouch">Hold 2, click 3</div>
+
+              <div class="selectLabel noTouch">Long-press 1</div>
+
+              <div class="selectLabel noTouch">Long-press 2</div>
+
+              <div class="selectLabel noTouch">Long-press 3</div>
+
+            </div>
+
+            <div class="selectContainer">
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row0" onChange="sendRow(0)">
+                  <option value="0">none</option>
+                  <option selected="selected" value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row1" onChange="sendRow(1)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option selected="selected" value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row2" onChange="sendRow(2)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option selected="selected" value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row3" onChange="sendRow(3)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option selected="selected" value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row4" onChange="sendRow(4)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option selected="selected" value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row5" onChange="sendRow(5)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row6" onChange="sendRow(6)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select blue semi-square">
+
+                <select id="row7" onChange="sendRow(7)">
+                  <option value="0">none</option>
+                  <option value="1">Send MIDI message:</option>
+                  <option value="2">Change slide/vibrato mode</option>
+                  <option value="3">Change instrument</option>
+                  <option value="4">Play/stop (bagless mode)</option>
+                  <option value="5">Octave shift up</option>
+                  <option value="6">Octave shift down</option>
+                  <option value="10">Semitone shift up</option>
+                  <option value="11">Semitone shift down</option>
+                  <option value="7">MIDI Panic</option>
+                  <option value="8">Change register control mode</option>
+                  <option value="9">Turn drones on/off</option>
+                  <option value="19">Begin autocalibration</option>
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="messageContainer">
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow0" onChange="sendMIDIrow(0)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow1" onChange="sendMIDIrow(1)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow2" onChange="sendMIDIrow(2)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow3" onChange="sendMIDIrow(3)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow4" onChange="sendMIDIrow(4)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow5" onChange="sendMIDIrow(5)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow6" onChange="sendMIDIrow(6)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+              <div class="styled-select2 blue semi-square">
+
+                <select id="MIDIrow7" onChange="sendMIDIrow(7)">
+                  <option value="0">Note on/note off</option>
+                  <option value="1">CC</option>
+                  <option value="2">Send PC</option>
+                  <option value="3">Increase PC</option>
+                  <option value="4">Decrease PC</option>
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="channelLabel noTouch">Channel<br />(1-16)</div>
+
+            <div class="byte2Label noTouch">Byte 2<br />(0-127)</div>
+
+            <div class="byte3Label noTouch">Byte 3<br />(0-127)</div>
+
+            <div class="channelInputContainer">
+
+              <input class="channelInput" type="text" onChange="sendChannel(0)" id="channel0" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(1)" id="channel1" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(2)" id="channel2" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(3)" id="channel3" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(4)" id="channel4" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(5)" id="channel5" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(6)" id="channel6" value="">
+
+              <input class="channelInput" type="text" onChange="sendChannel(7)" id="channel7" value="">
+
+            </div>
+
+            <div class="byte2inputContainer">
+
+              <input class="channelInput" type="text" onChange="sendByte2(0)" id="byte2_0" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(1)" id="byte2_1" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(2)" id="byte2_2" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(3)" id="byte2_3" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(4)" id="byte2_4" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(5)" id="byte2_5" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(6)" id="byte2_6" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte2(7)" id="byte2_7" value="">
+
+            </div>
+
+            <div class="byte3inputContainer">
+
+              <input class="channelInput" type="text" onChange="sendByte3(0)" id="byte3_0" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(1)" id="byte3_1" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(2)" id="byte3_2" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(3)" id="byte3_3" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(4)" id="byte3_4" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(5)" id="byte3_5" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(6)" id="byte3_6" value="">
+
+              <input class="channelInput" type="text" onChange="sendByte3(7)" id="byte3_7" value="">
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="controlbox">
+
+        <h2 class="controlboxtitle noTouch">Optical Sensor Calibration
+
+          <button type="button" class="infocircle" onClick="modal(9)"><i class="fa fa-info-circle"></i></button>
+
+        </h2>
+
+        <div class="warblrect"></div>
+
+        <div class="mouthpiecerect"></div>
+
+        <div id="bellSensor" class="bellsensorrect"></div>
+        
+        <div id="dot0" class="bell-dot"></div>
+        
+        <div class="leddot" id="leddot"></div>
+
+        <div id="dot8" class="dots dot1"></div>
+
+        <div id="dot7"  class="dots dot2"></div>
+
+        <div id="dot6"  class="dots dot3"></div>
+
+        <div id="dot5"  class="dots dot4"></div>
+
+        <div id="dot4"  class="dots dot5"></div>
+
+        <div id="dot3"  class="dots dot6"></div>
+
+        <div id="dot2"   class="dots dot7"></div>
+
+        <div id="dot1"   class="dots dot8"></div>
+        
+        <button type="button" class="smallbutton noTouch submitcalibration" id="19" onClick="sendToWARBL(102,19)">Save calibration</button>
+
+        <button type="button" class="smallbutton noTouch autoCalibrate" id="autoCalibrate" onClick="autoCalibrate()">Auto-calibrate all sensors</button>
+
+        <button type="button" class="smallbutton noTouch autoCalibrateBell" id="autoCalibrateBell" onClick="autoCalibrateBell()">Auto-calibrate bell sensor only</button>
+        
+        <button type="button" class="toprowbuttons button b1" id="18" onClick="sendToWARBL(102,18)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b1" id="17" onClick="sendToWARBL(102,17)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b2" id="16" onClick="sendToWARBL(102,16)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b2" id="15" onClick="sendToWARBL(102,15)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b3" id="14" onClick="sendToWARBL(102,14)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b3" id="13" onClick="sendToWARBL(102,13)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b4" id="12" onClick="sendToWARBL(102,12)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b4" id="11" onClick="sendToWARBL(102,11)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b5" id="10" onClick="sendToWARBL(102,10)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b5" id="9" onClick="sendToWARBL(102,9)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b6" id="8" onClick="sendToWARBL(102,8)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b6" id="7" onClick="sendToWARBL(102,7)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b7" id="6" onClick="sendToWARBL(102,6)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b7" id="5" onClick="sendToWARBL(102,5)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b8" id="4" onClick="sendToWARBL(102,4)"><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b8" id="3" onClick="sendToWARBL(102,3)"><i class="fa fa-angle-down"></i></button>
+
+        <button type="button" class="toprowbuttons button b9" id="2" onClick="sendToWARBL(102,2)" disabled><i class="fa fa-angle-up"></i></button>
+
+        <button type="button" class="bottomrowbuttons button b9" id="1" onClick="sendToWARBL(102,1)" disabled><i class="fa fa-angle-down"></i></button>
+        
+        <div class="sensorvalue noTouch b1" id="v9">0</div>
+
+        <div class="sensorvalue noTouch b2" id="v8">0</div>
+
+        <div class="sensorvalue noTouch b3" id="v7">0</div>
+
+        <div class="sensorvalue noTouch b4" id="v6">0</div>
+
+        <div class="sensorvalue noTouch b5" id="v5">0</div>
+
+        <div class="sensorvalue noTouch b6" id="v4">0</div>
+
+        <div class="sensorvalue noTouch b7" id="v3">0</div>
+
+        <div class="sensorvalue noTouch b8" id="v2">0</div>
+
+        <div class="sensorvalue noTouch b9" id="v1">0</div>
+        
+      </div>
+    
+      <div id="importexport" class="importexportbox">
+
+        <h2 class="importexportboxtitle noTouch">Preset Import/Export
+          <button type="button" class="infocircle" onClick="modal(15)"><i class="fa fa-info-circle"></i></button>
+        </h2>        
+
+        <!-- <input type="file" name="importPreset" id="importPreset" class="warbl-preset-import" accept=".warbl" onChange="importPreset(this)">  -->
+
+        <label for="importPreset" class="importPreset">
+          Import Preset
+        </label>
+
+        <input id="importPreset" type="file" accept=".warbl" onChange="importPreset(this)" disabled/>
+
+        <button type="button" class="smallbutton noTouch importexportbutton" id="exportPreset" onClick="exportPreset()">Export Preset</button>
+
+      </div> 
+
+    </div>
+
+    <div id="open-modal2" onClick="" class="modal-window">
+
+      <div id="modal-center2">
+
+        <h1></h1>
+
+        <div>Save settings for this instrument?</div>
+
+        <div class="modal-footer">
+
+          <button type="submit" class="smallbutton noTouch okay" onClick="saveAsDefaults()">OK</button>
+
+          <button type="button" class="smallbutton noTouch cancel" onClick="modalclose(2)">Cancel</button>
+
+        </div>
+
+      </div>
+
+    </div>    
+    
+    <div id="open-modal3" onClick="" class="modal-window">
+
+      <div id="modal-center3">
+
+        <h1></h1>
+
+        <div>Apply these settings to all three instruments?</div>
+
+        <div class="modal-footer">
+
+          <button type="submit" class="smallbutton noTouch okay" onClick="saveAsDefaultsForAll()">OK</button>
+
+          <button type="button" class="smallbutton noTouch cancel" onClick="modalclose(3)">Cancel</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal4" onClick="" class="modal-window">
+
+      <div id="modal-center4">
+
+        <h1></h1>
+
+        <div>Are you sure you would like to restore all factory settings?</div>
+
+        <div class="modal-footer">
+
+          <button type="submit" class="smallbutton noTouch okay" onClick="restoreAll()">OK</button>
+
+          <button type="button" class="smallbutton noTouch cancel" onClick="modalclose(4)">Cancel</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal6" onClick="" class="modal-window">
+
+      <div id="modal-center6">
+
+        <h2 title="Close" onClick="modalclose(6)" class="modal-close">Close</h2>
+
+        <h1>Note Trigger and Register Control</h1>
+
+        <div>
+
+          <p>
+            You can play in a single register or choose from several options for controlling the register. 
+          </p>
+
+          <p>
+            Choosing <b>1. Single register</b> will allow you to use breath or bag pressure to start/stop notes, but will only allow access to one register. The pressure sensor can be used to mimic the way that whistles, flutes, and some bagpipes can be "overblown" to reach the second octave. To use this feature, select <b>2. Overblow</b>. For fingering patterns that don't use the left thumb, you can instead select <b>3. Thumb register</b> to allow you use that finger to control the register, which will be familiar to players of many woodwind instruments. To play the upper register, simply uncover the thumb hole. Finally, you can use the "bell" sensor to select the register by choosing <b>4. Bell register</b>. Uncovering the bell sensor (lifting it off your knee), will access the second register. The functionality for either of these two options can be reversed by turning on the <b>Invert thumb/bell</b> switch. Then covering the left thumb hole or covering the bell sensor will allow playing in the second register, depending on whether option 3 or 4 is selected. In the case of the thumb hole, this will be more familiar to players of instruments with a register key.
+          </p>
+          
+          <p>
+            Turning on <b>Bagless mode</b> will allow you to configure a button to start/stop the sound instead of using the pressure sensor. This will be similar to many electronic bagpipe chanters that don't use pressure sensing. If you choose you can still select one of the options for controlling the register when using bagless mode. <b>Note:</b> if you choose the bagless option you must also configure a button to <b>Play/stop (bagless mode)</b>.
+          </p>
+
+          <p>
+            The pressure sensor will normally be calibrated at startup, meaning that the pressure when you plug in the device will be used as a basepoint for determining the pressure level at which sound will be triggered. This is desirable if you are using breath to control the instrument. If you are using a bag with this setting, you will want to squeeze the bag when you plug WARBL in to "tell" it the pressure at which you want notes to begin playing. Alternatively, you can select <b>Learn or enter pressure</b> to use a different pressure. This is usually preferable if you are using a bag instead of breath, and you want to trigger notes at a higher pressure. You can squeeze the bag at the pressure that you would like to use for initial triggering of sound and then click <b>Learn</b>, which will cause WARBL to use the current pressure (as with all settings, you can save this pressure by saving the settings for the current instrument). After clicking <b>Learn</b>, the pressure input cell will flash green and the learned pressure will be displayed. You can also enter the desired pressure manually if you prefer. Simply type in a pressure between 0.0 and 24.0 (inches water) and hit return or enter. The input cell will momentarily turn green to indicate that the pressure setting was sent to WARBL.
+          </p>
+          
+          <p>
+            If you're using the <b>vented</b> mouthpiece with the small hole in the side, or other mouthpiece or bagpipe bag that allows some air to escape, you can turn on the <b>Vented mouthpiece</b> switch, which uses more sensitive settings for triggering notes and controlling the register in order to compensate for escaping air. The settings that determine how difficult it is to jump to the second register are customizable using the <b>Advanced</b> panel if desired (please see the help file within the advanced panel for information about these settings).
+          </p>
+          
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal7" onClick="" class="modal-window">
+
+      <div id="modal-center7">
+
+        <h2 title="Close" onClick="modalclose(7)" class="modal-close">Close</h2>
+
+        <h1>Vibrato and Slide</h1>
+
+        <div>
+          
+          <p>
+            WARBL mimics open-tone hole instruments by sensing the distance of your fingers from the holes and using this information to bend notes downward. It can detect your fingers a maximum of about 1 cm (~1/2") from the holes. You can reduce this distance using the slider if you don't want to have to remove your fingers as far from the holes to turn off the pitch bend. The downside is that you'll have less precision in bending notes.
+          </p>
+          
+          <p>
+            You can choose <b>1. Slide and vibrato</b>, <b>2. Vibrato only</b>, or <b>3. No pitch bend</b>. The way <b>slide</b> works is that lowering the finger over the highest uncovered hole will gradually flatten the current note down to the next lower note on the scale, much like on a real instrument. This can also allow you to approximate "half-holing" accidentals. Because of the nature of note transitions in MIDI, sliding between notes can sometimes result in a slight "popping" sound when the new note is triggered. This is quite apparent with some sounds like whistles and less so with other sounds like reed instruments. Whether you choose to use slide may depend partly on the MIDI host and sounds that you're using.
+          </p>
+
+          <p>
+            With <b>vibrato</b>, lowering fingers over any open holes (other than the "slide" hole, if you also have slide turned on) will gradually flatten the note down to the selected maximum vibrato depth. The pitch bend contributed by each hole is cumulative, meaning that lowering fingers over multiple holes simultaneously will flatten the note more than lowering just one finger. This gives control over the amount of vibrato, and can be used to simulate sliding even when "slide" isn't turned on. If a finger is covering a hole when a note is triggered and subsequently lifting that finger doesn't cause a different note to be triggered, then that finger will be available to use for vibrato. However, to enable that finger, you first must remove it completely, past where WARBL can first detect it. This is to prevent problems with closed fingering patterns. As an example of how this works, if you trigger a note, completely remove a finger (one that doesn't change the current note), and then place it back down, the resulting pitch will be lower than the originally triggered note because vibrato has been enabled. This is usually intuitive, but it's important to understand because in certain cases it might not be immediately apparent why the resulting pitch is lower than the original pitch.
+          </p>
+
+          <p>
+            You can select at the bottom of the panel which holes you'd like to have available for vibrato. If you normally only use a few fingers for vibrato, you may want to select only those holes, to prevent unwanted behavior.
+          </p>
+
+          <p>
+            <b>Custom vibrato</b> is a different vibrato option that is only available for some fingering patterns (currently tin whistle, uilleann pipes, GHB, and Northumbrian pipes). For <b>tin whistle and uilleann pipes</b>, the differences from normal vibrato are as follows: 1. Only the first and/or second fingers of the right hand are available for vibrato, depending on the fingering pattern (you cannot select vibrato holes if this option is turned on). 2. Vibrato is not cumulative, meaning that lowering more than one finger doesn't increase the vibrato depth. 3. If a vibrato hole is covered when a note is triggered, the note is immediately flattened (this is the major difference and may be more natural in certain circumstances). 4. When playing a back D with uilleann fingering, uncovering a vibrato hole actually lowers the pitch instead of raising it, which is how real pipes behave. For <b>GHB and Northumbrian pipes</b>, the custom vibrato is designed for closed fingering systems, and sharpens the note when finger R2 or R3 is raised from a closed fingering position (as opposed to the normal vibrato, where lowering a finger from an open position flattens a note).
+          </p>
+
+          <p>
+            Note that custom vibrato is not available when any unsupported fingering pattern has been chosen.
+          </p>
+          
+          <p>
+            <b>Note:</b> For MIDI host apps that allow you to choose the maximum pitch bend depth, you should choose 2 semitones as the maximum depth so that WARBL pitch bend will function as intended.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal8" onClick="" class="modal-window">
+
+      <div id="modal-center8">
+
+        <h2 title="Close" onClick="modalclose(8)" class="modal-close">Close</h2>
+
+        <h1>Button Behavior</h1>
+
+        <div>
+          
+          <p>
+            The three buttons can be programmed to perform different actions. This is useful for sending special commands to MIDI apps or customizing the ability to switch modes.
+          </p>
+          
+          <p>
+            If a button click is configured to send MIDI Note On/Note Off messages, the normal behavior is to alternate between sending Note On and Note Off messages each time the button is "clicked" (the action actually occurs when the button is released). There is also the option to choose <b>momentary</b> behavior, meaning that the button will send a Note On message when pressed and a Note Off message when released. This is useful if you only want a note to be on when the button is held down, for example for mimicking uilleann pipe regulators. Note: If <b>momentary</b> is selected, other actions using that same button will be disabled, because it's not possible to differentiate other intentions from a momentary press.
+          </p>
+          
+          <p>
+            If you are sending Note On/Note Off messages, <b>byte 2</b> is the MIDI note number, and <b>byte 3</b> is velocity. If you are sending CC messages, <b>byte 2</b> is the CC number and <b>byte 3</b> is the value.
+          </p>
+          
+          <p>
+            Please note that CC messages 102-119 on channel 7 are reserved for the Configuration Tool, so WARBL cannot be programmed to send additional messages in this range.
+          </p>
+
+          <p>
+            Selecting <b>Send PC</b> will send a Program Change message to the selected channel. This would be useful, for example, to select a particular instrument in a MIDI host app. <b>Increase PC</b> and <b>Decrease PC</b> are different in that they assume a Program Change value of 1 when WARBl is started, and then increase or decrease it from there. For example, clicking a button assigned to <b>Increase PC</b> after starting WARBL will send a PC message of 2 on the selected channel. These commands are useful for consecutively stepping through the available sounds in a MIDI app.
+          </p>
+          
+          <p>
+            The <b>momentary</b> switches can also be used when you have selected <b>Octave shift up</b>, <b>Octave shift down</b>, <b>Semitone shift up</b>, or <b>semitone shift down</b>. This allows you to use a button to momentarily shift the octave or key, extending the range of the instrument and allowing any button to act as a "key" for sharpening or flattening a note.
+          </p>
+          
+          <p>
+            A button can be assigned to <b>begin autocalibration</b>. This can be useful if you anticipate needing to autocalibrate when you don't have access to the Configuration Tool. However, you'll want to use a button combination that can't be triggered accidentally, for example holding button 2 and clicking either button 1 or button 3. Also, when you begin autocalibration with a button combination, you need to be careful not to cover any of the sensors while pressing the buttons, because if you are pressing firmly on the sensors when autocalibration begins it will give WARBL incorrect examples of covered sensors.
+          </p>
+          
+          <p>
+            The "secret" button commands are a few additional hard-coded actions that involve covering certain tone holes while clicking button 1. These can be useful if normal button actions are used for other functions. They give you an alternative way of changing slide/vibrato mode and instrument. With the “secret” commands turned on, covering only hole L3 while pressing button 1 will change the slide/vibrato mode, and covering only R3 while pressing button 1 will change the instrument. Note that the <b>Use "secret" button commands</b> switch does not have to be on to use the "secret" drone control button, if that option is selected in the Drone Control panel.
+          </p>
+           
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal9" onClick="" class="modal-window">
+
+      <div id="modal-center9">
+
+        <h2 title="Close" onClick="modalclose(9)" class="modal-close">Close</h2>
+
+        <h1>Optical Sensor Calibration</h1>
+
+        <div>
+
+          <p>
+            The optical sensors may occasionally need to be calibrated, for example when the device is new, if a new person is playing the device, or the sensors are a bit dirty. Calibration can also be used in a pinch to compensate for having dirty hands, but it's easier to wash your hands...
+          </p>
+
+          <p>
+            If the calibration is far off or you want to calibrate quickly, you can run <b>auto-calibration</b>. Begin by holding WARBL in a well-lit room (but not direct sunlight) in such a way that no tone holes are covered (important because it gives WARBL examples of raw sensor readings) and then click <b>Begin auto-calibration</b>. The LED on WARBL will turn on and then you'll have ten seconds to lightly place your fingers over all the tone holes. Pressing harder on each tone hole will make it more difficult to "cover" after auto-calibration. After this the calibration should be reasonably close. Note that the bell sensor will only be calibrated if it is currently plugged in. If this is the case, rest the bell sensor on whatever surface you intend to use with it while also covering the tone holes with your fingers. Note that auto-calibration is always saved immediately; it is not necessary to click <b>Save calibration</b> afterward.
+          </p>
+          
+          <p>
+            You also have the option of auto-calibrating only the bell sensor. This is useful because the sensor may respond differently depending on the type of clothing you're wearing. To do this, hold WARBL up in the air so the sensor is completely uncovered, click <b>Auto-calibrate bell sensor only</b>, and then lower the sensor onto your knee. After five seconds, the LED with turn off and the sensor will be calibrated.
+          </p>
+          
+          <p>
+            After auto-calibration or for more frequent adjustments, you can just fine-tune each sensor individually. Clicking the up arrow will make it easier to "cover" the tone hole, while clicking the down arrow will make it more difficult. Note that when you plug in WARBL, values for each sensor will always read zero, and any changes will be relative to the current calibration. Changes to individual sensors will take place immediately so you can test them as you are changing them, but you must click <b>Save calibration</b> for the changes to be saved. Otherwise the calibration will be reset when WARBL is unplugged.
+          </p>
+          
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal10" onClick="" class="modal-window">
+
+      <div id="modal-center10">
+
+        <h2 title="Close" onClick="modalclose(10)" class="modal-close">Close</h2>
+
+        <h1>WARBL Configuration Tool</h1>
+
+        <div>
+
+          <p>
+            The Configuration Tool connects to WARBL using MIDI protocol to let you control settings. 
+          </p>
+
+          <p>
+            It is necessary to use a browser that supports Web MIDI, which currently includes Chrome and Opera on Windows, Mac, Linux, Chromebook, or Android. You can also use Firefox or Safari on Mac if you install the WEB MIDI extension. Safari on iOS unfortunately does not yet support Web MIDI, but on iOS devices you can use the free WARBL app, generously made by Michael Eskin of Appcordions. You can also use the free Web MIDI Browser app. For the latter, navigate to this page within the app, and select "Enable SYSEX" in the settings. You may also want to bookmark this page for later use.
+          </p>
+          
+          <p>
+            The Configuration Tool will try to connect to WARBL if WARBL is already plugged in when the page is loaded, or you can click "Connect to WARBL" if it hasn't connected automatically. Once it has connected, it should show your firmware version in the upper right corner, and it will tell you if there is a firmware update available (see section 8 in the User Manual for updating the firmware). <b>NOTE:</b> If your firmware is not up to date, you will be able to use the Configuration Tool normally, but some options may be disabled (shown in gray).
+          </p>
+          
+          <p>
+            WARBL has three <b>"instruments"</b> available for use at any time. Each instrument consists of a fingering pattern and a set of associated settings. You can select different fingering patterns for each instrument, or you can select the same fingering pattern for more than one instrument. For example, if you only want to use tin whistle fingering, you can select that option for all three instruments, but still have three different sets of settings available at any time. You may want to have the buttons configured differently for each instrument, for example, or have different register control and/or slide/vibrato settings.
+          </p>
+
+          <p>
+            Selecting the tab for each instrument allows you to change the settings for that instrument. You can apply changes to settings to the current instrument, or you can choose to apply them to all three instruments. This can be useful if you want to make three instruments that are the same except for minor differences (which can be changed after applying the initial settings to all three instruments). You can also restore the original factory settings. Please note that WARBL responds immediately to changes to settings, but if you don't save them, those changes will be lost when you unplug WARBL.
+          </p>
+
+          <p>
+            Beginning with firmware V. 1.7, you can set the <b>"Default instrument"</b> that will be active when WARBL is plugged in. This prevents having to click a button to switch instruments if your current favorite instrument is not instrument 1. To set the default instrument, simply click the tab for that instrument and then click <b>"Set as Default".</b>  This change will be saved immediately.
+          </p>
+
+          <p>
+            The Configuration Tool can produce simple square wave sounds if you click the volume icon in the upper-left corner. The sound will not respond to pitch-bend commands or CC messages, but can be useful for testing basic settings. It's also possible to have other MIDI apps running at the same time as the Configuration Tool, which is preferable and will give you higher-quality sound.
+          </p>
+
+          <p>
+            <b>NOTE:</b> The optical sensor calibration is separate from all other settings, and does not change depending on which instrument is selected. However, restoring factory settings will also restore the initial "factory" calibration.
+          </p>
+          
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="open-modal11" onClick="" class="modal-window">
+
+      <div id="modal-center11">
+
+        <h2 title="Close" onClick="modalclose(11)" class="modal-close">Close</h2>
+
+        <h1>Advanced Register Control Settings</h1>
+
+        <div>
+          
+          <p>
+            These settings control the way that the register is changed by "overblowing". Each variable below has a setting for the <b>"closed"</b> mouthpiece (or bag) and one for the <b>"vented"</b> mouthpiece (or bag setup that allows some air to escape).
+            The variables that are most likely to need adjustment are located near the top. Clicking the <b>Breath defaults</b> button will restore the default breath settings for all variables in the panel, and clicking the <b>Bag defaults</b> button will restore the default settings for a bagpipe bag. Units are not shown because the units are arbitrary for many of these variables.
+          </p>
+
+          <p>
+            <b>Threshold</b> represents how much pressure is required to move from the first register to the second register. If you are using a bag, increasing this variable to around 50 or higher can give you better register control.
+          </p>
+
+          <p>
+            With wind instruments that respond to overblowing, it typically requires more pressure to move to the second register from higher notes in the scale than it does from lower notes in the scale. The <b>Multiplier</b> setting controls how pronounced this difference is. Again, increasing this setting can give you better control over the register, especially if using a bag, but will also increase the pressure required to reach the second register, from higher notes in the scale in particular.
+          </p>
+
+          <p>
+            <b>Note:</b> Setting both <b>Threshold</b> and <b>Multiplier</b> too high can make it impossible to reach the highest notes in the second register because the pressure sensor is saturated, i.e. it has reached the highest pressure it can detect. If you find that cannot reach the highest notes in the second register, try reducing one or both of these settings slightly.
+          </p>
+
+          <p>
+            WARBL has the ability to jump directly from silence to the second register by detecting a rapid increase in pressure. Thus, by blowing forcefully, you can begin playing in the second register without passing through the first register. Similarly, by cutting off air pressure suddenly, you can drop directly from the second register to silence, without playing a passing tone in the first register. The <b>Jump</b> setting controls how difficult it is to move directly to the second register, and the <b>Drop</b> controls how difficult it is to drop directly from the second register to silence. You can increase these variables if you find you are "jumping" or "dropping" inadvertently, or decrease them if you are unable to move up or down between silence and the second register.
+            <p>
+              After a <b>"jump"</b> or <b>"drop"</b> occurs because of rapidly changing pressure, WARBL waits for a small amount of time before allowing another state change. This is to prevent rapid oscillations while the pressure stabilizes. <b>Jump time</b> is the amount of time (in milliseconds) that WARBL waits before allowing dropping back down to the first register after jumping directly to the second one. Decreasing it can allow faster response time if you want to be able to drop immediately down to the first register, but can also cause unwanted drops because the pressure hasn't had a chance to stabilize. Similarly, setting <b>Drop time</b> too low can cause a note to come back on immediately after dropping from the second register to silence. These two variables typically won't need to be adjusted.
+            </p>
+            
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="open-modal12" onClick="" class="modal-window">
+
+        <div id="modal-center12">
+
+          <h2 title="Close" onClick="modalclose(12)" class="modal-close">Close</h2>
+
+          <h1>Expression</h1>
+
+          <div>
+
+            <p>
+              Turning on the <b>Force Max Velocity</b> switch will cause WARBL to always send notes with a velocity of 127 (the maximum allowed), which will allow maximum volume from MIDI apps. Some more sophisticated apps interpret high velocity in ways that also affect the timbre of notes, or various other effects. If this is the case, you may want to uncheck this switch, which will cause WARBL to send notes with a velocity of 64 (the middle of the allowed range). The switch has no effect if the <b>"Send Pressure as Velocity"</b> (below) is selected.
+            </p>
+
+            <p>
+              Turning on the <b>Send expression as pitch bend</b> switch will cause WARBL to send pitch bend messages based on pressure. This means that for a given note, blowing (or squeezing a bag) gently will cause the note to play slightly flat, while blowing with excess force will cause it to be slightly sharp. This is meant to simulate the way that pressure is used to fine-tune the pitch of real instruments, and can make WARBL sound more lifelike. The <b>Expression depth</b> slider controls the amount of pitch bend. The pitch bend is added to any that is contributed by vibrato and slide, so they can all be used simultaneously.
+            </p>
+
+            <p>
+              WARBL also has the ability to map pressure sensor values to a MIDI Continuous Controller (CC) note-on velocity, and/or aftertouch (channel pressure), allowing it to function as a MIDI breath controller. An example would be to send pressure data to CC 7 to control the volume of notes with pressure. The input pressure range can be mapped to the output CC range using one of three curves: linear, a power curve (curve 2), or an inverse power curve (curve 3). Please see the user manual for diagrams of these curves. Note that you can select a channel for sending CC messages, but the channel selection will be ignored for note-on velocity, because velocity is always sent on channel 1. Typically you would use channel 1 for all three options. The <b>"Send Pressure as Velocity"</b> option overrides the <b>"Force Max Velocity"</b> switch (above).
+            </p>
+            
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="open-modal13" onClick="" class="modal-window">
+
+        <div id="modal-center13">
+
+          <h2 title="Close" onClick="modalclose(13)" class="modal-close">Close</h2>
+
+          <h1>Drones Control</h1>
+
+          <div>
+
+            <p>
+              WARBL makes it possible to control drones in MIDI bagpipe host apps by assigning commands for turning the drones on and off, and then choosing from a few methods for sending those commands. You can choose to send either Note On, Note Off, or CC messages, assigning the channel, byte 2, and byte 3. For Note On and Note Off messages, byte 2 is a MIDI note number and byte 3 is velocity. For CC messages, byte 2 is the CC number and byte 3 is the value.
+            </p>
+            
+            <p>
+              The commands used for turning drones on and off will depend on the MIDI host app. For example, the Celtic Sounds app uses a Note On command both for turning drones on and turning them off. In some apps such as Universal Piper, you can choose which command you'll use to control the drones.
+            </p>
+
+            <p>
+              Choosing <b>Use secret button</b> will allow you to turn the drones on and off by pressing button 1 while covering the right-hand index-finger hole.
+            </p>
+
+            <p>
+              Choosing <b>Turn on/off with chanter</b> will cause the drones to be on whenever the chanter is playing. This will be true no matter how you control the chanter, so will work in <b>bagless mode</b> as well as using the pressure sensor.
+            </p>
+
+            <p>
+              Selecting <b>Pressure</b> will turn the drones on and off at a given pressure threshold, so, for example, you can mimic real bagpipes by having the drones come on at a baseline pressure and the chanter come on at a higher pressure. You can either <b>"learn"</b> the pressure or enter it manually, as with the note trigger pressure.
+            </p>
+            
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="open-modal14" onClick="" class="modal-window">
+
+        <div id="modal-center14">
+
+          <h1></h1>
+
+          <div id="modal14-title"></div>
+
+          <div class="modal-footer">
+
+            <button type="button" id="modal14-ok" class="smallbutton noTouch okaySingle" onClick="modalclose(14)">OK</button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="open-modal15" onClick="" class="modal-window">
+
+        <div id="modal-center15">
+
+          <h2 title="Close" onClick="modalclose(15)" class="modal-close">Close</h2>
+
+          <h1>Preset Import/Export</h1>
+
+          <div>
+
+            <p>
+              Use the Preset Import and Export button to exchange your WARBL instrument settings with other users or to archive an instrument setting for later import back into the WARBL Configuration Tool.
+            </p>
+
+            <p>
+              These features are only available when the WARBL is connected.
+            </p>
+
+            <p>
+              WARBL settings for the currently selected instrument may be exported to a file using the <b>Export Preset</b> button. 
+            </p>
+
+            <p>
+              The exported file will be named "WARBL_Preset.warbl" and can be found in the "Downloads" directory on your computer. If there is already an existing export file in that directory, Chrome will save the file with incrementing numbers after the "WARBL_Preset" name.
+            </p>
+            
+            <p>
+              To load an existing WARBL preset file into the current instrument tab, click the <b>Import Preset</b> file selector button. 
+            </p>
+
+            <p>Select a .warbl settings file from your computer to import. The imported data will be loaded into your WARBL, but not saved permanently to allow you to make additional changes if desired.  
+            </p>
+
+            <p>
+              To permanently save the settings for the current instrument in your WARBL, click the "Save settings for the current instrument" button at the top of the screen.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div id="open-modal16" onClick="" class="modal-window">
+
+        <div id="modal-center16">
+
+          <h2 title="Close" onClick="modalclose(16)" class="modal-close">Close</h2>
+
+          <h1>Pressure Graph</h1>
+
+          <div>
+
+            <p>
+              Use the pressure graph to view the WARBL pressure sensor readings in inches of H2O over time.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </body>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous">
+    </script>
+    
+    <script src="js/nouislider.js"></script>
+
+    <script>
+
+      var slider = document.getElementById('slider');
+        noUiSlider.create(slider, {
+        start: [1, 100],
+        step: 1,
+        connect: true,
+        range: {
+        'min': 1,
+        'max': 100
+        }
+      });
+
+    </script>
+    
+    <script>
+
+      var slider2 = document.getElementById('slider2');
+        noUiSlider.create(slider2, {
+        start: [1, 127],
+        step: 1,
+        connect: true,
+        range: {
+        'min': 1,
+        'max': 127
+        }
+      });
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/webmidi"></script>
+
+    <script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
+    
+    <script src='https://surikov.github.io/webaudiofontdata/sound/0650_SBLive_sf2.js'></script>
+    
+    <script src="js/midi.js"></script>
+
+    <script src="js/d3.min.js"></script>
+
+  </html>
