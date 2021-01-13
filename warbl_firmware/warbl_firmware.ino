@@ -33,7 +33,7 @@
 
 #define MAXIMUM  (DEBOUNCE_TIME * SAMPLE_FREQUENCY) //the integrator value required to register a button press
 
-#define VERSION 18 //software version number (without decimal point)
+#define VERSION 19 //software version number (without decimal point)
 
 //MIDI commands
 #define NOTE_OFF 0x80 //127
