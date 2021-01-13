@@ -1499,9 +1499,12 @@ void saveFactorySettings()
 
     blinkNumber = 3;
 
-    for (int i = 40; i < 326; i++) { //then we read every byte in EEPROM from 40 to 325
+    // unfortunately there is no space with this layout to cover a few of the newly added parameters, unless
+    // we change the factory backup locations... TODO
+
+    for (int i = 40; i < 320; i++) { //then we read every byte in EEPROM from 40 to 319
         byte reading = EEPROM.read(i);
-        EEPROM.update(400 + i, reading); //and rewrite them from 440 to 725. Then they'll be available to easily restore later if necessary.
+        EEPROM.update(400 + i, reading); //and rewrite them from 440 to 719. Then they'll be available to easily restore later if necessary.
     }
 
     for (int i = 741; i < 804; i++) { //then we do the same for the expression and drones variables
@@ -1521,10 +1524,10 @@ void saveFactorySettings()
 void restoreFactorySettings()
 {
     byte reading;
-    for (int i = 440; i < 726; i++) { //then we read every byte in EEPROM from 440 to 725
+    for (int i = 440; i < 720; i++) { //then we read every byte in EEPROM from 440 to 720
         reading = EEPROM.read(i);
         EEPROM.update(i - 400, reading);
-    } //and rewrite them from 40 to 325.
+    } //and rewrite them from 40 to 319.
 
     for (int i = 804; i < 867; i++) { //then the same for expression and drones settings.
         reading = EEPROM.read(i);
