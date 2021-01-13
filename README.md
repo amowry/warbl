@@ -25,27 +25,27 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 * Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
 
-      `C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12` 
+  `C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12` 
 
-      I use the free NotePad++ app to edit this. First, change lines 296 and 297 to these to use the WARBL USB VID and PID:
+    I use the free NotePad++ app to edit this. First, change lines 296 and 297 to these to use the WARBL USB VID and PID:
 
-          itsybitsy32u4_3V.build.vid=0x04D8
+       itsybitsy32u4_3V.build.vid=0x04D8
   
-          itsybitsy32u4_3V.build.pid=0xEE87
+       itsybitsy32u4_3V.build.pid=0xEE87
   
-      Next, make the same changes to lines 311 and 312:
+    Next, make the same changes to lines 311 and 312:
   
-          itsybitsy32u4_3V.vid.0=0x04D8
+       itsybitsy32u4_3V.vid.0=0x04D8
   
-          itsybitsy32u4_3V.pid.0=0xEE87
+       itsybitsy32u4_3V.pid.0=0xEE87
  
-      Then change the product name on line 301:
+    Then change the product name on line 301:
   
-          itsybitsy32u4_3V.build.usb_product="WARBL"
+       itsybitsy32u4_3V.build.usb_product="WARBL"
   
-      And finally the manufacturer on line 302:
+    And finally the manufacturer on line 302:
   
-          itsybitsy32u4_3V.build.usb_manufacturer="Mowry Stringed Instruments"
+       itsybitsy32u4_3V.build.usb_manufacturer="Mowry Stringed Instruments"
 
 
 
