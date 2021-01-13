@@ -321,7 +321,12 @@ function MIDIMessageEventHandler(event) {
 						updateCustom();
 						updateCustom();
 					}
-
+					if (event.data[2] == 73) {
+					    document.getElementById("pitchbendradio3").checked = true;
+					    updateCustom();
+					    updateCustom();
+					}
+ 
 					if (event.data[2] == 80) {
 						document.getElementById("sensorradio0").checked = true;
 					}
@@ -495,11 +500,18 @@ function MIDIMessageEventHandler(event) {
 						document.getElementById("checkbox10").checked = event.data[2];
 					} //velocity	
 					else if (jumpFactorWrite == 46) {
-						document.getElementById("checkbox11").checked = event.data[2];
+						document.getElementById("checkbox11").checked = (event.data[2] & 0x1);
+						document.getElementById("checkbox13").checked = (event.data[2] & 0x2);
 					} //aftertouch	
 					else if (jumpFactorWrite == 47) {
 						document.getElementById("checkbox12").checked = event.data[2];
 					} //force max velocity	
+					else if (jumpFactorWrite == 61) {
+					    document.getElementById("midiBendRange").value = event.data[2];
+					}
+					else if (jumpFactorWrite == 62) {
+					    document.getElementById("noteChannel").value = event.data[2];
+					}
 
 
 				}
@@ -970,9 +982,15 @@ function sendCurveRadio(selection) {
 
 function sendPressureChannel(selection) {
 	blink(1);
-	selection = parseFloat(selection);
-	send(104, 17);
-	send(105, selection);
+	
+	var x = parseFloat(selection);
+	if (x < 1 || x > 16 || isNaN(x)) {
+	    alert("Value must be 1-16.");
+	    document.getElementById("pressureChannel").value = null;
+	} else {
+	    send(104, 17);
+	    send(105, x);
+	}
 }
 
 function sendPressureCC(selection) {
@@ -981,6 +999,31 @@ function sendPressureCC(selection) {
 	send(104, 18);
 	send(105, selection);
 }
+
+function sendBendRange(selection) {
+    blink(1);
+    var x = parseFloat(selection);
+    if (x < 1 || x > 96 || isNaN(x)) {
+        alert("Value must be 1-96.");
+        document.getElementById("midiBendRange").value = null;
+    } else {
+        send(104, 61);
+        send(105, x);
+    }
+}
+
+function sendNoteChannel(selection) {
+       blink(1);
+       var x = parseFloat(selection);
+       if (x < 1 || x > 16 || isNaN(x)) {
+               alert("Value must be 1-16.");
+               document.getElementById("noteChannel").value = null;
+       } else {
+               sendToWARBL(104, 62);
+               sendToWARBL(105, x);
+       }
+}
+
 
 
 //pressure input slider
@@ -1455,11 +1498,12 @@ function sendVelocity(selection) {
 	updateCells();
 }
 
-function sendAftertouch(selection) {
+function sendAftertouch(selection, polyselection) {
 	selection = +selection; //convert true/false to 1/0
+	var val = selection | ((+polyselection) << 1);
 	blink(1);
 	send(104, 46);
-	send(105, selection);
+	send(105, val);
 }
 
 function sendForceVelocity(selection) {

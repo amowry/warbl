@@ -1200,7 +1200,7 @@ input:disabled + .vibratoSlider:before {
 }
 
 #switch5 {
-	top: 220px;
+	top: 238px;
 	left: 365px;
 }
 
@@ -1236,7 +1236,7 @@ input:disabled + .vibratoSlider:before {
 	display: block;
 	position: absolute;
 	left: 258px;
-	top: 222px;
+	top: 242px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1766,14 +1766,14 @@ h2 {
 
 .jumpvalue14 {
 	left: 195px;
-	top: 205px;
+	top: 165px;
 }
 
 #pitchBendContainer {
 	display: block;
 	position: absolute;
 	left: 40px;
-	top: 125px;
+	top: 115px;
 	z-index: 99;
 }
 
@@ -1790,7 +1790,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 40px;
-	top: 220px;
+	top: 180px;
 	z-index: 99;
 }
 
@@ -1798,9 +1798,25 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 55px;
-	top: 185px;
+	top: 155px;
 	z-index: 99;
 	font-size: 14px;
+}
+
+.bendrangelabel {
+	display: block;
+	position: absolute;
+	left: 60px;
+	top: 220px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.midiBendRangeContainer {
+	display: block;
+	position: absolute;
+	left: 90px;
+	top: 242px;
 }
 
 #switch12 {
@@ -1838,8 +1854,8 @@ h2 {
 .expressionLabel {
 	display: block;
 	position: absolute;
-	width: 110px;
-	left: 40px;
+	width: 140px;
+	left: 10px;
 	top: 108px;
 	z-index: 99;
 	font-size: 14px;
@@ -1877,6 +1893,16 @@ h2 {
 	font-size: 14px;
 }
 
+.sendPolyAftertouchLabel {
+	display: block;
+	position: absolute;
+	left: 290px;
+	top: 228px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+
 #switch7 {
 	top: 165px;
 	left: 218px;
@@ -1891,6 +1917,12 @@ h2 {
 	top: 225px;
 	left: 218px;
 }
+
+#switch13 {
+	top: 225px;
+	left: 330px;
+}
+
 
 .expressionChannelLabel {
 	display: block;
@@ -2345,6 +2377,24 @@ input[type=range]::-moz-range-track {
 	width: 268px;
 	cursor: pointer;
 }
+
+.notechannellabel {
+	display: block;
+	position: absolute;
+	left: 60px;
+	top: 364px;
+	width: 100px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.noteChannelContainer {
+	display: block;
+	position: absolute;
+	left: 170px;
+	top: 360px;
+}
+
 
 .styled-select2 {
 	position: relative;

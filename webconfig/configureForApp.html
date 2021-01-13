@@ -263,6 +263,15 @@
             </div>
 
           </div>
+
+          <div class="notechannellabel noTouch">Note Channel</div>
+
+          <div class="noteChannelContainer">
+
+            <input class="channelInput" type="text" onChange="sendNoteChannel(value)" id="noteChannel" value="1">
+
+          </div>
+                 
           
           <div class="fingeringRadio">
 
@@ -664,6 +673,16 @@
 
             </div>
 
+            <div class="bendrangelabel noTouch">MIDI Bend Range</div>
+
+            <div class="midiBendRangeContainer">
+
+              <input class="expressionInput" type="text" onChange="sendBendRange(value)" id="midiBendRange" value="2">
+
+            </div>
+
+
+
             <div class="radiogroup3">
 
               <fieldset>
@@ -691,6 +710,15 @@
                   <label for="pitchbendradio2"><span><span></span></span>3. No pitch bend</label>
 
                 </div>
+
+                <div>
+
+                  <input type="radio" value="3" name="pitchbendradio" id="pitchbendradio3" onChange="sendPitchbendRadio(value)">
+
+                  <label for="pitchbendradio3"><span><span></span></span>4. Legato Slide and Vibrato</label>
+
+                </div>
+
 
               </fieldset>
 
@@ -804,15 +832,17 @@
               Force max velocity
             </div>
 
-            <div class="expressionDepthLabel noTouch">Expression depth</div>
+            <div class="expressionDepthLabel noTouch">Pitch expression depth</div>
 
-            <div class="expressionLabel noTouch">Send expression</div>
+            <div class="expressionLabel noTouch">Send pitch expression</div>
 
             <div id="sendPressureLabel" class="sendPressureLabel noTouch">Send pressure as CC</div>
 
             <div id="velocityLabel" class="sendVelocityLabel noTouch">Send pressure as Velocity</div>
 
             <div id="aftertouchLabel" class="sendAftertouchLabel noTouch">Send pressure as Aftertouch</div>
+
+            <div id="polyAftertouchLabel" class="sendPolyAftertouchLabel noTouch">Poly</div>
 
             <div class="expressionChannelLabel noTouch">Channel</div>
 
@@ -852,11 +882,21 @@
 
             <label class="switch" id="switch11">
 
-              <input type="checkbox" class="checkboxes" id="checkbox11" onChange="sendAftertouch(this.checked)">
+              <input type="checkbox" class="checkboxes" id="checkbox11" onChange="sendAftertouch(this.checked, document.getElementById('checkbox13').checked)">
 
               <span class="slider round"></span>
 
             </label>
+
+            <label class="switch" id="switch13">
+
+              <input type="checkbox" class="checkboxes" id="checkbox13" onChange="sendAftertouch(document.getElementById('checkbox11').checked, this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+
 
             <div class="radiogroup7">
 
