@@ -399,6 +399,13 @@ void setup()
 
     //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
+    if (EEPROM.read(1012) != 3) { //if EEPROM locations haven't been updated for v. 1.9 or greater, copy the baseline sensor calibrations to their new locations.
+        for (byte i = 0; i < 11; i++) {
+            EEPROM.update(500 + i, EEPROM.read(720 + i));
+            EEPROM.update(1000 + i, EEPROM.read(720 + i));
+        }
+        EEPROM.update(1012,3);
+    }
 
     if (EEPROM.read(1011) != VERSION) { //if a new software version has been loaded, update newer settings
         EEPROM.update(1011, VERSION); //update the stored software version
@@ -551,8 +558,6 @@ void loop()
             //This is a good place to send occasional debug info.
             //for (byte i = 0; i < 9; i++) {
             //Serial.println((EEPROM.read(44)));
-
-            //}
             //Serial.println(EEPROM.read(63));
             //Serial.println(EEPROM.read(71));
             //Serial.println(EEPROM.read(76));
