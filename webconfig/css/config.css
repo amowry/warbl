@@ -439,6 +439,13 @@ input[type=radio]:not(old) + label > span {
 	vertical-align: bottom;
 }
 
+/*the outer circle*/
+input[type=radio][disabled]:not(old) + label > span {
+	background: var(--disabled-bg-color);
+	border: solid 2px var(--disabled-bg-color);
+	cursor: default;
+}
+
 /*the checkmark*/
 input[type=radio]:not(old):checked + label > span > span {
 	display: block;
@@ -585,7 +592,7 @@ fieldset {
 	margin-bottom: 30px;
 	display: block;
 	clear: both;
-	height: 1695px;
+	height: 1765px;
 	border-radius: 5px;
 }
 
@@ -605,7 +612,7 @@ fieldset {
 	padding-bottom: 50px;
 	margin-bottom: 50px;
 	display: block;
-	top: 1300px;
+	top: 1370px;
 	left: 30px;
 	height: 360px;
 	width: 960px;
@@ -631,7 +638,7 @@ fieldset {
 	padding-top: 0px;
 	padding-bottom: 50px;
 	width: 463px;
-	height: 335px;
+	height: 375px;
 	float: right;
 	position: absolute;
 	left: 527px;
@@ -649,7 +656,7 @@ fieldset {
 	color: var(--text-color);
 	padding-bottom: 50px;
 	width: 463px;
-	height: 335px;
+	height: 375px;
 	position: absolute;
 	top: 420px;
 	left: 30px;
@@ -661,13 +668,13 @@ fieldset {
 }
 
 .dronescontrolBox {
-	top: 840px;
-	height: 375px;
+	top: 880px;
+	height: 405px;
 }
 
 .expressionBox {
-	top: 840px;
-	height: 375px;
+	top: 880px;
+	height: 405px;
 }
 
 #box1 {
@@ -676,6 +683,7 @@ fieldset {
 #box2 {
 	display: none;
 }
+
 
 #pressuregraph {
 	display: none;
@@ -718,9 +726,6 @@ fieldset {
 	outline: none;
 }
 
-.button:disabled {
-	color: var(--disabled-bg-color);
-}
 
 .button {
 	position: absolute;
@@ -738,6 +743,7 @@ fieldset {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 	z-index: 99;
 }
+
 
 .sensorvalue {
 	position: absolute;
@@ -815,6 +821,11 @@ fieldset {
 	color: var(--button-text-color);
 }
 
+.smallbutton:disabled {
+	background-color: var(--disabled-bg-color);
+	color: #555;
+}
+
 .okay {
 	float: left;
 	margin-top: 40px;
@@ -863,6 +874,12 @@ fieldset {
 	width: 140px;
 	left: 825px;
 }
+
+
+#box4 {
+	display: none;
+}
+
 
 .pitchbend {
 	top: 175px;
@@ -915,7 +932,7 @@ fieldset {
 	display: block;
 	position: absolute;
 	left: 170px;
-	top: 290px;
+	top: 330px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -924,7 +941,7 @@ fieldset {
 	display: block;
 	position: absolute;
 	left: 30px;
-	top: 290px;
+	top: 330px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -933,7 +950,7 @@ fieldset {
 	display: block;
 	position: absolute;
 	left: 400px;
-	top: 290px;
+	top: 330px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -988,6 +1005,11 @@ input:disabled + .vibratoSlider {
 	background-color: #444;
 }
 
+input:disabled {
+	background-color: #444;
+}
+
+
 input:disabled + .vibratoSlider:before {
 	border: solid 2px #444;
 }
@@ -995,7 +1017,7 @@ input:disabled + .vibratoSlider:before {
 .vibratoHoles {
 	position: absolute;
 	display: block;
-	top: 330px;
+	top: 370px;
 	height: 18px;
 	width: 18px;
 	background-color: var(--secondary-color);
@@ -1160,6 +1182,8 @@ input:disabled + .vibratoSlider:before {
 	cursor: pointer;
 }
 
+
+
 .momentaryLabel {
 	display: block;
 	position: absolute;
@@ -1173,6 +1197,8 @@ input:disabled + .vibratoSlider:before {
 .switch input {
 	display: none;
 }
+
+
 
 #switch0 {
 	top: 135px;
@@ -1200,9 +1226,10 @@ input:disabled + .vibratoSlider:before {
 }
 
 #switch5 {
-	top: 238px;
+	top: 258px;
 	left: 365px;
 }
+
 
 #switch8 {
 	top: 255px;
@@ -1236,7 +1263,7 @@ input:disabled + .vibratoSlider:before {
 	display: block;
 	position: absolute;
 	left: 258px;
-	top: 242px;
+	top: 262px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1249,6 +1276,7 @@ input:disabled + .vibratoSlider:before {
 	z-index: 99;
 	font-size: 14px;
 }
+
 
 .advancedOkay {
 	position: absolute;
@@ -1294,16 +1322,34 @@ input:disabled + .vibratoSlider:before {
 	position: absolute;
 	height: 40px;
 	width: 90px;
-	top: 290px;
-	left: 240px;
+	top: 320px;
+	left: 220px;
 }
+
+.advancedPB {
+	position: absolute;
+	height: 40px;
+	width: 90px;
+	top: 250px;
+	left: 90px;
+}
+
+.advancedOkayPB {
+	position: absolute;
+	height: 30px;
+	width: 60px;
+	top: 355px;
+	left: 50px;
+}
+
+
 
 .graph {
 	position: absolute;
 	height: 40px;
 	width: 90px;
-	top: 290px;
-	left: 350px;
+	top: 320px;
+	left: 340px;
 }
 
 .octavePressureInputContainer {
@@ -1806,8 +1852,8 @@ h2 {
 .bendrangelabel {
 	display: block;
 	position: absolute;
-	left: 60px;
-	top: 220px;
+	left: 140px;
+	top: 105px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1815,12 +1861,12 @@ h2 {
 .midiBendRangeContainer {
 	display: block;
 	position: absolute;
-	left: 90px;
-	top: 242px;
+	left: 210px;
+	top: 132px;
 }
 
 #switch12 {
-	top: 70px;
+	top: 80px;
 	left: 160px;
 }
 
@@ -1829,7 +1875,7 @@ h2 {
 	position: absolute;
 	width: 150px;
 	left: 15px;
-	top: 73px;
+	top: 83px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1845,7 +1891,7 @@ h2 {
 .expressionDepthLabel {
 	display: block;
 	position: absolute;
-	left: 270px;
+	left: 250px;
 	top: 83px;
 	z-index: 99;
 	font-size: 14px;
@@ -1855,21 +1901,21 @@ h2 {
 	display: block;
 	position: absolute;
 	width: 140px;
-	left: 10px;
-	top: 108px;
+	left: 25px;
+	top: 118px;
 	z-index: 99;
 	font-size: 14px;
 }
 
 #switch6 {
-	top: 104px;
+	top: 114px;
 	left: 160px;
 }
 
 .sendPressureLabel {
 	display: block;
 	position: absolute;
-	left: 70px;
+	left: 100px;
 	top: 168px;
 	z-index: 99;
 	font-size: 14px;
@@ -1878,7 +1924,7 @@ h2 {
 .sendVelocityLabel {
 	display: block;
 	position: absolute;
-	left: 42px;
+	left: 72px;
 	top: 198px;
 	z-index: 99;
 	font-size: 14px;
@@ -1887,7 +1933,7 @@ h2 {
 .sendAftertouchLabel {
 	display: block;
 	position: absolute;
-	left: 25px;
+	left: 120px;
 	top: 228px;
 	z-index: 99;
 	font-size: 14px;
@@ -1896,8 +1942,8 @@ h2 {
 .sendPolyAftertouchLabel {
 	display: block;
 	position: absolute;
-	left: 290px;
-	top: 228px;
+	left: 150px;
+	top: 258px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1905,30 +1951,56 @@ h2 {
 
 #switch7 {
 	top: 165px;
-	left: 218px;
+	left: 248px;
 }
 
 #switch10 {
 	top: 195px;
-	left: 218px;
+	left: 248px;
 }
 
 #switch11 {
 	top: 225px;
-	left: 218px;
+	left: 248px;
 }
 
 #switch13 {
-	top: 225px;
-	left: 330px;
+	top: 255px;
+	left: 248px;
+}
+
+#switch14 {
+	top: 200px;
+	left: 350px;
+}
+
+#switch15 {
+	top: 250px;
+	left: 350px;
+}
+
+.hack1Label {
+	position: absolute;
+	left: 45px;
+	top: 202px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.hack2Label {
+	position: absolute;
+	left: 200px;
+	top: 252px;
+	z-index: 99;
+	font-size: 14px;
 }
 
 
 .expressionChannelLabel {
 	display: block;
 	position: absolute;
-	left: 300px;
-	top: 165px;
+	left: 327px;
+	top: 155px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1936,8 +2008,8 @@ h2 {
 .highByteLabel {
 	display: block;
 	position: absolute;
-	left: 395px;
-	top: 165px;
+	left: 330px;
+	top: 220px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1958,22 +2030,22 @@ h2 {
 .expressionChannelInputContainer {
 	display: block;
 	position: absolute;
-	left: 300px;
-	top: 190px;
+	left: 340px;
+	top: 180px;
 }
 
 .expressionHighByteInputContainer {
 	display: block;
 	position: absolute;
-	left: 380px;
-	top: 190px;
+	left: 340px;
+	top: 245px;
 }
 
 .radiogroup7 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 265px;
+	top: 295px;
 	left: 20px;
 	padding: 0px;
 }
@@ -1982,7 +2054,7 @@ h2 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 265px;
+	top: 295px;
 	left: 160px;
 	padding: 0px;
 }
@@ -1991,7 +2063,7 @@ h2 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 265px;
+	top: 295px;
 	left: 300px;
 	padding: 0px;
 }
@@ -2001,7 +2073,7 @@ h2 {
 	width: 65%;
 	position: absolute;
 	left: 80px;
-	top: 345px;
+	top: 375px;
 	z-index: 99;
 }
 
@@ -2010,7 +2082,7 @@ h2 {
 	width: 65%;
 	position: absolute;
 	left: 80px;
-	top: 390px;
+	top: 420px;
 	z-index: 99;
 }
 
@@ -2018,7 +2090,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 175px;
-	top: 320px;
+	top: 350px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2027,7 +2099,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 195px;
-	top: 365px;
+	top: 395px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2070,7 +2142,7 @@ h2 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 250px;
+	top: 270px;
 	left: 15px;
 	padding: 0px;
 }
@@ -2079,7 +2151,7 @@ h2 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 250px;
+	top: 260px;
 	left: 260px;
 	padding: 0px;
 }
@@ -2088,7 +2160,7 @@ h2 {
 	position: absolute;
 	height: 40px;
 	width: 80px;
-	top: 310px;
+	top: 330px;
 	left: 275px;
 }
 
@@ -2096,14 +2168,14 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 375px;
-	top: 327px;
+	top: 347px;
 }
 
 .dronesPressureUnitsLabel {
 	display: block;
 	position: absolute;
 	left: 381px;
-	top: 302px;
+	top: 322px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2187,7 +2259,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 60px;
-	top: 300px;
+	top: 320px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2209,7 +2281,7 @@ h2 {
 	width: 60px;
 	height: 21px;
 	left: 79px;
-	top: 330px;
+	top: 350px;
 	color: var(--text-color);
 	z-index: 99;
 	font-size: 14px;
@@ -2503,6 +2575,7 @@ select option {
 	background: var(--disabled-bg-color);
 	opacity: 1;
 	color: #777 !important;
+	cursor: default;
 }
 
 .channelInputContainer {
