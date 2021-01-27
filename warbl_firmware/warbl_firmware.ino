@@ -2,7 +2,8 @@
 /*
     Copyright (C) 2018 Andrew Mowry warbl.xyz
 
-    Many thanks to Michael Eskin for his additions and debugging help.
+    Many thanks to Michael Eskin and Jesse Chappell for their additions and debugging help.
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -38,11 +39,11 @@
 //MIDI commands
 #define NOTE_OFF 0x80 //127
 #define NOTE_ON 0x90 // 144
-#define KEY_PRESSURE 0xA0
+#define KEY_PRESSURE 0xA0 // 160
 #define CC 0xB0 // 176
-#define PROGRAM_CHANGE 0xC0
-#define CHANNEL_PRESSURE 0xD0
-#define PITCH_BEND 0xE0
+#define PROGRAM_CHANGE 0xC0 // 192
+#define CHANNEL_PRESSURE 0xD0 // 208
+#define PITCH_BEND 0xE0 // 224
 
 // Fingering Patterns
 #define kModeWhistle 0
@@ -99,6 +100,8 @@
 #define SEND_VELOCITY 5
 #define SEND_AFTERTOUCH 6
 #define FORCE_MAX_VELOCITY 7
+#define IMMEDIATE_PB 8
+#define LEGATO 9
 
 //Variables in the ED array (all the settings for the Expression and Drones panels)
 #define EXPRESSION_ON 0
@@ -161,25 +164,27 @@ byte midiChannelSelector[] = {1, 1, 1};
 
 bool momentary[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}} ; //whether momentary click behavior is desired for MIDI on/off message sent with a button. Dimension 0 is mode (instrument), dimension 1 is button 0,1,2.
 
-byte switches[3][8] = //the settings for the five switches in the vibrato/slide and register control panels
+byte switches[3][10] = //the settings for the five switches in the vibrato/slide and register control panels
     //instrument 0
 {
     {
-        0,  // vented mouthpiece on or off (there are different pressure settings for the vented mouthpiece)
+        1,  // vented mouthpiece on or off (there are different pressure settings for the vented mouthpiece)
         0,  // bagless mode off or on
         0,  // secret button command mode off or on
         0,  // whether the functionality for using the right thumb or the bell sensor for increasing the register is inverted.
         0,  // off/on for Michael Eskin's custom vibrato approach
         0, // send pressure as NoteOn velocity off or on
         0, // send pressure as aftertouch (channel pressure) off or on, and/or poly aftertouch (2nd bit)
-        1,
-    }, // force maximum velocity (127)
+        1, // force maximum velocity (127)
+        0, // send pitchbend immediately before Note On (recommnded for MPE)
+        1, // send legato (Note On message before Note Off for previous note)
+    },
 
     //same for instrument 1
-    {0, 0, 0, 0, 0, 0, 0, 1},
+    {0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
 
     //same for instrument 2
-    {0, 1, 0, 0, 1, 0, 0, 1}
+    {0, 0, 0, 0, 1, 0, 0, 1, 0, 1}
 };
 
 byte ED[3][21] = //an array that holds all the settings for the Expression and Drones Control panels in the Configuration Tool.
@@ -221,7 +226,7 @@ byte pressureSelector[3][12] = //a selector array for all the pressure settings 
 {
     {
         15, 15, 15, 15, 30, 30, //closed mouthpiece: offset, multiplier, jump, drop, jump time, drop time
-        3, 7, 10, 7, 9, 9
+        3, 7, 100, 7, 9, 9
     }, //vented mouthpiece: offset, multiplier, jump, drop, jump time, drop time
     //instrument 1
     {
@@ -238,8 +243,7 @@ byte pressureSelector[3][12] = //a selector array for all the pressure settings 
 uint8_t buttonPrefs[3][8][5] = //The button configuration settings. Dimension 1 is the three instruments. Dimension 2 is the button combination: click 1, click 2, click3, hold 2 click 1, hold 2 click 3, longpress 1, longpress2, longpress3
     //Dimension 3 is the desired action: Action, MIDI command type (noteon/off, CC, PC), MIDI channel, MIDI byte 2, MIDI byte 3.
     //instrument 0                              //the actions are: 0 none, 1 send MIDI message, 2 change pitchbend mode, 3 instrument, 4 play/stop (bagless mode), 5 octave shift up, 6 octave shift down, 7 MIDI panic, 8 change register control mode, 9 drones on/off, 10 semitone shift up, 11 semitone shift down
-{
-    {   {2, 0, 0, 0, 0}, //for example, this means that clicking button 0 will send a CC message, channel 1, byte 2 = 0, byte 3 = 0.
+{   {   {2, 0, 0, 0, 0}, //for example, this means that clicking button 0 will send a CC message, channel 1, byte 2 = 0, byte 3 = 0.
         {8, 0, 0, 0, 0}, //for example, this means that clicking button 1 will change pitchbend mode.
         {0, 0, 0, 0, 0},
         {5, 0, 0, 0, 0},
@@ -250,10 +254,10 @@ uint8_t buttonPrefs[3][8][5] = //The button configuration settings. Dimension 1 
     },
 
     //same for instrument 1
-    {{2, 0, 0, 0, 0}, {8, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}},
+    {{2, 0, 0, 0, 0}, {8, 0, 0, 0, 0}, {9, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}},
 
     //same for instrument 2
-    {{4, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {9, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}}
+    {{2, 0, 0, 0, 0}, {8, 0, 0, 0, 0}, {9, 0, 0, 0, 0}, {5, 0, 0, 0, 0}, {6, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}, {0, 0, 0, 0, 0}}
 };
 
 //other misc. variables
@@ -396,8 +400,8 @@ void setup()
     //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
 
-    if (EEPROM.read(901) != VERSION) { //if a new software version has been loaded, update newer settings
-        EEPROM.update(901, VERSION); //update the stored software version
+    if (EEPROM.read(1011) != VERSION) { //if a new software version has been loaded, update newer settings
+        EEPROM.update(1011, VERSION); //update the stored software version
         saveFactorySettings(); //rewrite factory settings to EEPROM.
     }
 
