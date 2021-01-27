@@ -504,7 +504,7 @@
 
             <div class="slidecontainer" id="jumpfactor3Container">
 
-              <input type="range" min="1" max="75" value="15" class="ranger" id="jumpFactor3" onChange="sendJumpFactor(3, value)">
+              <input type="range" min="1" max="175" value="100" class="ranger" id="jumpFactor3" onChange="sendJumpFactor(3, value)">
 
             </div>
 
@@ -540,7 +540,7 @@
 
             <div class="slidecontainer" id="jumpfactor9Container">
 
-              <input type="range" min="1" max="75" value="10" class="ranger" id="jumpFactor9" onChange="sendJumpFactor(9, value)">
+              <input type="range" min="1" max="175" value="10" class="ranger" id="jumpFactor9" onChange="sendJumpFactor(9, value)">
 
             </div>
 
@@ -680,7 +680,7 @@
 
           </div>
 
-          <div class="rightsmallcontrolbox">
+          <div class="rightsmallcontrolbox" id="box5">
 
             <h2 class="controlboxtitle noTouch">Vibrato and Slide
 
@@ -710,13 +710,7 @@
 
             </div>
 
-            <div class="bendrangelabel noTouch">MIDI Bend Range</div>
 
-            <div class="midiBendRangeContainer">
-
-              <input class="expressionInput" type="text" onChange="sendBendRange(value)" id="midiBendRange" value="2">
-
-            </div>
 
             <div class="radiogroup3">
 
@@ -750,7 +744,7 @@
 
                   <input type="radio" value="3" name="pitchbendradio" id="pitchbendradio3" onChange="sendPitchbendRadio(value)">
 
-                  <label for="pitchbendradio3"><span><span></span></span>4. Legato Slide and Vibrato</label>
+                  <label for="pitchbendradio3"><span><span></span></span>4. Legato Slide / Vibrato</label>
 
                 </div>
 
@@ -767,6 +761,8 @@
               <span class="slider round"></span>
 
             </label>
+            
+            <button type="button" id="advancedPBbutton" class="smallbutton noTouch advancedPB" onClick="advancedPB()">Advanced...</button>
 
             <div class="vibratoHolesLabel noTouch">Select vibrato holes:</div>
 
@@ -847,6 +843,51 @@
             </label>
             
           </div>
+          
+          
+          
+                   
+          
+                  <div class="rightsmallcontrolbox" id="box4">
+
+            <h2 class="controlboxtitle noTouch">Advanced Pitchbend Settings
+              
+              <button type="button" class="infocircle" onClick="modal(17)"><i class="fa fa-info-circle"></i></button>
+
+            </h2>
+            
+                        <div class="bendrangelabel noTouch">MIDI Bend Range (semitones)</div>
+
+            <div class="midiBendRangeContainer">
+
+              <input class="expressionInput" type="text" onChange="sendBendRange(value)" id="midiBendRange" value="2">
+
+            </div>
+                      <button type="button" class="smallbutton noTouch advancedOkayPB" onClick="advancedOkayPB()">OK</button>
+            
+            
+             <div class="hack1Label noTouch">Send pitchbend immmediately before Note On</div>
+            <label class="switch" id="switch14">
+
+             <input type="checkbox" class="checkboxes" id="checkbox14" onChange="sendHack1(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+            <div class="hack2Label noTouch">Send notes as legato</div>
+            <label class="switch" id="switch15">
+
+              <input type="checkbox" class="checkboxes" id="checkbox15" onChange="sendHack2(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            
+          	</div>
+          
+          
+          
 
           <div class="rightsmallcontrolbox expressionBox">
 
@@ -868,19 +909,19 @@
 
             <div class="expressionDepthLabel noTouch">Pitch expression depth</div>
 
-            <div class="expressionLabel noTouch">Send pitch expression</div>
+            <div class="expressionLabel noTouch">Pitch expression</div>
 
             <div id="sendPressureLabel" class="sendPressureLabel noTouch">Send pressure as CC</div>
 
             <div id="velocityLabel" class="sendVelocityLabel noTouch">Send pressure as Velocity</div>
 
-            <div id="aftertouchLabel" class="sendAftertouchLabel noTouch">Send pressure as Aftertouch</div>
+            <div id="aftertouchLabel" class="sendAftertouchLabel noTouch">Channel Pressure</div>
 
-            <div id="polyAftertouchLabel" class="sendPolyAftertouchLabel noTouch">Poly</div>
+            <div id="polyAftertouchLabel" class="sendPolyAftertouchLabel noTouch">Key Pressure</div>
 
-            <div class="expressionChannelLabel noTouch">Channel</div>
+            <div class="expressionChannelLabel noTouch">CC Channel</div>
 
-            <div class="highByteLabel noTouch">CC</div>
+            <div class="highByteLabel noTouch">CC number</div>
 
             <label class="switch" id="switch12">
 
@@ -1000,7 +1041,7 @@
             <div class="rangeLabel2 noTouch">Output range</div>
             
           </div>
-
+          
           <div class="leftsmallcontrolbox dronescontrolBox" id="box3">
 
             <h2 class="controlboxtitle noTouch">Drones Control
@@ -2112,6 +2153,26 @@
           </div>
 
         </div>
+        </div>
+        <div id="open-modal17" onClick="" class="modal-window">
+
+        <div id="modal-center17">
+
+          <h2 title="Close" onClick="modalclose(17)" class="modal-close">Close</h2>
+
+          <h1>Advanced Pitchbend Settings</h1>
+
+          <div>
+
+            <p>
+              blah.
+            </p>
+
+          </div>
+          </div>
+
+        </div>
+
 
       </div>
 
