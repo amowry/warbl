@@ -826,8 +826,7 @@ void calculateAndSendPitchbend()
 
     if (!customEnabled && pitchBendMode != kPitchBendNone) {
         handlePitchBend();
-    }
-    else if (customEnabled) {
+    } else if (customEnabled) {
         handleCustomPitchBend();
     }
 }
@@ -839,7 +838,7 @@ void calculateAndSendPitchbend()
 void sendNote()
 {
     const int velDelayMs = switches[mode][SEND_AFTERTOUCH] != 0 ? 3 : 16 ; // keep this minimal to avoid latency if also sending aftertouch, but enough to get a good reading, otherwise use longer
-    
+
     if (     //several conditions to tell if we need to turn on a new note.
         (!noteon
          || ( pitchBendModeSelector[mode] != kPitchBendLegatoSlideVibrato && newNote != (notePlaying - shift))
@@ -853,8 +852,8 @@ void sendNote()
         int notewason = noteon;
         int notewasplaying = notePlaying;
 
-        if (notewason && (pitchBendModeSelector[mode] == kPitchBendLegatoSlideVibrato || pitchBendModeSelector[mode] == kPitchBendSlideVibrato)) {
-            // send prior noteoff now if we are using one of the slide bending modes
+        if (notewason && switches[mode][LEGATO] && (pitchBendModeSelector[mode] == kPitchBendLegatoSlideVibrato || pitchBendModeSelector[mode] == kPitchBendSlideVibrato)) {
+            // send prior noteoff now if we are using one of the slide bending modes and legato is selected.
             sendUSBMIDI(NOTE_OFF, mainMidiChannel, notePlaying, 64);
             notewason = 0;
         }
@@ -866,15 +865,18 @@ void sendNote()
         noteon = 1; //keep track of the fact that there's a note turned on
         notePlaying = newNote + shift;
 
-        // should always send pitch bend immediately prior to note
-        calculateAndSendPitchbend();
+        // send pitch bend immediately prior to note if necessary
+        if (switches[mode][IMMEDIATE_PB]) {
+            calculateAndSendPitchbend();
+        }
+
 
         sendUSBMIDI(NOTE_ON, mainMidiChannel, newNote + shift, velocity); //send the new note
 
         if (notewason) {
             // turn off the previous note after turning on the new one (if it wasn't already done above)
             // We do it after to signal to synths that the notes are legato (not all synths will respond to this).
-            sendUSBMIDI(NOTE_OFF, mainMidiChannel, notewasplaying, 64); 
+            sendUSBMIDI(NOTE_OFF, mainMidiChannel, notewasplaying, 64);
         }
 
         pitchBendTimer = millis(); //for some reason it sounds best if we don't send pitchbend right away after starting a new note.
@@ -972,7 +974,7 @@ void saveCalibration()
     for (byte i = 0; i < 9; i++) {
         EEPROM.update((i + 9) * 2, highByte(toneholeCovered[i]));
         EEPROM.update(((i + 9) * 2) + 1, lowByte(toneholeCovered[i]));
-        EEPROM.update((721 + i), lowByte(toneholeBaseline[i])); //the baseline readings can be stored in a single byte because they should be close to zero.
+        EEPROM.update((501 + i), lowByte(toneholeBaseline[i])); //the baseline readings can be stored in a single byte because they should be close to zero.
     }
     calibration = 0;
     EEPROM.update(37, 3); //we write a 3 to address 37 to indicate that we have stored a set of calibrations.
@@ -992,7 +994,7 @@ void loadCalibration()
         high = EEPROM.read((i + 9) * 2);
         low = EEPROM.read(((i + 9) * 2) + 1);
         toneholeCovered[i] = word(high, low);
-        toneholeBaseline[i] = EEPROM.read(721 + i);
+        toneholeBaseline[i] = EEPROM.read(501 + i);
     }
 }
 
@@ -1248,7 +1250,7 @@ void receiveMIDI()
                         }
 
 
-                        else if (pressureReceiveMode < 48) {
+                        else if (pressureReceiveMode < 50) {
                             switches[mode][pressureReceiveMode - 39] = rx.byte3; //switches in the slide/vibrato and register control panels
                             loadPrefs();
                         }
@@ -1320,8 +1322,8 @@ void receiveMIDI()
                             for (byte i = 0; i < 18; i++) {
                                 EEPROM.update(i, EEPROM.read(i + 18));
                             }
-                            for (int i = 731; i < 741; i++) { //save baseline calibration as factory baseline
-                                EEPROM.update(i, EEPROM.read(i - 10));
+                            for (int i = 1001; i < 1011; i++) { //save baseline calibration as factory baseline
+                                EEPROM.update(i, EEPROM.read(i - 500));
                             }
                         }
                     }
@@ -1360,15 +1362,15 @@ void saveSettings(byte i)
     EEPROM.update(53 + i, noteShiftSelector[mode]);
     EEPROM.update(50 + i, senseDistanceSelector[mode]);
 
-    for (byte n = 0; n < 8; n++) {
-        EEPROM.update((56 + n + (i * 8)), switches[mode][n]);
+    for (byte n = 0; n < 10; n++) {
+        EEPROM.update((56 + n + (i * 10)), switches[mode][n]);
     }
 
-    EEPROM.update(83 + (i * 2), lowByte(vibratoHolesSelector[mode]));
-    EEPROM.update(84 + (i * 2), highByte(vibratoHolesSelector[mode]));
-    EEPROM.update(89 + (i * 2), lowByte(vibratoDepthSelector[mode]));
-    EEPROM.update(90 + (i * 2), highByte(vibratoDepthSelector[mode]));
-    EEPROM.update(95 + i, useLearnedPressureSelector[mode]);
+    EEPROM.update(333 + (i * 2), lowByte(vibratoHolesSelector[mode]));
+    EEPROM.update(334 + (i * 2), highByte(vibratoHolesSelector[mode]));
+    EEPROM.update(339 + (i * 2), lowByte(vibratoDepthSelector[mode]));
+    EEPROM.update(340 + (i * 2), highByte(vibratoDepthSelector[mode]));
+    EEPROM.update(345 + i, useLearnedPressureSelector[mode]);
 
     for (byte j = 0; j < 5; j++) { //save button configuration for current mode
         for (byte k = 0; k < 8; k++) {
@@ -1393,7 +1395,7 @@ void saveSettings(byte i)
     EEPROM.update(322 + i, midiChannelSelector[mode]);
 
     for (byte n = 0; n < 21; n++) {
-        EEPROM.update((741 + n + (i * 21)), ED[mode][n]);
+        EEPROM.update((351 + n + (i * 21)), ED[mode][n]);
     }
 
 
@@ -1437,13 +1439,13 @@ void loadSettingsForAllModes()
 
         senseDistanceSelector[i] = EEPROM.read(50 + i);
 
-        for (byte n = 0; n < 8; n++) {
-            switches[i][n] = EEPROM.read(56 + n + (i * 8));
+        for (byte n = 0; n < 10; n++) {
+            switches[i][n] = EEPROM.read(56 + n + (i * 10));
         }
 
-        vibratoHolesSelector[i] = word(EEPROM.read(84 + (i * 2)), EEPROM.read(83 + (i * 2)));
-        vibratoDepthSelector[i] = word(EEPROM.read(90 + (i * 2)), EEPROM.read(89 + (i * 2)));
-        useLearnedPressureSelector[i] = EEPROM.read(95 + i);
+        vibratoHolesSelector[i] = word(EEPROM.read(334 + (i * 2)), EEPROM.read(333 + (i * 2)));
+        vibratoDepthSelector[i] = word(EEPROM.read(340 + (i * 2)), EEPROM.read(339 + (i * 2)));
+        useLearnedPressureSelector[i] = EEPROM.read(345 + i);
 
         for (byte j = 0; j < 5; j++) {
             for (byte k = 0; k < 8; k++) {
@@ -1467,13 +1469,13 @@ void loadSettingsForAllModes()
 
         midiBendRangeSelector[i] = EEPROM.read(319 + i);
         midiBendRangeSelector[i] = midiBendRangeSelector[i] > 96 ? 2 : midiBendRangeSelector[i]; // sanity check in case uninitialized
-        
+
         midiChannelSelector[i] = EEPROM.read(322 + i);
         midiChannelSelector[i] = midiChannelSelector[i] > 16 ? 1 : midiChannelSelector[i]; // sanity check in case uninitialized
 
 
         for (byte n = 0; n < 21; n++) {
-            ED[i][n] = EEPROM.read(741 + n + (i * 21));
+            ED[i][n] = EEPROM.read(351 + n + (i * 21));
         }
 
 
@@ -1494,25 +1496,20 @@ void saveFactorySettings()
         mode = i;
         saveSettings(i);
     }
+
     EEPROM.update(48, defaultMode); //save default mode
+
     mode = 0; //switch back to mode 0
 
     blinkNumber = 3;
 
-    // unfortunately there is no space with this layout to cover a few of the newly added parameters, unless
-    // we change the factory backup locations... TODO
-
-    for (int i = 40; i < 320; i++) { //then we read every byte in EEPROM from 40 to 319
+    for (int i = 40; i < 501; i++) { //then we read every byte in EEPROM from 40 to 500
         byte reading = EEPROM.read(i);
-        EEPROM.update(400 + i, reading); //and rewrite them from 440 to 719. Then they'll be available to easily restore later if necessary.
+        EEPROM.update(500 + i, reading); //and rewrite them from 540 to 1000. Then they'll be available to restore later if necessary.
     }
 
-    for (int i = 741; i < 804; i++) { //then we do the same for the expression and drones variables
-        byte reading2 = EEPROM.read(i);
-        EEPROM.update(63 + i, reading2);
 
-        EEPROM.update(44, 3); //indicates settings have been saved
-    }
+    EEPROM.update(44, 3); //indicates settings have been saved
 }
 
 
@@ -1524,24 +1521,17 @@ void saveFactorySettings()
 void restoreFactorySettings()
 {
     byte reading;
-    for (int i = 440; i < 720; i++) { //then we read every byte in EEPROM from 440 to 720
+    for (int i = 540; i < 1011; i++) { //then we read every byte in EEPROM from 540 to 1000
         reading = EEPROM.read(i);
-        EEPROM.update(i - 400, reading);
-    } //and rewrite them from 40 to 319.
+        EEPROM.update(i - 500, reading);
+    } //and rewrite them from 40 to 510.
 
-    for (int i = 804; i < 867; i++) { //then the same for expression and drones settings.
-        reading = EEPROM.read(i);
-        EEPROM.update(i - 63, reading);
-    }
 
     for (byte i = 0; i < 18; i++) { //do the same with sensor calibration (copy 0-17 to 18-35).
         EEPROM.update((i + 18), EEPROM.read(i));
     }
 
-
-    for (int i = 731; i < 741; i++) { //do the same with sensor baseline (copy 731-740 to 721-730)
-        EEPROM.update((i - 10), EEPROM.read(i));
-    }
+    mode = 0; //switch back to mode 0
 
     EEPROM.update(44, 3); //indicates settings have been saved
 
@@ -1616,7 +1606,7 @@ void sendSettings()
         }
     }
 
-    for (byte i = 0; i < 8; i++) { //send settings for switches in the slide/vibrato and register control panels
+    for (byte i = 0; i < 10; i++) { //send settings for switches in the slide/vibrato and register control panels
         sendUSBMIDI(CC, 7, 104, i + 40);
         sendUSBMIDI(CC, 7, 105, switches[mode][i]);
     }
@@ -2069,9 +2059,9 @@ void loadPrefs()
     //Serial.println(midiBendRange);
 
     for (byte i = 0; i < 9; i++) {
-        toneholeScale[i] = ((8 * (16383 / midiBendRange)) / (toneholeCovered[i] - 50 - senseDistance) / 2); // Precalculate scaleing factors for pitchbend. This one is for sliding. We multiply by 8 first to reduce rounding errors. We'll divide again later.
+        toneholeScale[i] = ((8 * (16383 / midiBendRange)) / (toneholeCovered[i] - 50 - senseDistance) / 2); // Precalculate scaling factors for pitchbend. This one is for sliding. We multiply by 8 first to reduce rounding errors. We'll divide again later.
         vibratoScale[i] = ((8 * 2 * (vibratoDepth / midiBendRange)) / (toneholeCovered[i] - 50 - senseDistance) / 2); //This one is for vibrato
-        //toneholeScale[i] = ((8 * 8191)/(toneholeCovered[i] - 50 - senseDistance)/2); // Precalculate scaleing factors for pitchbend. This one is for sliding. We multiply by 8 first to reduce rounding errors. We'll divide again later.
+        //toneholeScale[i] = ((8 * 8191)/(toneholeCovered[i] - 50 - senseDistance)/2); // Precalculate scaling factors for pitchbend. This one is for sliding. We multiply by 8 first to reduce rounding errors. We'll divide again later.
         //vibratoScale[i] = ((8 * vibratoDepth)/(toneholeCovered[i] - 50 - senseDistance)/2); //This one is for vibrato
         //Serial.print("TH: ");
         //Serial.println(toneholeScale[i]);
