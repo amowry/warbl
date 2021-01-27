@@ -852,8 +852,8 @@ void sendNote()
         int notewason = noteon;
         int notewasplaying = notePlaying;
 
-        if (notewason && switches[mode][LEGATO] && (pitchBendModeSelector[mode] == kPitchBendLegatoSlideVibrato || pitchBendModeSelector[mode] == kPitchBendSlideVibrato)) {
-            // send prior noteoff now if we are using one of the slide bending modes and legato is selected.
+        if (notewason && !switches[mode][LEGATO]) {
+            // send prior noteoff now if legato is selected.
             sendUSBMIDI(NOTE_OFF, mainMidiChannel, notePlaying, 64);
             notewason = 0;
         }
