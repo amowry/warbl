@@ -534,7 +534,7 @@ void get_state()
 void getExpression()
 {
 
-    //calculate the center pressure value fo rthe current note, regardless of register
+    //calculate the center pressure value for the current note, regardless of register
     int lowerBound = sensorThreshold[0];
     int useUpperBound = upperBound;
 
@@ -561,7 +561,7 @@ void getExpression()
         expression = ED[mode][EXPRESSION_DEPTH] * 200; //put a cap on it, because in the upper register or in single-register mode, there's no upper limit
     }
 
-    expression = (2 * expression) / midiBendRange;
+    expression = (2 * expression) / midiBendRange; //figure out how to do this without dividing?
 
 
     if (pitchBendMode == kPitchBendNone) { //if we're not using vibrato, send the pitchbend now instead of adding it in later.
@@ -605,7 +605,6 @@ void handleCustomPitchBend()
         getSlide();
     }
 
-    int adjvibdepth = vibratoDepth / midiBendRange;
 
     if (modeSelector[mode] != kModeGHB && modeSelector[mode] != kModeNorthumbrian) { //used for whistle and uilleann
         if (vibratoEnable == 1) { //if it's a vibrato fingering pattern
@@ -711,8 +710,6 @@ void handlePitchBend()
     if (pitchBendMode == kPitchBendSlideVibrato || pitchBendMode == kPitchBendLegatoSlideVibrato) { //calculate slide if necessary.
         getSlide();
     }
-
-    int adjvibdepth = vibratoDepth / midiBendRange;
 
 
     for (byte i = 0; i < 9; i++) {
@@ -2066,6 +2063,8 @@ void loadPrefs()
         //Serial.print("TH: ");
         //Serial.println(toneholeScale[i]);
     }
+
+    adjvibdepth = vibratoDepth / midiBendRange;
 
     pitchBendPerSemi = 8192 / midiBendRange;
 
