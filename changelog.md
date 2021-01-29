@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - ability to select output MIDI channel for notes
 - legato slide/vibrato, which allows continuous sliding without retriggering notes
 - ability to select MIDI bend range semitones (used with above to select number of semitones of sliding without retrigerring notes)
+- MPE support (select MIDI channel 2 and turn on channel pressure)
 
 ## [Released]
 
