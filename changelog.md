@@ -8,7 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Changed recorder fingering 0 111 0100 from G to F# to mimic real instrument
+- Fixed error in velocity calculation
 
+### Added
+
+- key pressure in addition to channel pressure
+- ability to select output MIDI channel for notes
+- legato slide/vibrato, which allows continuous sliding without retriggering notes
+- ability to select MIDI bend range semitones (used with above to select number of semitones of sliding without retrigerring notes)
 
 ## [Released]
 
