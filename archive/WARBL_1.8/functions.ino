@@ -2092,7 +2092,9 @@ void sendPressure()
 
         int m = constrain((map(n, 100, maxIn, minOut, maxOut)), minOut, maxOut) >> 7; // final mapping after transformation
 
-        velocity = m;
+        if (switches[0][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
+            velocity = m;
+        }
 
         if (ED[mode][SEND_PRESSURE] == 1) {
             sendUSBMIDI(CC, ED[mode][PRESSURE_CHANNEL], ED[mode][PRESSURE_CC], m); //send MSB of pressure mapped to the output range
