@@ -855,7 +855,7 @@ void sendNote()
             notewason = 0;
         }
 
-        // need to calculate and send pressure prior to note as well, in case we are using it for velocity
+        // need to send pressure prior to note, in case we are using it for velocity
         sendPressure(true);
 
         // set it now so that send pitchbend will operate correctly
@@ -2178,27 +2178,29 @@ void stopDrones()
 
 
 
-//send pressure data to configuration tool and as CC and/or velocity if those options are selected
-void sendPressure(bool force)
+//calculate pressure data for CC, velocity, channel pressure, and key pressure if those options are selected
+void calculatePressure()
 {
-    unsigned long n = sensorValue;
+    scaled = sensorValue;
 
     if (communicationMode) {
-        sendUSBMIDI(CC, 7, 116, n & 0x7F); //send LSB of current pressure to configuration tool
-        sendUSBMIDI(CC, 7, 118, n >> 7); //send MSB of current pressure
+        sendUSBMIDI(CC, 7, 116, scaled & 0x7F); //send LSB of current pressure to configuration tool
+        sendUSBMIDI(CC, 7, 118, scaled >> 7); //send MSB of current pressure
     }
 
     if (ED[mode][SEND_PRESSURE] == 1 || switches[mode][SEND_AFTERTOUCH] != 0 || switches[mode][SEND_VELOCITY] == 1) {
-        n = constrain(map(n, minIn, (100 + (ED[mode][INPUT_PRESSURE_MAX] * 8)), 100, 900), 100, 900); //map the sensor value from the selected input range up to 100-900 before transforming, to maximize sensitivity at smaller ranges
+        scaled = constrain(map(scaled, minIn, (100 + (ED[mode][INPUT_PRESSURE_MAX] * 8)), 100, 900), 100, 900); //map the sensor value from the selected input range up to 100-900 before transforming, to maximize sensitivity at smaller ranges
+
+
 
         if (ED[mode][CURVE] == 1) { //for this curve, cube the input and scale back down to avoid variable overflow.
             maxIn = 72900;
-            n = ((n * n * n) / 10000);
+            scaled = ((scaled * scaled * scaled) / 10000);
         }
 
         else if (ED[mode][CURVE] == 2) { //for this curve, scale up, divide by n, and invert.
             maxIn = 7300;
-            n = 8200 - (810000 / n);
+            scaled = 8200 - (810000 / scaled);
         }
 
         else {
@@ -2206,39 +2208,41 @@ void sendPressure(bool force)
         }
 
 
-        int m = constrain((map(n, 100, maxIn, minOut, maxOut)), minOut, maxOut) >> 7; // final mapping after transformation
+        mapped = constrain((map(scaled, 100, maxIn, minOut, maxOut)), minOut, maxOut) >> 7; // final mapping after transformation
 
-        if (switches[mode][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
-            if (!noteon && switches[mode][SEND_AFTERTOUCH] == 0) { //we give more weight to velocity if it's the first note being played after silence (e.g. tonguing a note).
-                velocity = m << 1;
-            } else {
-                velocity = m;
-            }
+        if (switches[0][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
+            velocity = mapped;
         }
+    }
+}
 
-        if (ED[mode][SEND_PRESSURE] == 1 && (m != prevCCPressure || force)) {
-            sendUSBMIDI(CC, ED[mode][PRESSURE_CHANNEL], ED[mode][PRESSURE_CC], m); //send MSB of pressure mapped to the output range
-            prevCCPressure = m;
+
+
+
+//send pressure data
+void sendPressure(bool force)
+{
+    if (ED[mode][SEND_PRESSURE] == 1 && (mapped != prevCCPressure || force)) {
+        sendUSBMIDI(CC, ED[mode][PRESSURE_CHANNEL], ED[mode][PRESSURE_CC], mapped); //send MSB of pressure mapped to the output range
+        prevCCPressure = mapped;
+    }
+
+    if ((switches[mode][SEND_AFTERTOUCH] & 1)) {
+        // hack
+        int sendm = (!noteon && scaled <= 100) ? 0 : mapped;
+        if (sendm != prevChanPressure || force) {
+            sendUSBMIDI(CHANNEL_PRESSURE, mainMidiChannel, sendm); //send MSB of pressure mapped to the output range
+            prevChanPressure = sendm;
         }
+    }
 
-        if ((switches[mode][SEND_AFTERTOUCH] & 1)) {
-            // hack
-            int sendm = (!noteon && n <= 100) ? 0 : m;
-            if (sendm != prevChanPressure || force) {
-                sendUSBMIDI(CHANNEL_PRESSURE, mainMidiChannel, sendm); //send MSB of pressure mapped to the output range
-                prevChanPressure = sendm;
-            }
+    // poly aftertouch uses 2nd lowest bit of ED flag
+    if ((switches[mode][SEND_AFTERTOUCH] & 2) && noteon) {
+        // hack
+        int sendm = (!noteon && scaled <= 100) ? 0 : mapped;
+        if (sendm != prevPolyPressure || force) {
+            sendUSBMIDI(KEY_PRESSURE, mainMidiChannel, notePlaying, sendm); //send MSB of pressure mapped to the output range
+            prevPolyPressure = sendm;
         }
-
-        // poly aftertouch uses 2nd lowest bit of ED flag
-        if ((switches[mode][SEND_AFTERTOUCH] & 2) && noteon) {
-            // hack
-            int sendm = (!noteon && n <= 100) ? 0 : m;
-            if (sendm != prevPolyPressure || force) {
-                sendUSBMIDI(KEY_PRESSURE, mainMidiChannel, notePlaying, sendm); //send MSB of pressure mapped to the output range
-                prevPolyPressure = sendm;
-            }
-        }
-
     }
 }

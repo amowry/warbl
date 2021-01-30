@@ -304,6 +304,9 @@ unsigned int minIn = 100; //used for sending pressure data as CC
 unsigned long maxIn = 800;
 unsigned int minOut = 127;
 unsigned int maxOut = 16383;
+unsigned long scaled = 0; //pressure data scaled to selected curve
+int mapped = 0; //scaled pressure data mapped to output
+
 
 //variables for reading tonehole sensors
 volatile byte lastRead = 0; //the transistor that was last read, so we know which to read the next time around the loop.
@@ -345,6 +348,7 @@ unsigned int toneholeScale[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //a scale for normal
 unsigned int vibratoScale[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //same as above but for vibrato
 int expression = 0; //pitchbend up or down from current note based on pressure
 bool customEnabled = 0; //Whether the custom vibrato above is currently enabled based on fingering pattern and pitchbend mode.
+int adjvibdepth; //vibrato depth scaled to MIDI bend range.
 
 //variables for managing MIDI note output
 bool noteon = 0; //whether a note is currently turned on
@@ -530,6 +534,7 @@ void loop()
     if ((nowtime - pressureTimer) >= ((nowtime - noteOnTimestamp) < 20 ? 2 : 5)) {
         pressureTimer = nowtime;
         if (abs(prevSensorValue - sensorValue) > 1) { //if pressure has changed more than a little, send it.
+            calculatePressure();
             sendPressure(false);
             prevSensorValue = sensorValue;
         }
@@ -557,7 +562,8 @@ void loop()
 
             //This is a good place to send occasional debug info.
             //for (byte i = 0; i < 9; i++) {
-            //Serial.println((EEPROM.read(44)));
+               // Serial.println(velocity);
+            //Serial.println(maxOut/129);
             //Serial.println(EEPROM.read(63));
             //Serial.println(EEPROM.read(71));
             //Serial.println(EEPROM.read(76));
