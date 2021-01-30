@@ -2092,7 +2092,7 @@ void sendPressure()
 
         int m = constrain((map(n, 100, maxIn, minOut, maxOut)), minOut, maxOut) >> 7; // final mapping after transformation
 
-        if (switches[0][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
+        if (switches[mode][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
             velocity = m;
         }
 
