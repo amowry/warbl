@@ -304,8 +304,8 @@ unsigned int minIn = 100; //used for sending pressure data as CC
 unsigned long maxIn = 800;
 unsigned int minOut = 127;
 unsigned int maxOut = 16383;
-unsigned long scaled = 0; //pressure data scaled to selected curve
-int mapped = 0; //scaled pressure data mapped to output
+unsigned long scaledPressure = 0; //pressure data scaled to selected curve
+int mappedPressure = 0; //scaled pressure data mapped to output
 
 
 //variables for reading tonehole sensors
