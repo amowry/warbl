@@ -2208,7 +2208,7 @@ void calculatePressure()
 
     //else curve 3 is linear, so no transformation
 
-    mappedPressure = (scaledPressure * (ED[mode][OUTPUT_PRESSURE_MAX] - ED[mode][OUTPUT_PRESSURE_MIN]) >> 10) + ED[mode][OUTPUT_PRESSURE_MIN]; //map to ouput poressure range
+    mappedPressure = (scaledPressure * (ED[mode][OUTPUT_PRESSURE_MAX] - ED[mode][OUTPUT_PRESSURE_MIN]) >> 10) + ED[mode][OUTPUT_PRESSURE_MIN]; //map to output pressure range
 
 }
 
