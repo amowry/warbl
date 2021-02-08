@@ -2210,6 +2210,9 @@ void calculatePressure()
 
     mappedPressure = (scaledPressure * (ED[mode][OUTPUT_PRESSURE_MAX] - ED[mode][OUTPUT_PRESSURE_MIN]) >> 10) + ED[mode][OUTPUT_PRESSURE_MIN]; //map to output pressure range
 
+    if (switches[mode][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
+        velocity = mappedPressure;
+    }
 }
 
 
