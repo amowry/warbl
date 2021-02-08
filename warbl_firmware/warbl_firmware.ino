@@ -302,10 +302,9 @@ byte soundTriggerOffset = 3; //the number of sensor values above the calibration
 int learnedPressure = 0; //the learned pressure reading, used as a base value
 unsigned int minIn = 100; //used for sending pressure data as CC
 unsigned long maxIn = 800;
-unsigned int minOut = 127;
-unsigned int maxOut = 16383;
-unsigned long scaledPressure = 0; //pressure data scaled to selected curve
+unsigned int scaledMinIn = 0; //the current input pressure scaled up to 1024, used in calculations
 int mappedPressure = 0; //scaled pressure data mapped to output
+unsigned long pressureInputScale = 0; //precalculated scale factor for mapping the input pressure range
 
 
 //variables for reading tonehole sensors
@@ -408,7 +407,7 @@ void setup()
             EEPROM.update(500 + i, EEPROM.read(720 + i));
             EEPROM.update(1000 + i, EEPROM.read(720 + i));
         }
-        EEPROM.update(1012,3);
+        EEPROM.update(1012, 3);
     }
 
     if (EEPROM.read(1011) != VERSION) { //if a new software version has been loaded, update newer settings
@@ -534,8 +533,14 @@ void loop()
     if ((nowtime - pressureTimer) >= ((nowtime - noteOnTimestamp) < 20 ? 2 : 5)) {
         pressureTimer = nowtime;
         if (abs(prevSensorValue - sensorValue) > 1) { //if pressure has changed more than a little, send it.
-            calculatePressure();
-            sendPressure(false);
+            if (ED[mode][SEND_PRESSURE] == 1 || switches[mode][SEND_AFTERTOUCH] != 0 || switches[mode][SEND_VELOCITY] == 1) {
+                calculatePressure();
+                sendPressure(false);
+            }
+            if (communicationMode) {
+                sendUSBMIDI(CC, 7, 116, sensorValue & 0x7F); //send LSB of current pressure to configuration tool
+                sendUSBMIDI(CC, 7, 118, sensorValue >> 7); //send MSB of current pressure
+            }
             prevSensorValue = sensorValue;
         }
 
@@ -562,11 +567,11 @@ void loop()
 
             //This is a good place to send occasional debug info.
             //for (byte i = 0; i < 9; i++) {
-               // Serial.println(velocity);
+            // Serial.println(velocity);
             //Serial.println(maxOut/129);
             //Serial.println(EEPROM.read(63));
             //Serial.println(EEPROM.read(71));
-            //Serial.println(EEPROM.read(76));
+            //Serial.println(finalTime);
             //Serial.println("");
             //Serial.println(buttonPrefs[mode][0][0]);
 
