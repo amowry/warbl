@@ -2195,16 +2195,32 @@ void calculatePressure()
     scaledPressure = constrain (scaledPressure, minIn, maxIn);
     scaledPressure = (((scaledPressure * pressureInputScale) >> 10) - scaledMinIn); //scale input pressure up to a range of 0-1024 using the precalculated scale factor
 
-
     if (ED[mode][CURVE] == 1) { //for this curve, cube the input and scale back down.
         scaledPressure = ((scaledPressure * scaledPressure * scaledPressure)  >> 20);
     }
 
-    else if (ED[mode][CURVE] == 2) { //approximates a log curve.
-        if (scaledPressure > 0) { //avoid divide by 0
-            scaledPressure = 1024 - (131072 / (scaledPressure + 114)) + 115;
+
+    else if (ED[mode][CURVE] == 2) { //approximates a log curve with piecewise linear function.
+        switch (scaledPressure >> 6) {
+            case 0:
+                scaledPressure = scaledPressure << 3;
+                break;
+            case 1 ... 2:
+                scaledPressure = (scaledPressure << 1) + 376;
+                break;
+            case 3 ... 5:
+                scaledPressure = scaledPressure + 566;
+                break;
+            default:
+                scaledPressure = (scaledPressure >> 3) + 901;
+                break;
         }
+        if (scaledPressure > 1024) {
+          scaledPressure = 1024;
+        }
+
     }
+
 
     //else curve 3 is linear, so no transformation
 

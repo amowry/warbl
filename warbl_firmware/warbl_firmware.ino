@@ -571,7 +571,7 @@ void loop()
             //Serial.println(maxOut/129);
             //Serial.println(EEPROM.read(63));
             //Serial.println(EEPROM.read(71));
-            //Serial.println(finalTime);
+            Serial.println(finalTime);
             //Serial.println("");
             //Serial.println(buttonPrefs[mode][0][0]);
 
