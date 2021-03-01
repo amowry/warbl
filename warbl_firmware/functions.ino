@@ -509,9 +509,6 @@ void get_state()
     if (sensorValue2 <= sensorThreshold[0]) {
         newState = 1;
     }
-    // else if (((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
-    // newState = 2;
-    // }
 
     //added very small amount of hysteresis for state 2, 4/25/20
     else if (sensorValue2 > sensorThreshold[0] + 1 && ((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
@@ -534,12 +531,19 @@ void get_state()
 void getExpression()
 {
 
-    //calculate the center pressure value for the current note, regardless of register
-    int lowerBound = sensorThreshold[0];
-    int useUpperBound = upperBound;
+    //calculate the center pressure value for the current note, regardless of register, unless "override" is turned on and we're not in overblow mode. In that case, use the override bounds instead
 
-    if (breathMode != kPressureBreath && (ED[mode][SEND_PRESSURE] == 1 || switches[mode][SEND_AFTERTOUCH] != 0 || switches[mode][SEND_VELOCITY] == 1)) {
-        useUpperBound = 100 + (ED[mode][INPUT_PRESSURE_MAX] * 8);
+
+    int lowerBound;
+    int useUpperBound;
+
+    if (switches[mode][OVERRIDE] && (breathMode != kPressureBreath)) {
+        lowerBound = (ED[mode][EXPRESSION_MIN] * 9) + 100;
+        useUpperBound = (ED[mode][EXPRESSION_MAX] * 9) + 100;
+    } else {
+        lowerBound = sensorThreshold[0];
+        useUpperBound = upperBound;
+
     }
 
     unsigned int halfway = ((useUpperBound - lowerBound) >> 1) + lowerBound;
@@ -558,10 +562,8 @@ void getExpression()
 
 
     if (expression > ED[mode][EXPRESSION_DEPTH] * 200) {
-        expression = ED[mode][EXPRESSION_DEPTH] * 200; //put a cap on it, because in the upper register or in single-register mode, there's no upper limit
+        expression = ED[mode][EXPRESSION_DEPTH] * 200;   //put a cap on it, because in the upper register or in single-register mode, there's no upper limit
     }
-
-    expression = (2 * expression) / midiBendRange; //****figure out how to do this without dividing?****
 
 
     if (pitchBendMode == kPitchBendNone) { //if we're not using vibrato, send the pitchbend now instead of adding it in later.
@@ -752,12 +754,6 @@ void getSlide()
         if (toneholeRead[i] > senseDistance && i == slideHole && stepsDown > 0) {
             if (bitRead(holeCovered, i) != 1) {
                 iPitchBend[i] = ((toneholeRead[i] - senseDistance) * toneholeScale[i]) >> (4 - stepsDown); //bend down toward the next lowest note in the scale, the amount of bend depending on the number of steps down.
-                //Serial.print("TR: ");
-                //Serial.println((toneholeRead[i]-senseDistance) * toneholeScale[i], DEC);
-                //Serial.print("THS: ");
-                //Serial.println(toneholeScale[i], DEC);
-                //Serial.print("PB: ");
-                //Serial.println(iPitchBend[i], DEC);
             }
         } else {
             iPitchBend[i] = 0;
@@ -796,18 +792,7 @@ void sendPitchbend()
     if (prevPitchBend != pitchBend) {
 
         if (noteon) {
-            /*
-                Serial.print("noteshift: ");
-                Serial.print(noteshift);
-                Serial.print(" noteplay: ");
-                Serial.print(notePlaying - shift);
-                Serial.print(" newnote: ");
-                Serial.print(newNote);
-                Serial.print(" pb: ");
-                Serial.print(pitchBend);
-                Serial.print(" bps: ");
-                Serial.println(pitchBendPerSemi);
-            */
+
             sendUSBMIDI(PITCH_BEND, mainMidiChannel, pitchBend & 0x7F, pitchBend >> 7);
             prevPitchBend = pitchBend;
         }
@@ -850,8 +835,19 @@ void sendNote()
         int notewasplaying = notePlaying;
 
         // if this is a fresh/tongued note calculate pressure now to get the freshest initial velocity/pressure
-        if (!notewason && (ED[mode][SEND_PRESSURE] == 1 || switches[mode][SEND_AFTERTOUCH] != 0 || switches[mode][SEND_VELOCITY] == 1)) {
-            calculatePressure();
+        if (!notewason) {
+            if (ED[mode][SEND_PRESSURE]) {
+                calculatePressure(0);
+            }
+            if (switches[mode][SEND_VELOCITY]) {
+                calculatePressure(1);
+            }
+            if (switches[mode][SEND_AFTERTOUCH] & 1) {
+                calculatePressure(2);
+            }
+            if (switches[mode][SEND_AFTERTOUCH] & 2) {
+                calculatePressure(3);
+            }
         }
 
         if (notewason && !switches[mode][LEGATO]) {
@@ -961,11 +957,10 @@ void calibrate()
 
     if ((calibration == 1 && ((millis() - calibrationTimer) > 10000)) || (calibration == 2 && ((millis() - calibrationTimer) > 5000))) {
         saveCalibration();
-        for (byte i = 0; i < 9; i++) { //here we precalculate a scaling factor for each tonehole sensor for use later when we are controlling pitchbend. It maps the distance of the finger from a tonehole to the maximum pitchbend range for that tonehole.
-            toneholeScale[i] = ((8 * 8191) / (toneholeCovered[i] - 50 - senseDistance) / 2);
-        } //We multiply by 8 first to reduce rounding errors. We'll divide again later.
+        loadPrefs(); //do this so pitchbend scaling will be recalculated.
     }
 }
+
 
 
 
@@ -1005,6 +1000,7 @@ void loadCalibration()
 
 
 
+
 //send MIDI messages
 void sendUSBMIDI(uint8_t m, uint8_t c, uint8_t d1, uint8_t d2)    // send a 3-byte MIDI event over USB
 {
@@ -1024,6 +1020,8 @@ void sendUSBMIDI(uint8_t m, uint8_t c, uint8_t d1, uint8_t d2)    // send a 3-by
 
 
 
+
+
 void sendUSBMIDI(uint8_t m, uint8_t c, uint8_t d)    // send a 2-byte MIDI event over USB
 {
     c--; // Channels are zero-based
@@ -1036,6 +1034,7 @@ void sendUSBMIDI(uint8_t m, uint8_t c, uint8_t d)    // send a 2-byte MIDI event
     MidiUSB.flush();
     interrupts();
 }
+
 
 
 
@@ -1254,7 +1253,7 @@ void receiveMIDI()
                         }
 
 
-                        else if (pressureReceiveMode < 50) {
+                        else if (pressureReceiveMode < 51) {
                             switches[mode][pressureReceiveMode - 39] = rx.byte3; //switches in the slide/vibrato and register control panels
                             loadPrefs();
                         }
@@ -1267,6 +1266,12 @@ void receiveMIDI()
                         else if (pressureReceiveMode == 61) {
                             midiChannelSelector[mode] = rx.byte3;
                             loadPrefs();
+                        }
+
+                        else if (pressureReceiveMode < 87) {
+                            ED[mode][pressureReceiveMode - 48] = rx.byte3; //more expression and drones settings
+                            loadPrefs();
+
                         }
 
                     }
@@ -1366,8 +1371,8 @@ void saveSettings(byte i)
     EEPROM.update(53 + i, noteShiftSelector[mode]);
     EEPROM.update(50 + i, senseDistanceSelector[mode]);
 
-    for (byte n = 0; n < 10; n++) {
-        EEPROM.update((56 + n + (i * 10)), switches[mode][n]);
+    for (byte n = 0; n < 11; n++) {
+        EEPROM.update((56 + n + (i * 11)), switches[mode][n]);
     }
 
     EEPROM.update(333 + (i * 2), lowByte(vibratoHolesSelector[mode]));
@@ -1398,8 +1403,8 @@ void saveSettings(byte i)
     EEPROM.update(319 + i, midiBendRangeSelector[mode]);
     EEPROM.update(322 + i, midiChannelSelector[mode]);
 
-    for (byte n = 0; n < 21; n++) {
-        EEPROM.update((351 + n + (i * 21)), ED[mode][n]);
+    for (byte n = 0; n < 38; n++) {
+        EEPROM.update((351 + n + (i * 38)), ED[mode][n]);
     }
 
 
@@ -1443,8 +1448,8 @@ void loadSettingsForAllModes()
 
         senseDistanceSelector[i] = EEPROM.read(50 + i);
 
-        for (byte n = 0; n < 10; n++) {
-            switches[i][n] = EEPROM.read(56 + n + (i * 10));
+        for (byte n = 0; n < 11; n++) {
+            switches[i][n] = EEPROM.read(56 + n + (i * 11));
         }
 
         vibratoHolesSelector[i] = word(EEPROM.read(334 + (i * 2)), EEPROM.read(333 + (i * 2)));
@@ -1478,8 +1483,8 @@ void loadSettingsForAllModes()
         midiChannelSelector[i] = midiChannelSelector[i] > 16 ? 1 : midiChannelSelector[i]; // sanity check in case uninitialized
 
 
-        for (byte n = 0; n < 21; n++) {
-            ED[i][n] = EEPROM.read(351 + n + (i * 21));
+        for (byte n = 0; n < 38; n++) {
+            ED[i][n] = EEPROM.read(351 + n + (i * 38));
         }
 
 
@@ -1610,7 +1615,7 @@ void sendSettings()
         }
     }
 
-    for (byte i = 0; i < 10; i++) { //send settings for switches in the slide/vibrato and register control panels
+    for (byte i = 0; i < 11; i++) { //send settings for switches in the slide/vibrato and register control panels
         sendUSBMIDI(CC, 7, 104, i + 40);
         sendUSBMIDI(CC, 7, 105, switches[mode][i]);
     }
@@ -1620,19 +1625,20 @@ void sendSettings()
         sendUSBMIDI(CC, 7, 105, ED[mode][i]);
     }
 
+    for (byte i = 21; i < 38; i++) { //more settings for expression and drones control panels
+        sendUSBMIDI(CC, 7, 104, i + 49);
+        sendUSBMIDI(CC, 7, 105, ED[mode][i]);
+    }
 
     for (byte i = 0; i < 3; i++) {
         sendUSBMIDI(CC, 7, 102, 90 + i); //indicate that we'll be sending data for momentary
         sendUSBMIDI(CC, 7, 102, 117 + momentary[mode][i]);
     }
 
-
     for (byte i = 0; i < 12; i++) {
         sendUSBMIDI(CC, 7, 104, i + 1); //indicate which pressure variable we'll be sending data for
         sendUSBMIDI(CC, 7, 105, pressureSelector[mode][i]); //send the data
     }
-
-
 }
 
 
@@ -2162,9 +2168,6 @@ void loadPrefs()
 
     sensorThreshold[1] = sensorThreshold[0] + (offset << 2); //threshold for move to second octave
 
-    //Serial.print("MB range: ");
-    //Serial.println(midiBendRange);
-
     for (byte i = 0; i < 9; i++) {
         toneholeScale[i] = ((8 * (16383 / midiBendRange)) / (toneholeCovered[i] - 50 - senseDistance) / 2); // Precalculate scaling factors for pitchbend. This one is for sliding. We multiply by 8 first to reduce rounding errors. We'll divide again later.
         vibratoScale[i] = ((8 * 2 * (vibratoDepth / midiBendRange)) / (toneholeCovered[i] - 50 - senseDistance) / 2); //This one is for vibrato
@@ -2173,12 +2176,33 @@ void loadPrefs()
     adjvibdepth = vibratoDepth / midiBendRange; //precalculations for pitchbend range
     pitchBendPerSemi = 8192 / midiBendRange;
 
-    minIn = (ED[mode][INPUT_PRESSURE_MIN] * 9); //precalculate input and output pressure ranges for sending pressure as CC
-    maxIn = (ED[mode][INPUT_PRESSURE_MAX] * 9);
+    inputPressureBounds[0][0] = (ED[mode][INPUT_PRESSURE_MIN] * 9); //precalculate input and output pressure ranges for sending pressure as CC
+    inputPressureBounds[0][1] = (ED[mode][INPUT_PRESSURE_MAX] * 9);
+    inputPressureBounds[1][0] = (ED[mode][VELOCITY_INPUT_PRESSURE_MIN] * 9); //precalculate input and output pressure ranges for sending pressure as velocity
+    inputPressureBounds[1][1] = (ED[mode][VELOCITY_INPUT_PRESSURE_MAX] * 9);
+    inputPressureBounds[2][0] = (ED[mode][AFTERTOUCH_INPUT_PRESSURE_MIN] * 9); //precalculate input and output pressure ranges for sending pressure as aftertouch
+    inputPressureBounds[2][1] = (ED[mode][AFTERTOUCH_INPUT_PRESSURE_MAX] * 9);
+    inputPressureBounds[3][0] = (ED[mode][POLY_INPUT_PRESSURE_MIN] * 9); //precalculate input and output pressure ranges for sending pressure as poly
+    inputPressureBounds[3][1] = (ED[mode][POLY_INPUT_PRESSURE_MAX] * 9);
 
-    pressureInputScale = (1048576 / (maxIn - minIn)); //precalculate a scaling factor for pressure input, which will be used to scale it up to a range of 1024.
+    for (byte j = 0; j < 4; j++) { // CC, velocity, aftertouch, poly
+        pressureInputScale[j] = (1048576 / (inputPressureBounds[j][1] - inputPressureBounds[j][0])); //precalculate scaling factors for pressure input, which will be used to scale it up to a range of 1024.
+        inputPressureBounds[j][2] = (inputPressureBounds[j][0] * pressureInputScale[j]) >> 10;
+    }
 
-    scaledMinIn = (minIn * pressureInputScale) >> 10;
+    outputBounds[0][0] = ED[mode][OUTPUT_PRESSURE_MIN];  //move all these variables to a more logical order so they can be accessed in FOR loops
+    outputBounds[0][1] = ED[mode][OUTPUT_PRESSURE_MAX];
+    outputBounds[1][0] = ED[mode][VELOCITY_OUTPUT_PRESSURE_MIN];
+    outputBounds[1][1] = ED[mode][VELOCITY_OUTPUT_PRESSURE_MAX];
+    outputBounds[2][0] = ED[mode][AFTERTOUCH_OUTPUT_PRESSURE_MIN];
+    outputBounds[2][1] = ED[mode][AFTERTOUCH_OUTPUT_PRESSURE_MAX];
+    outputBounds[3][0] = ED[mode][POLY_OUTPUT_PRESSURE_MIN];
+    outputBounds[3][1] = ED[mode][POLY_OUTPUT_PRESSURE_MAX];
+
+    curve[0] = ED[mode][CURVE];
+    curve[1] = ED[mode][VELOCITY_CURVE];
+    curve[2] = ED[mode][AFTERTOUCH_CURVE];
+    curve[3] = ED[mode][POLY_CURVE];
 
 }
 
@@ -2188,19 +2212,18 @@ void loadPrefs()
 
 
 //calculate pressure data for CC, velocity, channel pressure, and key pressure if those options are selected
-void calculatePressure()
+void calculatePressure(byte pressureOption)
 {
 
     long scaledPressure = sensorValue - 100; // input pressure range is 100-1000. Bring this down to 0-900
-    scaledPressure = constrain (scaledPressure, minIn, maxIn);
-    scaledPressure = (((scaledPressure * pressureInputScale) >> 10) - scaledMinIn); //scale input pressure up to a range of 0-1024 using the precalculated scale factor
+    scaledPressure = constrain (scaledPressure, inputPressureBounds[pressureOption][0], inputPressureBounds[pressureOption][1]);
+    scaledPressure = (((scaledPressure * pressureInputScale[pressureOption]) >> 10) - inputPressureBounds[pressureOption][2]); //scale input pressure up to a range of 0-1024 using the precalculated scale factor
 
-    if (ED[mode][CURVE] == 1) { //for this curve, cube the input and scale back down.
+    if (curve[pressureOption] == 1) { //for this curve, cube the input and scale back down.
         scaledPressure = ((scaledPressure * scaledPressure * scaledPressure)  >> 20);
     }
 
-
-    else if (ED[mode][CURVE] == 2) { //approximates a log curve with piecewise linear function.
+    else if (curve[pressureOption] == 2) { //approximates a log curve with a piecewise linear function.
         switch (scaledPressure >> 6) {
             case 0:
                 scaledPressure = scaledPressure << 3;
@@ -2216,21 +2239,19 @@ void calculatePressure()
                 break;
         }
         if (scaledPressure > 1024) {
-          scaledPressure = 1024;
+            scaledPressure = 1024;
         }
-
     }
 
+    //else curve 0 is linear, so no transformation
 
-    //else curve 3 is linear, so no transformation
+    inputPressureBounds[pressureOption][3] = (scaledPressure * (outputBounds[pressureOption][1] - outputBounds[pressureOption][0]) >> 10) + outputBounds[pressureOption][0]; //map to output pressure range
 
-    mappedPressure = (scaledPressure * (ED[mode][OUTPUT_PRESSURE_MAX] - ED[mode][OUTPUT_PRESSURE_MIN]) >> 10) + ED[mode][OUTPUT_PRESSURE_MIN]; //map to output pressure range
 
-    if (switches[mode][SEND_VELOCITY] == 1) { //set velocity to mapped pressure if desired
-        velocity = mappedPressure;
+    if (pressureOption == 1) { //set velocity to mapped pressure if desired
+        velocity = inputPressureBounds[pressureOption][3];
     }
 }
-
 
 
 
@@ -2240,14 +2261,14 @@ void calculatePressure()
 void sendPressure(bool force)
 {
 
-    if (ED[mode][SEND_PRESSURE] == 1 && (mappedPressure != prevCCPressure || force)) {
-        sendUSBMIDI(CC, ED[mode][PRESSURE_CHANNEL], ED[mode][PRESSURE_CC], mappedPressure); //send MSB of pressure mapped to the output range
-        prevCCPressure = mappedPressure;
+    if (ED[mode][SEND_PRESSURE] == 1 && (inputPressureBounds[0][3] != prevCCPressure || force)) {
+        sendUSBMIDI(CC, ED[mode][PRESSURE_CHANNEL], ED[mode][PRESSURE_CC], inputPressureBounds[0][3]); //send MSB of pressure mapped to the output range
+        prevCCPressure = inputPressureBounds[0][3];
     }
 
     if ((switches[mode][SEND_AFTERTOUCH] & 1)) {
         // hack
-        int sendm = (!noteon && sensorValue <= 100) ? 0 : mappedPressure;
+        int sendm = (!noteon && sensorValue <= 100) ? 0 : inputPressureBounds[2][3];
         if (sendm != prevChanPressure || force) {
             sendUSBMIDI(CHANNEL_PRESSURE, mainMidiChannel, sendm); //send MSB of pressure mapped to the output range
             prevChanPressure = sendm;
@@ -2257,7 +2278,7 @@ void sendPressure(bool force)
     // poly aftertouch uses 2nd lowest bit of ED flag
     if ((switches[mode][SEND_AFTERTOUCH] & 2) && noteon) {
         // hack
-        int sendm = (!noteon && sensorValue <= 100) ? 0 : mappedPressure;
+        int sendm = (!noteon && sensorValue <= 100) ? 0 : inputPressureBounds[3][3];
         if (sendm != prevPolyPressure || force) {
             sendUSBMIDI(KEY_PRESSURE, mainMidiChannel, notePlaying, sendm); //send MSB of pressure mapped to the output range
             prevPolyPressure = sendm;

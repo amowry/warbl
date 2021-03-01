@@ -72,7 +72,7 @@
 #define kPitchBendLegatoSlideVibrato 3
 #define kPitchBendNModes 4
 
-// Pressure modes
+// Register control modes
 #define kPressureSingle 0
 #define kPressureBreath 1
 #define kPressureThumb 2
@@ -98,10 +98,11 @@
 #define INVERT 3
 #define CUSTOM 4
 #define SEND_VELOCITY 5
-#define SEND_AFTERTOUCH 6
+#define SEND_AFTERTOUCH 6 //second bit of this one is used for poly
 #define FORCE_MAX_VELOCITY 7
 #define IMMEDIATE_PB 8
 #define LEGATO 9
+#define OVERRIDE 10
 
 //Variables in the ED array (all the settings for the Expression and Drones panels)
 #define EXPRESSION_ON 0
@@ -125,6 +126,23 @@
 #define DRONES_CONTROL_MODE 18
 #define DRONES_PRESSURE_LOW_BYTE 19
 #define DRONES_PRESSURE_HIGH_BYTE 20
+#define VELOCITY_INPUT_PRESSURE_MIN 21
+#define VELOCITY_INPUT_PRESSURE_MAX 22
+#define VELOCITY_OUTPUT_PRESSURE_MIN 23
+#define VELOCITY_OUTPUT_PRESSURE_MAX 24
+#define AFTERTOUCH_INPUT_PRESSURE_MIN 25
+#define AFTERTOUCH_INPUT_PRESSURE_MAX 26
+#define AFTERTOUCH_OUTPUT_PRESSURE_MIN 27
+#define AFTERTOUCH_OUTPUT_PRESSURE_MAX 28
+#define POLY_INPUT_PRESSURE_MIN 29
+#define POLY_INPUT_PRESSURE_MAX 30
+#define POLY_OUTPUT_PRESSURE_MIN 31
+#define POLY_OUTPUT_PRESSURE_MAX 32
+#define VELOCITY_CURVE 33
+#define AFTERTOUCH_CURVE 34
+#define POLY_CURVE 35
+#define EXPRESSION_MIN 36
+#define EXPRESSION_MAX 37
 
 //GPIO constants
 const uint8_t ledPin = 13;
@@ -139,8 +157,8 @@ byte defaultMode = 0; // The default mode, from 0-2.
 //variables that can change according to instrument.
 int8_t octaveShift = 0; //octave transposition
 int8_t noteShift = 0; //note transposition, for changing keys. All fingering patterns are initially based on the key of D, and transposed with this variable to the desired key.
-byte pitchBendMode = kPitchBendSlideVibrato; //0 means slide and vibrato are on. 1 means only vibrato is on. 2 is all pitchbend off.
-byte senseDistance = 10;   //the sensor value above which the finger is sensed for bending notes. Needs to higher than the baseline sensor readings, otherwise vibrato will be turned on erroneously.
+byte pitchBendMode = kPitchBendSlideVibrato; //0 means slide and vibrato are on. 1 means only vibrato is on. 2 is all pitchbend off, 3 is legato slide/vibrato.
+byte senseDistance = 10;   //the sensor value above which the finger is sensed for bending notes. Needs to be higher than the baseline sensor readings, otherwise vibrato will be turned on erroneously.
 byte breathMode = kPressureBreath; //the desired presure sensor behavior: single register, overblow, thumb register control, bell register control.
 unsigned int vibratoDepth = 1024; //vibrato depth from 0 (no vibrato) to 8191 (one semitone)
 bool useLearnedPressure = 0; //whether we use learned pressure for note on threshold, or we use calibration pressure from startup
@@ -164,7 +182,7 @@ byte midiChannelSelector[] = {1, 1, 1};
 
 bool momentary[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}} ; //whether momentary click behavior is desired for MIDI on/off message sent with a button. Dimension 0 is mode (instrument), dimension 1 is button 0,1,2.
 
-byte switches[3][10] = //the settings for the five switches in the vibrato/slide and register control panels
+byte switches[3][11] = //the settings for the five switches in the vibrato/slide and register control panels
     //instrument 0
 {
     {
@@ -178,16 +196,17 @@ byte switches[3][10] = //the settings for the five switches in the vibrato/slide
         1, // force maximum velocity (127)
         0, // send pitchbend immediately before Note On (recommnded for MPE)
         1, // send legato (Note On message before Note Off for previous note)
+        0, //override pitch expression pressure range
     },
 
     //same for instrument 1
-    {0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+    {0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0},
 
     //same for instrument 2
-    {0, 0, 0, 0, 1, 0, 0, 1, 0, 1}
+    {0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0}
 };
 
-byte ED[3][21] = //an array that holds all the settings for the Expression and Drones Control panels in the Configuration Tool.
+byte ED[3][38] = //an array that holds all the settings for the Expression and Drones Control panels in the Configuration Tool.
     //instrument 0
 {
     {
@@ -211,17 +230,34 @@ byte ED[3][21] = //an array that holds all the settings for the Expression and D
         36,    //DRONES_OFF_BYTE3
         0,    //DRONES_CONTROL_MODE (0 is no drone control, 1 is use secret button, 2 is use bagless button, 3 is use pressure.
         0,    //DRONES_PRESSURE_LOW_BYTE
-        0
-    },    //DRONES_PRESSURE_HIGH_BYTE
+        0,     //DRONES_PRESSURE_HIGH_BYTE
+        0,    //VELOCITY_INPUT_PRESSURE_MIN
+        100,  //VELOCITY_INPUT_PRESSURE_MAX
+        0,    //VELOCITY_OUTPUT_PRESSURE_MIN
+        127,  //VELOCITY_OUTPUT_PRESSURE_MAX
+        0,    //AFTERTOUCH_INPUT_PRESSURE_MIN
+        100,  //AFTERTOUCH_INPUT_PRESSURE_MAX
+        0,    //AFTERTOUCH_OUTPUT_PRESSURE_MIN
+        127,  //AFTERTOUCH_OUTPUT_PRESSURE_MAX
+        0,    //POLY_INPUT_PRESSURE_MIN
+        100,  //POLY_INPUT_PRESSURE_MAX
+        0,    //POLY_OUTPUT_PRESSURE_MIN
+        127,  //POLY_OUTPUT_PRESSURE_MAX
+        0,    //VELOCITY_CURVE
+        0,    //AFTERTOUCH_CURVE
+        0,    //POLY_CURVE
+        0,    //EXPRESSION_MIN
+        100    //EXPRESSION_MAX
+    },
 
     //same for instrument 1
-    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0},
+    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 0, 0, 0, 100},
 
     //same for instrument 2
-    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0}
+    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 0, 0, 0, 100}
 };
 
-byte pressureSelector[3][12] = //a selector array for all the pressure settings variables that can be changed in the Configuration Tool
+byte pressureSelector[3][12] = //a selector array for all the register control variables that can be changed in the Configuration Tool
     //instrument 0
 {
     {
@@ -291,20 +327,34 @@ boolean velocityDelay = 0; //whether we are currently waiting for the pressure t
 unsigned long velocityDelayTimer = 0; //a timer for the above delay.
 bool jump = 0; //whether we jumped directly to second octave from note off because of rapidly increasing pressure.
 unsigned long jumpTimer = 0; //records time when we dropped to note off.
-int jumpTime = 15; //the amount of time to wait before dropping back down from an octave jump to first octave because of insufficient pressure MAE FOOFOO was 40
+int jumpTime = 15; //the amount of time to wait before dropping back down from an octave jump to first octave because of insufficient pressure
 bool drop = 0; //whether we dropped directly from second octave to note off
 unsigned long dropTimer = 0; //time when we jumped to second octave.
-int dropTime = 15 ; //the amount of time to wait (ms) before turning a note back on after dropping directly from second octave to note off MAE FOOFOO was 120
+int dropTime = 15 ; //the amount of time to wait (ms) before turning a note back on after dropping directly from second octave to note off
 byte jumpValue = 15;
 byte dropValue = 15;
 byte multiplier = 15; //controls how much more difficult it is to jump to second octave from higher first-octave notes than from lower first-octave notes. Increasing this makes playing with a bag more forgiving but requires more force to reach highest second-octave notes. Can be set according to fingering mode and breath mode (i.e. a higher jump factor may be used for playing with a bag). Array indices 1-3 are for breath mode jump factor, indices 4-6 are for bag mode jump factor.
 byte soundTriggerOffset = 3; //the number of sensor values above the calibration setting at which a note on will be triggered (first octave)
 int learnedPressure = 0; //the learned pressure reading, used as a base value
-unsigned int minIn = 100; //used for sending pressure data as CC
-unsigned long maxIn = 800;
-unsigned int scaledMinIn = 0; //the current input pressure scaled up to 1024, used in calculations
-int mappedPressure = 0; //scaled pressure data mapped to output
-unsigned long pressureInputScale = 0; //precalculated scale factor for mapping the input pressure range
+
+unsigned int inputPressureBounds[4][4] = { //for mapping pressure input range to output range. Dimension 1 is CC, velocity, aftertouch, poly. Dimension 2 is minIn, maxIn, scaledMinIn, mappedPressure
+    {100, 800, 0, 0},
+    {100, 800, 0, 0},
+    {100, 800, 0, 0},
+    {100, 800, 0, 0},
+};
+
+unsigned long pressureInputScale[4] = // precalculated scale factor for mapping the input pressure range, for CC, velocity, aftertouch, and poly.
+{0, 0, 0, 0};
+
+byte outputBounds[4][2] = { // container for ED output pressure range variables (CC, velocity, aftertouch, poly)-- the ED variables will be copied here so they're in a more logical order. This is a fix for variables that were added later.
+    {0, 127},
+    {0, 127},
+    {0, 127},
+    {0, 127}
+};
+
+byte curve[4] = {0, 0, 0}; //similar to above-- more logical odering for the pressure curve variable
 
 
 //variables for reading tonehole sensors
@@ -318,7 +368,7 @@ unsigned int holeCovered = 0; //whether each hole is covered-- each bit correspo
 uint8_t tempCovered = 0; //used when masking holeCovered to ignore certain holes depending on the fingering pattern.
 bool fingersChanged = 1; //keeps track of when the fingering pattern has changed.
 unsigned int prevHoleCovered = 1; //so we can track changes.
-unsigned int hysteresis = 4;
+unsigned int hysteresis = 4; //difference in sensor readings required to cover/uncover holes, to prevent oscillations
 volatile int tempNewNote = 0;
 byte prevNote;
 byte newNote = -1; //the next note to be played, based on the fingering chart (does not include transposition).
@@ -533,10 +583,21 @@ void loop()
     if ((nowtime - pressureTimer) >= ((nowtime - noteOnTimestamp) < 20 ? 2 : 5)) {
         pressureTimer = nowtime;
         if (abs(prevSensorValue - sensorValue) > 1) { //if pressure has changed more than a little, send it.
-            if (ED[mode][SEND_PRESSURE] == 1 || switches[mode][SEND_AFTERTOUCH] != 0 || switches[mode][SEND_VELOCITY] == 1) {
-                calculatePressure();
-                sendPressure(false);
+            if (ED[mode][SEND_PRESSURE]) {
+                calculatePressure(0);
             }
+            if (switches[mode][SEND_VELOCITY]) {
+                calculatePressure(1);
+            }
+            if (switches[mode][SEND_AFTERTOUCH] & 1) {
+                calculatePressure(2);
+            }
+            if (switches[mode][SEND_AFTERTOUCH] & 2) {
+                calculatePressure(3);
+            }
+
+            sendPressure(false);
+
             if (communicationMode) {
                 sendUSBMIDI(CC, 7, 116, sensorValue & 0x7F); //send LSB of current pressure to configuration tool
                 sendUSBMIDI(CC, 7, 118, sensorValue >> 7); //send MSB of current pressure
@@ -569,12 +630,11 @@ void loop()
             //for (byte i = 0; i < 9; i++) {
             // Serial.println(velocity);
             //Serial.println(maxOut/129);
-            //Serial.println(EEPROM.read(63));
-            //Serial.println(EEPROM.read(71));
-            Serial.println(finalTime);
-            //Serial.println("");
-            //Serial.println(buttonPrefs[mode][0][0]);
+            //Serial.println(ED[mode][VELOCITY_INPUT_PRESSURE_MIN]);
+            //Serial.println(outputBounds[0][0]);
+            //Serial.println(inputPressureBounds[0][3]);
 
+            //Serial.println("");
 
         }
     }
