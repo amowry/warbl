@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Many other small improvements to Config Tool user interface
 - Changed recorder fingering 0 111 0100 from G to F# to mimic real instrument
 - Fixed error in velocity calculation
-- Changed how restoring factory settings works, so that the settings no longer need to be stored in EEPROM, freeing up space. Restoring settings now requires/causes WARBL to reboot, after which the Configuration Tool attempts to reconnect to it. Chrome occasionally freezes when WARBL reboots because of a Chrome bug, so occaionally Chrome may need to be restarted after a factory reset.
+- Changed how restoring factory settings works, so that the settings no longer need to be stored in EEPROM, freeing up space. Restoring settings now requires/causes WARBL to reboot, after which the Configuration Tool attempts to reconnect to it. Chrome occasionally freezes when WARBL reboots because of a Chrome bug, so occasionally Chrome may need to be restarted after a factory reset.
 
 ### Added
 
