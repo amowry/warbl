@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
-## [1.9] - 2020-8-12
+## [2.0] - 2020-8-12
 ### Changed
 
 - Changed the MIDI console in the Config Tool to display up to 300 messages (CC messages used for WARBL/Config Tool communication are filtered out.)
@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added Säckpipa major and minor fingering charts
 - Added the ability to make a custom fingering chart based on simple tin whistle fingering patterns (plus the left thumb hole). Any MIDI note can be assigned to each pattern in the chart, and the R4 finger can optionally be used to flatten any note one semitone. Both the thumb and overblowing can optionally be used for register control, for a maximum range of three registers.
 - Key pressure in addition to channel pressure
 - Ability to select output MIDI channel for notes
