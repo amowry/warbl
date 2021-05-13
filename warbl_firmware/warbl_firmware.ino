@@ -1,6 +1,6 @@
 
 /*
-    Copyright (C) 2018 Andrew Mowry warbl.xyz
+    Copyright (C) 2018-2021 Andrew Mowry warbl.xyz
 
     Many thanks to Michael Eskin and Jesse Chappell for their additions and debugging help.
 
@@ -21,6 +21,7 @@
 
 
 //#include <MemoryUsage.h> //can be used to show free RAM
+#include <avr/wdt.h> //for resetting with watchdog
 #include <TimerOne.h> //for timer interrupt for reading sensors at a regular interval
 #include <DIO2.h> //fast digitalWrite library used for toggling IR LEDs
 #include <MIDIUSB.h>
@@ -34,7 +35,7 @@
 
 #define MAXIMUM  (DEBOUNCE_TIME * SAMPLE_FREQUENCY) //the integrator value required to register a button press
 
-#define VERSION 19 //software version number (without decimal point)
+#define VERSION 20 //software version number (without decimal point)
 
 //MIDI commands
 #define NOTE_OFF 0x80 //127
@@ -63,7 +64,10 @@
 #define kModeSaxBasic 14
 #define kModeEVI 15
 #define kModeShakuhachi 16
-#define kModeNModes 17
+#define kModeSackpipaMajor 17
+#define kModeSackpipaMinor 18
+#define kModeCustom 19
+#define kModeNModes 20
 
 // Pitch bend modes
 #define kPitchBendSlideVibrato 0
@@ -103,6 +107,9 @@
 #define IMMEDIATE_PB 8
 #define LEGATO 9
 #define OVERRIDE 10
+#define THUMB_AND_OVERBLOW 11
+#define R4_FLATTEN 12
+#define kSWITCHESnVariables 13
 
 //Variables in the ED array (all the settings for the Expression and Drones panels)
 #define EXPRESSION_ON 0
@@ -143,6 +150,18 @@
 #define POLY_CURVE 35
 #define EXPRESSION_MIN 36
 #define EXPRESSION_MAX 37
+#define CUSTOM_FINGERING_1 38
+#define CUSTOM_FINGERING_2 39
+#define CUSTOM_FINGERING_3 40
+#define CUSTOM_FINGERING_4 41
+#define CUSTOM_FINGERING_5 42
+#define CUSTOM_FINGERING_6 43
+#define CUSTOM_FINGERING_7 44
+#define CUSTOM_FINGERING_8 45
+#define CUSTOM_FINGERING_9 46
+#define CUSTOM_FINGERING_10 47
+#define CUSTOM_FINGERING_11 48
+#define kEXPRESSIONnVariables 49
 
 //GPIO constants
 const uint8_t ledPin = 13;
@@ -182,7 +201,7 @@ byte midiChannelSelector[] = {1, 1, 1};
 
 bool momentary[3][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}} ; //whether momentary click behavior is desired for MIDI on/off message sent with a button. Dimension 0 is mode (instrument), dimension 1 is button 0,1,2.
 
-byte switches[3][11] = //the settings for the five switches in the vibrato/slide and register control panels
+byte switches[3][13] = //the settings for the five switches in the vibrato/slide and register control panels
     //instrument 0
 {
     {
@@ -197,16 +216,18 @@ byte switches[3][11] = //the settings for the five switches in the vibrato/slide
         0, // send pitchbend immediately before Note On (recommnded for MPE)
         1, // send legato (Note On message before Note Off for previous note)
         0, //override pitch expression pressure range
+        0, //use both thumb and overblowing for register control with custom fingering chart
+        0 //use R4 finger to flatten any note one semitone with custom fingering chart
     },
 
     //same for instrument 1
-    {0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0},
+    {0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0},
 
     //same for instrument 2
-    {0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0}
+    {0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0}
 };
 
-byte ED[3][38] = //an array that holds all the settings for the Expression and Drones Control panels in the Configuration Tool.
+byte ED[3][49] = //an array that holds all the settings for the Expression and Drones Control panels in the Configuration Tool.
     //instrument 0
 {
     {
@@ -247,14 +268,25 @@ byte ED[3][38] = //an array that holds all the settings for the Expression and D
         0,    //AFTERTOUCH_CURVE
         0,    //POLY_CURVE
         0,    //EXPRESSION_MIN
-        100    //EXPRESSION_MAX
+        100,    //EXPRESSION_MAX
+        0,   //CUSTOM_FINGERING_1
+        74,   //CUSTOM_FINGERING_2
+        73,   //CUSTOM_FINGERING_3
+        72,   //CUSTOM_FINGERING_4
+        71,   //CUSTOM_FINGERING_5
+        69,   //CUSTOM_FINGERING_6
+        67,   //CUSTOM_FINGERING_7
+        66,   //CUSTOM_FINGERING_8
+        64,   //CUSTOM_FINGERING_9
+        62,   //CUSTOM_FINGERING_10
+        61   //CUSTOM_FINGERING_11
     },
 
     //same for instrument 1
-    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 0, 0, 0, 100},
+    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 0, 0, 0, 100, 0, 74, 73, 72, 71, 69, 67, 66, 64, 62, 61},
 
     //same for instrument 2
-    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 0, 0, 0, 100}
+    {0, 3, 0, 0, 1, 7, 0, 100, 0, 127, 0, 1, 51, 36, 0, 1, 51, 36, 0, 0, 0, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 127, 0, 0, 0, 0, 100, 0, 74, 73, 72, 71, 69, 67, 66, 64, 62, 61}
 };
 
 byte pressureSelector[3][12] = //a selector array for all the register control variables that can be changed in the Configuration Tool
@@ -318,6 +350,7 @@ int prevSensorValue = 0; // previous sensor reading, used to tell if the pressur
 int pressureChangeRate = 0; //the difference between current and previous sensor readings
 int sensorCalibration = 0; //the sensor reading at startup, used as a base value
 byte offset = 15;
+byte customScalePosition; //used to indicate the position of the current note on the custom chart scale (needed for state calculation)
 int sensorThreshold[] = {260, 0}; //the pressure sensor thresholds for initial note on and shift from register 1 to register 2, before some transformations.
 int upperBound = 255; //this represents the pressure transition between the first and second registers. It is calculated on the fly as: (sensorThreshold[1] + ((newNote - 60) * multiplier))
 byte newState; //the note/octave state based on the sensor readings (1=not enough force to sound note, 2=enough force to sound first octave, 3 = enough force to sound second octave)
@@ -354,7 +387,7 @@ byte outputBounds[4][2] = { // container for ED output pressure range variables 
     {0, 127}
 };
 
-byte curve[4] = {0, 0, 0}; //similar to above-- more logical odering for the pressure curve variable
+byte curve[4] = {0, 0, 0, 0}; //similar to above-- more logical odering for the pressure curve variable
 
 
 //variables for reading tonehole sensors
@@ -368,7 +401,6 @@ unsigned int holeCovered = 0; //whether each hole is covered-- each bit correspo
 uint8_t tempCovered = 0; //used when masking holeCovered to ignore certain holes depending on the fingering pattern.
 bool fingersChanged = 1; //keeps track of when the fingering pattern has changed.
 unsigned int prevHoleCovered = 1; //so we can track changes.
-unsigned int hysteresis = 4; //difference in sensor readings required to cover/uncover holes, to prevent oscillations
 volatile int tempNewNote = 0;
 byte prevNote;
 byte newNote = -1; //the next note to be played, based on the fingering chart (does not include transposition).
@@ -408,8 +440,6 @@ byte velocity = 127;//default MIDI note velocity
 //tonehole calibration variables
 byte calibration = 0; //whether we're currently calibrating. 1 is for calibrating all sensors, 2 is for calibrating bell sensor only, 3 is for calibrating all sensors plus baseline calibration (normally only done once, in the "factory").
 unsigned long calibrationTimer = 0;
-byte high; //for rebuiding ints from bytes read from EEPROM
-byte low; // "" ""
 
 //variables for reading buttons
 unsigned long buttonReadTimer = 0; //for telling when it's time to read the buttons
@@ -419,7 +449,7 @@ bool released[] = {0, 0, 0}; //if a button has just been released
 bool justPressed[] = {0, 0, 0}; //if a button has just been pressed
 bool prevOutput[] = {0, 0, 0}; //previous state of button, to track state through time
 bool longPress[] = {0, 0, 0}; //long button press
-unsigned int longPressCounter[] = {0, 0, 0}; //for counting how many reading each button has been held, to indicate a long button press
+unsigned int longPressCounter[] = {0, 0, 0}; //for counting how many readings each button has been held, to indicate a long button press
 bool noteOnOffToggle[] = {0, 0, 0}; //if using a button to toggle a noteOn/noteOff command, keep track of state.
 bool longPressUsed[] = {0, 0, 0}; //if we used a long button press, we set a flag so we don't use it again unless the button has been released first.
 bool buttonUsed = 0; //flags any button activity, so we know to handle it.
@@ -452,24 +482,12 @@ void setup()
 
     //EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for debugging (after making changes to factory settings). Needs to be recommented again after.
 
-    if (EEPROM.read(1012) != 3) { //if EEPROM locations haven't been updated for v. 1.9 or greater, copy the baseline sensor calibrations to their new locations.
-        for (byte i = 0; i < 11; i++) {
-            EEPROM.update(500 + i, EEPROM.read(720 + i));
-            EEPROM.update(1000 + i, EEPROM.read(720 + i));
-        }
-        EEPROM.update(1012, 3);
-    }
 
-    if (EEPROM.read(1011) != VERSION) { //if a new software version has been loaded, update newer settings
+    if (EEPROM.read(44) != 3 || EEPROM.read(1011) != VERSION) {
         EEPROM.update(1011, VERSION); //update the stored software version
-        saveFactorySettings(); //rewrite factory settings to EEPROM.
+        saveFactorySettings(); //If we're running the software for the first time, if a factory reset has been requested, or if the software version has changed, copy all settings to EEPROM.
     }
 
-    //  EEPROM.update(44, 255); //this line can be uncommented to make a version of the software that will resave factory settings the first time it is loaded.
-
-    if (EEPROM.read(44) != 3) {
-        saveFactorySettings(); //If we're running the software for the first time, copy all settings to EEPROM.
-    }
     if (EEPROM.read(37) == 3) {
         loadCalibration(); //If there has been a calibration saved, reload it at startup.
     }
@@ -484,7 +502,6 @@ void setup()
     sensorValue = sensorCalibration; //an initial reading to "seed" subsequent pressure readings
 
     loadPrefs(); //load the correct user settings based on current instrument.
-
 
     //prepare sensors
     Timer1.initialize(100); //this timer is only used to add some additional time after reading all sensors, for power savings.
@@ -626,15 +643,14 @@ void loop()
                 }
             }
 
-            //This is a good place to send occasional debug info.
-            //for (byte i = 0; i < 9; i++) {
-            // Serial.println(velocity);
-            //Serial.println(maxOut/129);
+
+            //Serial.println(newState);
             //Serial.println(ED[mode][VELOCITY_INPUT_PRESSURE_MIN]);
             //Serial.println(outputBounds[0][0]);
             //Serial.println(inputPressureBounds[0][3]);
+            //FREERAM_PRINT
 
-            //Serial.println("");
+
 
         }
     }

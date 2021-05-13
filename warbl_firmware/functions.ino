@@ -143,7 +143,7 @@ void get_fingers()
     for (byte i = 0; i < 9; i++) {
         if ((toneholeRead[i]) > (toneholeCovered[i] - 50)) {
             bitWrite(holeCovered, i, 1); //use the tonehole readings to decide which holes are covered
-        } else if ((toneholeRead[i]) <= (toneholeCovered[i] - 50 - hysteresis)) {
+        } else if ((toneholeRead[i]) <= (toneholeCovered[i] - 54)) {
             bitWrite(holeCovered, i, 0); //decide which holes are uncovered -- the "hole uncovered" reading is a little less then the "hole covered" reading, to prevent oscillations.
         }
     }
@@ -171,9 +171,11 @@ void send_fingers()
 int get_note(unsigned int fingerPattern)
 {
 
+
     int ret = -1;  //default for unknown fingering
 
     switch (modeSelector[mode]) { //determine the note based on the fingering pattern
+
 
         case kModeWhistle: //these first two are the same
 
@@ -210,14 +212,13 @@ int get_note(unsigned int fingerPattern)
             }
             if (modeSelector[mode] == kModeUilleannStandard) { //cancel accidentals if we're in standard uilleann mode
                 if (tempCovered == 0b1001000 || tempCovered == 0b1001010) {
-                    ret = 71;
+                    return 71;
                 }
 
                 if (tempCovered == 0b1101000 || tempCovered == 0b1101010) {
-                    ret = 69;
+                    return 69;
                 }
             }
-
             return ret;
 
 
@@ -267,6 +268,7 @@ int get_note(unsigned int fingerPattern)
                     return ret;
                 }
             }
+            break;
 
 
         case kModeGaita:
@@ -371,13 +373,83 @@ int get_note(unsigned int fingerPattern)
         case kModeShakuhachi:
 
             //ignore all unused holes by extracting bits and then logical OR
-            byte high = (fingerPattern >> 4) & 0b11000;
-            byte middle = (fingerPattern >> 4) & 0b00011;
-            middle = middle << 1;
-            byte low = (fingerPattern >> 2) & 0b0000001;
-            tempCovered = high | middle;
-            tempCovered = tempCovered | low;
-            ret = pgm_read_byte(&shakuhachi_explicit[tempCovered].midi_note);
+            {
+                //braces necessary for scope
+                byte high = (fingerPattern >> 4) & 0b11000;
+                byte middle = (fingerPattern >> 4) & 0b00011;
+                middle = middle << 1;
+                byte low = (fingerPattern >> 2) & 0b0000001;
+                tempCovered = high | middle;
+                tempCovered = tempCovered | low;
+                ret = pgm_read_byte(&shakuhachi_explicit[tempCovered].midi_note);
+                return ret;
+            }
+
+
+
+        case kModeSackpipaMajor:
+
+        case kModeSackpipaMinor: //the same except we'll change C# to C
+
+            //check the chart.
+            tempCovered = (0b011111100 & fingerPattern) >> 2; //ignore thumb hole, R4 hole, and bell sensor
+            if ((fingerPattern & 0b111111110) >> 1 == 0b11111111) { //play D if all holes are covered
+                return 60; //play D
+            }
+            if ((fingerPattern & 0b100000000) == 0) { //if the thumb hole is open, play high E
+                return 74; //play E
+            }
+            ret = pgm_read_byte(&sackpipa_explicit[tempCovered].midi_note);
+            if (modeSelector[mode] == kModeSackpipaMinor) { //flatten the C# if we're in "minor" mode
+                if (ret == 71) {
+                    return 70; //play C natural instead
+                }
+            }
+            return ret;
+
+
+
+        case kModeCustom:
+            tempCovered = (0b011111110 & fingerPattern) >> 1; //ignore thumb hole and bell sensor for now
+            uint8_t leftmost = findleftmostunsetbit(tempCovered);  //here we find the index of the leftmost uncovered hole, which will be used to determine the note from the chart.
+
+            for (uint8_t i = 0; i < 6; i++) { //look only at leftmost uncovered hole for lower several notes
+                if (leftmost == i) {
+                    customScalePosition = 47 - i;
+                }
+            }
+
+            //several ugly special cases
+            if (tempCovered >> 3 == 0b0111) {
+                customScalePosition = 39;
+            }
+
+            else if (tempCovered >> 3 == 0b0110) {
+                customScalePosition = 41;
+            }
+
+            else if (tempCovered >> 5 == 0b00) {
+                customScalePosition = 40;
+            }
+
+            if (tempCovered == 0b1111111) {
+                if (!switches[mode][R4_FLATTEN]) { //all holes covered but not R4 flatten
+                    customScalePosition = 48;
+                } else {
+                    customScalePosition = 47;
+                }
+            }
+
+            if (fingerPattern >> 8 == 0 && !switches[mode][THUMB_AND_OVERBLOW] && !breathMode == kPressureThumb && ED[mode][38] != 0) { //thumb hole is open and we're not using it for register
+                customScalePosition = 38;
+            }
+
+            ret = ED[mode][customScalePosition];
+
+            if (bitRead(tempCovered, 0) == 1 && switches[mode][R4_FLATTEN] && ret != 0) { //flatten one semitone if using R4 for that purpose
+                ret = ret - 1;
+            }
+
             return ret;
 
 
@@ -396,10 +468,10 @@ int get_note(unsigned int fingerPattern)
 void get_shift()
 {
 
-    shift = ((octaveShift * 12) + noteShift); //adjust for key.
+    shift = ((octaveShift * 12) + noteShift); //adjust for key and octave shift.
 
     if (newState == 3 && !(modeSelector[mode] == kModeEVI || (modeSelector[mode] == kModeSax  && newNote < 62) || (modeSelector[mode] == kModeSaxBasic && newNote < 74) || (modeSelector[mode] == kModeRecorder && newNote < 76)) && !(newNote == 62 && (modeSelector[mode] == kModeUilleann || modeSelector[mode] == kModeUilleannStandard))) {  //if overblowing (except EVI, sax in the lower register, and low D with uilleann fingering, which can't overblow)
-        shift = shift + 12; //add a register jump to the transposition if necessary.
+        shift = shift + 12; //add a register jump to the transposition if overblowing.
         if (modeSelector[mode] == kModeKaval) { //Kaval only plays a fifth higher in the second register.
             shift = shift - 5;
         }
@@ -414,7 +486,7 @@ void get_shift()
         }
     }
 
-    else if (breathMode == kPressureThumb && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeNAF)) { //if we're using the left thumb to control the regiser with a fingering patern that doesn't normally use the thumb
+    else if ((breathMode == kPressureThumb && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeNAF || modeSelector[mode] == kModeCustom)) || (breathMode == kPressureBreath && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) { //if we're using the left thumb to control the regiser with a fingering patern that doesn't normally use the thumb
 
         if (bitRead(holeCovered, 8) == switches[mode][INVERT]) {
             shift = shift + 12;   //add an octave jump to the transposition if necessary.
@@ -452,6 +524,14 @@ void get_state()
         return; //don't bother going further if the pressure hasn't changed.
     }
 
+    byte scalePosition;
+
+    if (modeSelector[mode] == kModeCustom) {
+        scalePosition = 110 - customScalePosition; //scalePosition is used to tell where we are on the scale, because higher notes are more difficult to overblow.
+    } else {
+        scalePosition = newNote;
+    }
+
     pressureChangeRate = sensorValue2 - sensorValue; //calculate the rate of change
 
     if (ED[mode][DRONES_CONTROL_MODE] == 3) { //use pressure to control drones if that option has been selected. There's a small amount of hysteresis added.
@@ -473,7 +553,7 @@ void get_state()
     }
 
 
-    upperBound = (sensorThreshold[1] + ((newNote - 60) * multiplier)); //calculate the threshold between state 2 and state 3. This will also be used to calculate expression.
+    upperBound = (sensorThreshold[1] + ((scalePosition - 60) * multiplier)); //calculate the threshold between state 2 and state 3. This will also be used to calculate expression.
 
 
     if (jump && ((millis() - jumpTimer) >= jumpTime)) {
@@ -487,7 +567,7 @@ void get_state()
 
     if (!jump && !drop) {
 
-        if (breathMode == kPressureBreath && ((sensorValue2 - sensorValue) > jumpValue) && (sensorValue2 > sensorThreshold[0])) {  //if the pressure has increased rapidly (since the last reading) and there's a least enough pressure to turn a note on, jump immediately to the second register
+        if ((breathMode == kPressureBreath || (breathMode == kPressureThumb && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) && ((sensorValue2 - sensorValue) > jumpValue) && (sensorValue2 > sensorThreshold[0])) {  //if the pressure has increased rapidly (since the last reading) and there's a least enough pressure to turn a note on, jump immediately to the second register
             newState = 3;
             jump = 1;
             jumpTimer = millis();
@@ -504,14 +584,13 @@ void get_state()
         }
     }
 
-
     //if there haven't been rapid pressure changes and we haven't just jumped registers, choose the state based solely on current pressure.
     if (sensorValue2 <= sensorThreshold[0]) {
         newState = 1;
     }
 
     //added very small amount of hysteresis for state 2, 4/25/20
-    else if (sensorValue2 > sensorThreshold[0] + 1 && ((breathMode != kPressureBreath) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
+    else if (sensorValue2 > sensorThreshold[0] + 1 && (((breathMode != kPressureBreath) && !(breathMode == kPressureThumb && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
         newState = 2;
     } else if (!drop && (sensorValue2 > upperBound)) { //we're in two-register mode and above the upper bound for state 2
         newState = 3;
@@ -973,7 +1052,7 @@ void saveCalibration()
     for (byte i = 0; i < 9; i++) {
         EEPROM.update((i + 9) * 2, highByte(toneholeCovered[i]));
         EEPROM.update(((i + 9) * 2) + 1, lowByte(toneholeCovered[i]));
-        EEPROM.update((501 + i), lowByte(toneholeBaseline[i])); //the baseline readings can be stored in a single byte because they should be close to zero.
+        EEPROM.update((721 + i), lowByte(toneholeBaseline[i])); //the baseline readings can be stored in a single byte because they should be close to zero.
     }
     calibration = 0;
     EEPROM.update(37, 3); //we write a 3 to address 37 to indicate that we have stored a set of calibrations.
@@ -990,10 +1069,10 @@ void saveCalibration()
 void loadCalibration()
 {
     for (byte i = 0; i < 9; i++) {
-        high = EEPROM.read((i + 9) * 2);
-        low = EEPROM.read(((i + 9) * 2) + 1);
+        byte high = EEPROM.read((i + 9) * 2);
+        byte low = EEPROM.read(((i + 9) * 2) + 1);
         toneholeCovered[i] = word(high, low);
-        toneholeBaseline[i] = EEPROM.read(501 + i);
+        toneholeBaseline[i] = EEPROM.read(721 + i);
     }
 }
 
@@ -1063,7 +1142,7 @@ void receiveMIDI()
                         if (rx.byte3 > 0 && rx.byte3 <= 18) { //handle sensor calibration commands from the configuration tool.
                             if ((rx.byte3 & 1) == 0) {
                                 toneholeCovered[(rx.byte3 >> 1) - 1] -= 5;
-                                if ((toneholeCovered[(rx.byte3 >> 1) - 1] - 50 - hysteresis) < 5) { //if the tonehole calibration gets set too low so that it would never register as being uncovered, send a message to the configuration tool.
+                                if ((toneholeCovered[(rx.byte3 >> 1) - 1] - 54) < 5) { //if the tonehole calibration gets set too low so that it would never register as being uncovered, send a message to the configuration tool.
                                     sendUSBMIDI(CC, 7, 102, (20 + ((rx.byte3 >> 1) - 1)));
                                 }
                             } else {
@@ -1197,8 +1276,9 @@ void receiveMIDI()
                         }
 
                         else if (rx.byte3 == 125) { //restore all factory settings
-                            restoreFactorySettings();
-                            blinkNumber = 3;
+                            EEPROM.update(44, 255); //indicates that settings should be resaved at next startup
+                            wdt_enable(WDTO_30MS);//restart the device in order to trigger resaving default settings
+                            while (true) {}
                         }
                     }
 
@@ -1253,7 +1333,7 @@ void receiveMIDI()
                         }
 
 
-                        else if (pressureReceiveMode < 51) {
+                        else if (pressureReceiveMode < 53) {
                             switches[mode][pressureReceiveMode - 39] = rx.byte3; //switches in the slide/vibrato and register control panels
                             loadPrefs();
                         }
@@ -1268,7 +1348,7 @@ void receiveMIDI()
                             loadPrefs();
                         }
 
-                        else if (pressureReceiveMode < 87) {
+                        else if (pressureReceiveMode < 98) {
                             ED[mode][pressureReceiveMode - 48] = rx.byte3; //more expression and drones settings
                             loadPrefs();
 
@@ -1331,8 +1411,8 @@ void receiveMIDI()
                             for (byte i = 0; i < 18; i++) {
                                 EEPROM.update(i, EEPROM.read(i + 18));
                             }
-                            for (int i = 1001; i < 1011; i++) { //save baseline calibration as factory baseline
-                                EEPROM.update(i, EEPROM.read(i - 500));
+                            for (int i = 731; i < 741; i++) { //save baseline calibration as factory baseline
+                                EEPROM.update(i, EEPROM.read(i - 10));
                             }
                         }
                     }
@@ -1371,8 +1451,8 @@ void saveSettings(byte i)
     EEPROM.update(53 + i, noteShiftSelector[mode]);
     EEPROM.update(50 + i, senseDistanceSelector[mode]);
 
-    for (byte n = 0; n < 11; n++) {
-        EEPROM.update((56 + n + (i * 11)), switches[mode][n]);
+    for (byte n = 0; n < kSWITCHESnVariables; n++) {
+        EEPROM.update((56 + n + (i * kSWITCHESnVariables)), switches[mode][n]);
     }
 
     EEPROM.update(333 + (i * 2), lowByte(vibratoHolesSelector[mode]));
@@ -1403,8 +1483,8 @@ void saveSettings(byte i)
     EEPROM.update(319 + i, midiBendRangeSelector[mode]);
     EEPROM.update(322 + i, midiChannelSelector[mode]);
 
-    for (byte n = 0; n < 38; n++) {
-        EEPROM.update((351 + n + (i * 38)), ED[mode][n]);
+    for (byte n = 0; n < kEXPRESSIONnVariables; n++) {
+        EEPROM.update((351 + n + (i * kEXPRESSIONnVariables)), ED[mode][n]);
     }
 
 
@@ -1448,8 +1528,8 @@ void loadSettingsForAllModes()
 
         senseDistanceSelector[i] = EEPROM.read(50 + i);
 
-        for (byte n = 0; n < 11; n++) {
-            switches[i][n] = EEPROM.read(56 + n + (i * 11));
+        for (byte n = 0; n < kSWITCHESnVariables; n++) {
+            switches[i][n] = EEPROM.read(56 + n + (i * kSWITCHESnVariables));
         }
 
         vibratoHolesSelector[i] = word(EEPROM.read(334 + (i * 2)), EEPROM.read(333 + (i * 2)));
@@ -1483,8 +1563,8 @@ void loadSettingsForAllModes()
         midiChannelSelector[i] = midiChannelSelector[i] > 16 ? 1 : midiChannelSelector[i]; // sanity check in case uninitialized
 
 
-        for (byte n = 0; n < 38; n++) {
-            ED[i][n] = EEPROM.read(351 + n + (i * 38));
+        for (byte n = 0; n < kEXPRESSIONnVariables; n++) {
+            ED[i][n] = EEPROM.read(351 + n + (i * kEXPRESSIONnVariables));
         }
 
 
@@ -1497,7 +1577,7 @@ void loadSettingsForAllModes()
 
 
 
-//this is used only once, the first time the software is run, to copy all the default settings to EEPROM, where they can later be restored
+//This is used the first time the software is run, to copy all the default settings to EEPROM, and is also used to restore factory settings.
 void saveFactorySettings()
 {
 
@@ -1506,53 +1586,22 @@ void saveFactorySettings()
         saveSettings(i);
     }
 
-    EEPROM.update(48, defaultMode); //save default mode
-
-    mode = 0; //switch back to mode 0
-
-    blinkNumber = 3;
-
-    for (int i = 40; i < 501; i++) { //then we read every byte in EEPROM from 40 to 500
-        byte reading = EEPROM.read(i);
-        EEPROM.update(500 + i, reading); //and rewrite them from 540 to 1000. Then they'll be available to restore later if necessary.
-    }
-
-
-    EEPROM.update(44, 3); //indicates settings have been saved
-}
-
-
-
-
-
-
-//restore original settings from EEPROM
-void restoreFactorySettings()
-{
-    byte reading;
-    for (int i = 540; i < 1011; i++) { //then we read every byte in EEPROM from 540 to 1000
-        reading = EEPROM.read(i);
-        EEPROM.update(i - 500, reading);
-    } //and rewrite them from 40 to 510.
-
-
-    for (byte i = 0; i < 18; i++) { //do the same with sensor calibration (copy 0-17 to 18-35).
+    for (byte i = 0; i < 18; i++) { //copy sensor calibration from factory settings location (copy 0-17 to 18-35).
         EEPROM.update((i + 18), EEPROM.read(i));
     }
 
-    mode = 0; //switch back to mode 0
+    for (int i = 721; i < 731; i++) { //copy sensor baseline calibration from factory settings location.
+        EEPROM.update((i), EEPROM.read(i + 10));
+    }
+
+    EEPROM.update(48, defaultMode); //save default mode
 
     EEPROM.update(44, 3); //indicates settings have been saved
 
-
-    loadFingering();
-    loadCalibration();
-    loadSettingsForAllModes(); //load the newly restored settings
-    communicationMode = 1;
-    loadPrefs();
-    sendSettings(); //send the new settings
-
+    blinkNumber = 3;
 }
+
+
 
 
 
@@ -1615,7 +1664,7 @@ void sendSettings()
         }
     }
 
-    for (byte i = 0; i < 11; i++) { //send settings for switches in the slide/vibrato and register control panels
+    for (byte i = 0; i < kSWITCHESnVariables; i++) { //send settings for switches in the slide/vibrato and register control panels
         sendUSBMIDI(CC, 7, 104, i + 40);
         sendUSBMIDI(CC, 7, 105, switches[mode][i]);
     }
@@ -1625,7 +1674,7 @@ void sendSettings()
         sendUSBMIDI(CC, 7, 105, ED[mode][i]);
     }
 
-    for (byte i = 21; i < 38; i++) { //more settings for expression and drones control panels
+    for (byte i = 21; i < 49; i++) { //more settings for expression and drones control panels
         sendUSBMIDI(CC, 7, 104, i + 49);
         sendUSBMIDI(CC, 7, 105, ED[mode][i]);
     }
