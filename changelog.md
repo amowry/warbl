@@ -7,15 +7,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [1.9] - 2020-8-12
 ### Changed
 
+- Changed the MIDI console in the Config Tool to display up to 300 messages (CC messages used for WARBL/Config Tool communication are filtered out.)
+- Many other small improvements to Config Tool user interface
 - Changed recorder fingering 0 111 0100 from G to F# to mimic real instrument
 - Fixed error in velocity calculation
+- Changed how restoring factory settings works, so that the settings no longer need to be stored in EEPROM, freeing up space. Restoring settings now requires/causes WARBL to reboot, after which the Configuration Tool attempts to reconnect to it. Chrome occasionally freezes when WARBL reboots because of a Chrome bug, so occaionally Chrome may need to be restarted after a factory reset.
 
 ### Added
 
-- key pressure in addition to channel pressure
-- ability to select output MIDI channel for notes
-- legato slide/vibrato, which allows continuous sliding without retriggering notes
-- ability to select MIDI bend range semitones (used with above to select number of semitones of sliding without retrigerring notes)
+- Added the ability to make a custom fingering chart based on simple tin whistle fingering patterns (plus the left thumb hole). Any MIDI note can be assigned to each pattern in the chart, and teh R4 finger can optinally be used to flatten any note one semitone. Both the thumb and overblowing can optionally be used for register control, for a maximum range of three registers.
+- Key pressure in addition to channel pressure
+- Ability to select output MIDI channel for notes
+- Legato slide/vibrato, which allows continuous sliding without retriggering notes
+- Ability to select MIDI bend range semitones (used with above to select number of semitones of sliding without retrigerring notes)
 - MPE support (select MIDI channel 2 and turn on channel pressure)
 
 ## [Released]
