@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
-## [2.0] - 2020-8-12
+## [2.0] - 2021-5-13
 ### Changed
 
 - Changed the MIDI console in the Config Tool to display up to 300 messages (CC messages used for WARBL/Config Tool communication are filtered out.)
