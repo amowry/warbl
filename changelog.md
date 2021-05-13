@@ -12,16 +12,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Changed recorder fingering 0 111 0100 from G to F# to mimic real instrument
 - Fixed error in velocity calculation
 - Changed how restoring factory settings works, so that the settings no longer need to be stored in EEPROM, freeing up space. Restoring settings now requires/causes WARBL to reboot, after which the Configuration Tool attempts to reconnect to it. Chrome occasionally freezes when WARBL reboots because of a Chrome bug, so occasionally Chrome may need to be restarted after a factory reset.
+- Improved pressure mapping calculations so that they are approximately ten times faster. 
 
 ### Added
 
 - Added Säckpipa major and minor fingering charts
 - Added the ability to make a custom fingering chart based on simple tin whistle fingering patterns (plus the left thumb hole). Any MIDI note can be assigned to each pattern in the chart, and the R4 finger can optionally be used to flatten any note one semitone. Both the thumb and overblowing can optionally be used for register control, for a maximum range of three registers.
-- Key pressure in addition to channel pressure
+- Added key pressure in addition to channel pressure
+- Added the ability to map pressure independently to CC, velocity, channel pressure, and key pressure.
 - Ability to select output MIDI channel for notes
-- Legato slide/vibrato, which allows continuous sliding without retriggering notes
+- Added legato slide/vibrato, which allows continuous sliding without retriggering notes
 - Ability to select MIDI bend range semitones (used with above to select number of semitones of sliding without retrigerring notes)
 - MPE support (select MIDI channel 2 and turn on channel pressure)
+- Abilty to override the default pressure range for pitch bend expression if overblowing is not being used
+- Added preset import/export and pressure graph to Configuration Tool
+
 
 ## [Released]
 
