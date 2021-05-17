@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Added key pressure in addition to channel pressure
 - Added the ability to map pressure independently to CC, velocity, channel pressure, and key pressure.
 - Ability to select output MIDI channel for notes
-- Added legato slide/vibrato, which allows continuous sliding without retriggering notes
+- Added legato slide/vibrato, which allows continuous sliding over a range of multiple semitomes without retriggering notes
 - Ability to select MIDI bend range semitones (used with above to select number of semitones of sliding without retrigerring notes)
 - MPE support (select MIDI channel 2 and turn on channel pressure)
 - Abilty to override the default pressure range for pitch bend expression if overblowing is not being used
