@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
+## [Released]
+
+
 ## [2.0] - 2021-5-13
 ### Changed
 
@@ -27,8 +30,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Abilty to override the default pressure range for pitch bend expression if overblowing is not being used
 - Added preset import/export and pressure graph to Configuration Tool
 
-
-## [Released]
 
 ## [1.8] - 2020-5-6
 ### Changed
