@@ -210,6 +210,7 @@ a {
 	height: 100px;
 	background: var(--main-bg-color);
 	border-radius: 5px 5px 0px 0px;
+	z-index: 1;
 }
 
 .volume {
@@ -293,6 +294,367 @@ input {
 	z-index: 9999;
 	line-height: normal;
 	color: var(--warning-color);
+}
+
+#topControls {
+	display: block;
+}
+
+#customChart {
+	display: block;
+	position: absolute;
+	left: 50px;
+	top: -20px;
+}
+
+.customFingeringOkay{
+	display: block;
+	position: absolute;
+	width: 60px !important;
+	height: 30px !important;
+	top: 635px;
+	left: 820px;
+}
+
+#switch17 {
+	top: 370px;
+	left:  860px;
+	z-index: 99;
+}
+
+.bothLabel {
+	display: block;
+	position: absolute;
+	width: 400px;
+	left: 480px;
+	top: 372px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+
+#switch18 {
+	top: 420px;
+	left:  860px;
+	z-index:100;
+}
+
+.R4Label {
+	display: block;
+	position: absolute;
+	width: 400px;
+	left: 513px;
+	top: 422px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+
+
+.fingering{
+	display: block;
+	position: absolute;
+}
+
+.fingeringInput{
+	display: block;
+	position: absolute;
+	height: 23px;
+	border: none;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	padding: 0px 0px 0px 0px;
+	text-align: center;
+	font-size: 14px;
+	width: 50px;
+}
+
+.customFingeringLabel {
+	display: block;
+	position: absolute;
+	left: 80px;
+	top: 280px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+.MIDILabel {
+	display: block;
+	position: absolute;
+	left: 240px;
+	top: 280px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+.customThumbLabel {
+	display: block;
+	position: absolute;
+	left: -40px;
+	top: 305px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+
+.customR4Label {
+	display: block;
+	position: absolute;
+	left: 170px;
+	top: 305px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+
+.blackHoleLabel {
+	display: block;
+	position: absolute;
+	left: 500px;
+	top: 492px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+.whiteHoleLabel {
+	display: block;
+	position: absolute;
+	left: 500px;
+	top: 542px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+.grayHoleLabel {
+	display: block;
+	position: absolute;
+	left: 500px;
+	top: 592px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+
+.customFingeringFillLabel {
+	display: block;
+	position: absolute;
+	left: 730px;
+	top: 510px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+.asteriskLabel {
+	display: block;
+	position: absolute;
+	left: 515px;
+	top: 655px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+.asterisk {
+	display: block;
+	position: absolute;
+	left: 335px;
+	top: 316px;
+	width: 200px;
+	z-index: 99;
+	font-size: 14px;	
+}
+
+
+#whiteHole{
+	top: 125px;
+	left: 180px;
+}
+
+#blackHole{
+	top: 75px;
+	left: 180px;
+}
+
+#grayHole{
+	top: 175px;
+	left: 180px;
+}
+
+
+
+
+#fingering1{
+	top: -82px;
+	left: -80px;
+}
+
+#fingering2{
+	top: -48px;
+	left: -80px;
+}
+
+#fingering3{
+	top: -14px;
+	left: -80px;
+}
+
+#fingering4{
+	top: 20px;
+	left: -80px;
+}
+
+#fingering5{
+	top: 54px;
+	left: -80px;
+}
+
+#fingering6{
+	top: 88px;
+	left: -80px;
+}
+
+#fingering7{
+	top: 122px;
+	left: -80px;
+}
+
+#fingering8{
+	top: 156px;
+	left: -80px;
+}
+
+
+#fingering9{
+	top: 190px;
+	left: -80px;
+}
+
+#fingering10{
+	top: 224px;
+	left: -80px;
+}
+
+#fingering11{
+	top: 258px;
+	left: -80px;
+}
+
+
+
+#fingeringInput1{
+	left: 315px;
+	top: 331px;
+	z-index:100;
+}
+
+#fingeringInput2{
+	left: 315px;
+	top: 365px;
+	z-index:100;
+}
+#fingeringInput3{
+	left: 315px;
+	top: 399px;
+	z-index:100;
+}
+
+#fingeringInput4{
+	left: 315px;
+	top: 433px;
+	z-index:100;
+}
+
+#fingeringInput5{
+	left: 315px;
+	top: 467px;
+	z-index:100;
+}
+
+#fingeringInput6{
+	left: 315px;
+	top: 501px;
+	z-index:100;
+}
+
+#fingeringInput7{
+	left: 315px;
+	top: 535px;
+	z-index:100;
+}
+
+#fingeringInput8{
+	left: 315px;
+	top: 569px;
+	z-index:100;
+}
+
+#fingeringInput9{
+	left: 315px;
+	top: 603px;
+	z-index:100;
+}
+
+#fingeringInput10{
+	left: 315px;
+	top: 637px;
+	z-index:100;
+}
+
+
+#fingeringInput11{
+	left: 315px;
+	top: 671px;
+	z-index:100;
+}
+
+#customControlsHeader {
+	position: absolute;
+	width: 300px;
+	left: 555px;
+	top: 271px;
+	z-index:100;
+}
+
+
+#customControls {
+	display: none;
+	position: absolute;
+}
+
+#configureCustomFingering{
+	display: block;
+	position: absolute;
+	width: 200px;
+	height: 32px;
+	top: 370px;
+	left: 50px;
+	z-index:210;
+}
+
+
+.notechannellabel {
+	display: block;
+	position: absolute;
+	left: 295px;
+	top: 384px;
+	width: 100px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.noteChannelContainer {
+	display: block;
+	position: absolute;
+	left: 400px;
+	top: 380px;
 }
 
 .headerbuttonwrapper {
@@ -381,6 +743,16 @@ input {
 	height: 200px;
 	left: 50px;
 	top: 317px;
+	z-index:200;
+}
+
+
+.customFillContainer {
+	display: block;
+	position: absolute;
+	height: 500px;
+	left: 730px;
+	top: 527px;
 }
 
 .fingeringSelectLabel {
@@ -585,14 +957,14 @@ fieldset {
 	border-radius: 25px 25px 0px 0px;
 }
 
-.topcontrolbox {
+#topcontrolbox {
 	position: relative;
 	background-color: var(--main-bg-color);
 	padding-bottom: 50px;
 	margin-bottom: 30px;
 	display: block;
 	clear: both;
-	height: 1765px;
+	height: 1785px;
 	border-radius: 5px;
 }
 
@@ -612,7 +984,6 @@ fieldset {
 	padding-bottom: 50px;
 	margin-bottom: 50px;
 	display: block;
-	top: 1370px;
 	left: 30px;
 	height: 360px;
 	width: 960px;
@@ -633,7 +1004,7 @@ fieldset {
 	border-radius: 5px;
 }
 
-.leftsmallcontrolbox {
+.smallcontrolbox {
 	background-color: var(--main-bg-color);
 	padding-top: 0px;
 	padding-bottom: 50px;
@@ -641,8 +1012,7 @@ fieldset {
 	height: 375px;
 	float: right;
 	position: absolute;
-	left: 527px;
-	top: 420px;
+	top: 440px;
 	border-radius: 5px;
 	border: solid 2px var(--box-border-color);
 	border-radius: 5px;
@@ -651,42 +1021,43 @@ fieldset {
 	box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
 }
 
-.rightsmallcontrolbox {
-	background-color: var(--main-bg-color);
-	color: var(--text-color);
-	padding-bottom: 50px;
-	width: 463px;
-	height: 375px;
-	position: absolute;
-	top: 420px;
-	left: 30px;
-	border-radius: 5px;
-	border: solid 2px var(--box-border-color);
-	-webkit-box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
-	-moz-box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
-	box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
-}
-
-.dronescontrolBox {
-	top: 880px;
-	height: 405px;
-}
-
-.expressionBox {
-	top: 880px;
-	height: 405px;
+#buttonBox{
+	top: 1390px;
 }
 
 #box1 {
+	left: 527px;
 }
 
 #box2 {
+	left: 527px;
 	display: none;
+}
+
+#box3 {
+	left: 527px;
+	top: 900px;
+	height: 405px;
+}
+
+#box6 {
+	left: 30px;
+	top: 900px;
+	height: 405px;
+}
+
+#box7 {
+	height: 405px;
+}
+
+#box8 {
+	height: 405px;
 }
 
 
 #pressuregraph {
 	display: none;
+	left: 527px;
 }
 
 .controlboxtitle {
@@ -709,6 +1080,7 @@ fieldset {
 	color: var(--primary-color);
 	padding: 5px;
 	cursor: pointer;
+	z-index:100;
 }
 
 .infocircle:focus {
@@ -823,6 +1195,13 @@ fieldset {
 
 .smallbutton:disabled {
 	background-color: var(--disabled-bg-color);
+		cursor: default;
+	color: #555;
+}
+
+.headerbuttons:disabled {
+	background-color: var(--disabled-bg-color);
+	cursor: default;
 	color: #555;
 }
 
@@ -878,6 +1257,23 @@ fieldset {
 
 #box4 {
 	display: none;
+	left: 30px;
+}
+
+#box5 {
+	left: 30px;
+}
+
+#box7 {
+	display: none;
+	top: 900px;
+	left: 30px;
+}
+
+#box8 {
+	display: none;
+	top: 900px;
+	left: 30px;
 }
 
 
@@ -1286,6 +1682,7 @@ input:disabled + .vibratoSlider:before {
 	left: 250px;
 }
 
+
 .pressureOkay {
 	position: absolute;
 	height: 30px;
@@ -1342,6 +1739,61 @@ input:disabled + .vibratoSlider:before {
 	left: 50px;
 }
 
+.advancedOkayCC {
+	position: absolute;
+	height: 30px;
+	width: 60px;
+	top: 365px;
+	left: 80px;
+}
+
+.mapCC {
+	position: absolute;
+	height: 30px;
+	width: 80px;
+	top: 250px;
+	left: 320px;
+}
+
+.mapVelocity {
+	position: absolute;
+	height: 30px;
+	width: 80px;
+	top: 295px;
+	left: 320px;
+}
+
+.mapAftertouch {
+	position: absolute;
+	height: 30px;
+	width: 80px;
+	top: 340px;
+	left: 320px;
+}
+
+.mapPoly {
+	position: absolute;
+	height: 30px;
+	width: 80px;
+	top: 385px;
+	left: 320px;
+}
+
+.override {
+	position: absolute;
+	height: 30px;
+	width: 100px;
+	top: 180px;
+	left: 80px;
+}
+
+.openConsole {
+	position: absolute;
+	height: 30px;
+	width: 150px;
+	top: 40px;
+	left: 100px;
+}
 
 
 .graph {
@@ -1553,6 +2005,7 @@ h2 {
 	padding: 2em;
 	background: white;
 	color: #333333;
+	line-height: 30px;
 	max-height: 75%;
 	overflow-y: auto;
 	border-radius: 5px;
@@ -1569,6 +2022,11 @@ h2 {
 	color: #333333;
 }
 
+.consoleLabel {
+	margin-left: 30px !important;
+	//margin-top: 100px !important;
+}
+
 .modal-close {
 	color: black;
 	line-height: 50px;
@@ -1582,6 +2040,12 @@ h2 {
 	text-decoration: none;
 	cursor: pointer;
 }
+
+#clear {
+	left: 120px;
+	top: 80px;
+}
+
 
 .modal-close:hover {
 	color: #000;
@@ -1867,14 +2331,14 @@ h2 {
 
 #switch12 {
 	top: 80px;
-	left: 160px;
+	left: 280px;
 }
 
 .forceVelocityLabel {
 	display: block;
 	position: absolute;
 	width: 150px;
-	left: 15px;
+	left: 135px;
 	top: 83px;
 	z-index: 99;
 	font-size: 14px;
@@ -1884,7 +2348,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 250px;
-	top: 110px;
+	top: 175px;
 	z-index: 99;
 }
 
@@ -1892,7 +2356,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 250px;
-	top: 83px;
+	top: 148px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1902,21 +2366,21 @@ h2 {
 	position: absolute;
 	width: 140px;
 	left: 25px;
-	top: 118px;
+	top: 138px;
 	z-index: 99;
 	font-size: 14px;
 }
 
 #switch6 {
-	top: 114px;
+	top: 134px;
 	left: 160px;
 }
 
 .sendPressureLabel {
 	display: block;
 	position: absolute;
-	left: 100px;
-	top: 168px;
+	left: 80px;
+	top: 258px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1924,8 +2388,8 @@ h2 {
 .sendVelocityLabel {
 	display: block;
 	position: absolute;
-	left: 72px;
-	top: 198px;
+	left: 52px;
+	top: 303px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1933,8 +2397,8 @@ h2 {
 .sendAftertouchLabel {
 	display: block;
 	position: absolute;
-	left: 120px;
-	top: 228px;
+	left: 100px;
+	top: 348px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1942,32 +2406,34 @@ h2 {
 .sendPolyAftertouchLabel {
 	display: block;
 	position: absolute;
-	left: 150px;
-	top: 258px;
+	left: 130px;
+	top: 393px;
 	z-index: 99;
 	font-size: 14px;
 }
 
 
 #switch7 {
-	top: 165px;
-	left: 248px;
+	top: 255px;
+	left: 228px;
 }
 
 #switch10 {
-	top: 195px;
-	left: 248px;
+	top: 300px;
+	left: 228px;
 }
 
 #switch11 {
-	top: 225px;
-	left: 248px;
+	top: 345px;
+	left: 228px;
 }
 
 #switch13 {
-	top: 255px;
-	left: 248px;
+	top: 390px;
+	left: 228px;
 }
+
+
 
 #switch14 {
 	top: 200px;
@@ -1978,6 +2444,28 @@ h2 {
 	top: 250px;
 	left: 350px;
 }
+
+#switch16 {
+	top: 130px;
+	left: 330px;
+}
+
+.overrideLabel {
+	position: absolute;
+	left: 85px;
+	top: 120px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.overrideLabel2 {
+	position: absolute;
+	left: 85px;
+	top: 150px;
+	z-index: 99;
+	font-size: 14px;
+}
+
 
 .hack1Label {
 	position: absolute;
@@ -1995,21 +2483,21 @@ h2 {
 	font-size: 14px;
 }
 
-
 .expressionChannelLabel {
 	display: block;
 	position: absolute;
-	left: 327px;
-	top: 155px;
+	left: 227px;
+	top: 350px;
 	z-index: 99;
 	font-size: 14px;
+
 }
 
 .highByteLabel {
 	display: block;
 	position: absolute;
 	left: 330px;
-	top: 220px;
+	top: 350px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2030,50 +2518,104 @@ h2 {
 .expressionChannelInputContainer {
 	display: block;
 	position: absolute;
-	left: 340px;
-	top: 180px;
+	left: 240px;
+	top: 375px;
 }
 
 .expressionHighByteInputContainer {
 	display: block;
 	position: absolute;
 	left: 340px;
-	top: 245px;
+	top: 375px;
+}
+
+#pressureChannel{
+	visibility:hidden;
+}
+
+#pressureCC{
+	visibility:hidden;
+}
+
+#expressionChannel{
+	visibility:hidden;
+}
+
+#highByte{
+	visibility:hidden;
 }
 
 .radiogroup7 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 295px;
+	top: 100px;
 	left: 20px;
 	padding: 0px;
+	z-index: 1000;
 }
 
 .radiogroup8 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 295px;
+	top: 100px;
 	left: 160px;
 	padding: 0px;
+	z-index: 1000;
 }
 
 .radiogroup9 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 295px;
+	top: 100px;
 	left: 300px;
 	padding: 0px;
+	z-index: 1000;
 }
+
+.curveLabel {
+	display: inline;
+	position: absolute;
+	top: 15px;
+}
+
+
+.linear {
+	display: block;
+	position: absolute;
+	width: 250px;
+	top: -80px;
+	left: -75px;
+	padding: 0px;
+}
+
+.curve2 {
+		display: block;
+	position: absolute;
+	width: 250px;
+	top: -80px;
+	left: 70px;
+	padding: 0px;
+}
+
+.curve3 {
+		display: block;
+	position: absolute;
+	width: 250px;
+	top: -80px;
+	left: 215px;
+	padding: 0px;
+}
+	
 
 .maxMinContainer {
 	display: block;
 	width: 65%;
 	position: absolute;
 	left: 80px;
-	top: 375px;
+	top: 220px;
 	z-index: 99;
 }
 
@@ -2082,15 +2624,78 @@ h2 {
 	width: 65%;
 	position: absolute;
 	left: 80px;
-	top: 420px;
+	top: 285px;
+	z-index: 99;
+}
+
+.maxMinContainer3 {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: 80px;
+	top: 270px;
+	z-index: 99;
+}
+
+#slider-value-min {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: -100px;
+	top: 215px;
+	z-index: 99;
+}
+
+#slider-value-max {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: 270px;
+	top: 215px;
+	z-index: 99;
+}
+
+#slider2-value-min {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: -100px;
+	top: 280px;
+	z-index: 99;
+}
+
+#slider2-value-max {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: 270px;
+	top: 280px;
+	z-index: 99;
+}
+
+#slider3-value-min {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: -100px;
+	top: 265px;
+	z-index: 99;
+}
+
+#slider3-value-max {
+	display: block;
+	width: 65%;
+	position: absolute;
+	left: 270px;
+	top: 265px;
 	z-index: 99;
 }
 
 .rangeLabel {
 	display: block;
 	position: absolute;
-	left: 175px;
-	top: 350px;
+	left: 150px;
+	top: 190px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2099,7 +2704,16 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 195px;
-	top: 395px;
+	top: 255px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.overrideRangeLabel {
+	display: block;
+	position: absolute;
+	left: 165px;
+	top: 230px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2359,14 +2973,6 @@ input[type=range]::-moz-range-track {
 	cursor: pointer;
 }
 
-.consoleLabel {
-	display: block;
-	position: absolute;
-	left: 85px;
-	top: 25px;
-	z-index: 99;
-	font-size: 14px;
-}
 
 .console {
 	display: block;
@@ -2374,16 +2980,19 @@ input[type=range]::-moz-range-track {
 	margin: auto;
 	text-align: center;
 	width: 145px;
-	height: 21px;
-	left: 180px;
-	top: 22px;
-	color: var(--text-color);
+	height: 100px;
+	left: 60px;
+	top: 160px;
+	color: black;
 	z-index: 99;
 	font-size: 14px;
 	line-height: 21px;
-	border: solid 2px var(--console-border-color);
-	background-color: var(--console-bg-color);
-	border-radius: 5px;
+}
+
+	
+#modal-center18 {
+	height: 800px;
+	width: 200px;
 }
 
 .styled-select {
@@ -2448,23 +3057,6 @@ input[type=range]::-moz-range-track {
 	padding: 3px;  /* If you add too much padding here, the options won't show in IE */
 	width: 268px;
 	cursor: pointer;
-}
-
-.notechannellabel {
-	display: block;
-	position: absolute;
-	left: 60px;
-	top: 364px;
-	width: 100px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-.noteChannelContainer {
-	display: block;
-	position: absolute;
-	left: 170px;
-	top: 360px;
 }
 
 
