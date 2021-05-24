@@ -2,6 +2,19 @@
 
 <html>
 
+    
+
+
+    <script>
+	  //Change this for app vs. web version. File names should be configure.html for web version and configureForApp.html for app version.
+      //var platform = "app";
+	  var platform = "web";
+    </script>
+    
+ 
+
+
+
   <head>
     
     <meta charset="utf-8"/>
@@ -30,6 +43,7 @@
 
     </style>
     
+    
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-129157937-1">
     </script>
@@ -45,7 +59,7 @@
 
   <body>
 
-    <div class="toplogo">
+    <div id = "topLogo" class="toplogo">
 
       <a href="index.html">
 
@@ -83,7 +97,7 @@
 
     <div class="pagewrapper">
 
-      <div class="topcontrolbox">
+      <div id="topcontrolbox">
         
         <div class="topheader noTouch">
 
@@ -116,10 +130,353 @@
         </div>
 
         <div class="middleControlBox">
+        
+        
+        
+        
+        
+        
+              <div class="fingeringRadio">
 
+            <div class="tab tab0">
+
+              <input type="radio" value="0" name="quality" id="fingering0" onChange="sendFingeringRadio(value)" checked>
+
+              <label for="fingering0"> <span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel1">Tin whistle/flute</div><div class="instrument" id=instrument1Label>Instrument 1:</div></label>
+
+            </div>
+
+            <div class="tab tab1">
+
+              <input type="radio" value="1" name="quality" id="fingering1" onChange="sendFingeringRadio(value)">
+
+              <label for="fingering1"><span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel2">Tin whistle/flute</div><div class="instrument" id=instrument2Label>Instrument 2:</div></label>
+
+            </div>
+
+            <div class="tab tab2">
+
+              <input type="radio" value="2" name="quality" id="fingering2" onChange="sendFingeringRadio(value)">
+
+              <label for="fingering2"><span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel3">Tin whistle/flute</div><div class="instrument" id=instrument3Label>Instrument 3:</div></label>
+
+            </div>
+
+          </div>
+
+          <div class="tabBorder"></div>
+          
+          <div class="tabBorder1"></div>
+        
+        
+        
+        
+        
+        
+        
+        
+        <div id="customControls">
+			
+			
+            <h2 class="controlboxtitle noTouch" id="customControlsHeader">Custom Fingering Configuration
+
+              <button type="button" class="infocircle" onClick="modal(19)"><i class="fa fa-info-circle"></i></button>
+
+		  </h2>
+			
+		   <div id="customChart">	
+		
+            <div class="customFingeringLabel noTouch">Fingering pattern</div>		
+            <div class="MIDILabel noTouch">MIDI Note</div>
+            <div class="customThumbLabel noTouch">thumb</div>		
+            <div class="customR4Label noTouch">R4</div>
+        
+        <div class="fingering" id="fingering1">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+			</svg>
+         </div>
+         
+		<div class="fingering" id="fingering2">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+			</svg>
+         </div>
+		 
+		 
+		<div class="fingering" id="fingering3">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+           	</svg>
+         </div>
+		 
+		 
+		 
+		<div class="fingering" id="fingering4">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+ 		<div class="fingering" id="fingering5">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+		<div class="fingering" id="fingering6">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+		<div class="fingering" id="fingering7">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+		<div class="fingering" id="fingering8">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+		<div class="fingering" id="fingering9">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+		<div class="fingering" id="fingering10">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+        
+		<div class="fingering" id="fingering11">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="140.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="160.123" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="188.104" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="214.207" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="247.269" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="275.739" cy="425.345" r="7.56"/>
+			<circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="310.605" cy="425.345" r="7.56"/>
+            <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+        
+         
+         
+         <input class="fingeringInput" id="fingeringInput1"type="text" onChange="fingeringInput(1,value)">
+          <input class="fingeringInput" id="fingeringInput2"type="text" onChange="fingeringInput(2,value)">
+         <input class="fingeringInput" id="fingeringInput3"type="text" onChange="fingeringInput(3,value)">
+          <input class="fingeringInput" id="fingeringInput4"type="text" onChange="fingeringInput(4,value)">
+          <input class="fingeringInput" id="fingeringInput5"type="text" onChange="fingeringInput(5,value)">
+          <input class="fingeringInput" id="fingeringInput6"type="text" onChange="fingeringInput(6,value)">
+         <input class="fingeringInput" id="fingeringInput7"type="text" onChange="fingeringInput(7,value)">
+          <input class="fingeringInput" id="fingeringInput8"type="text" onChange="fingeringInput(8,value)">
+           <input class="fingeringInput" id="fingeringInput9"type="text" onChange="fingeringInput(9,value)">
+          <input class="fingeringInput" id="fingeringInput10"type="text" onChange="fingeringInput(10,value)">
+         <input class="fingeringInput" id="fingeringInput11"type="text" onChange="fingeringInput(11,value)">
+		  
+	 	</div>
+		
+		
+		
+		<div class="fingering" id="whiteHole">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+			 <circle fill="#C3C0C0" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+		
+		
+		<div class="fingering" id="blackHole">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+			 <circle fill="#262626" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+	
+		
+		<div class="fingering" id="grayHole">
+			<svg version="1.1" baseProfile="tiny" id="WARBL_3.0_top_holes"
+			 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="792px" height="612px"
+			 viewBox="0 0 792 612" xml:space="preserve">
+			 <circle fill="#555" stroke="none" stroke-linecap="round" stroke-linejoin="round" cx="350.453" cy="425.345" r="7.56"/>
+		</svg>
+		</div>
+		
+	<div class="blackHoleLabel noTouch">Covered hole</div>
+	<div class="whiteHoleLabel noTouch">Open hole</div>
+	<div class="grayHoleLabel noTouch">No effect</div>
+		
+    <div class="asterisk noTouch">*</div>
+     <div class="asteriskLabel noTouch">* Enter "0" to ignore thumb hole</div>
+     
+
+     
+      <div class="customFillContainer">
+
+            <div class="styled-fingering-select blue semi-square" id="customFingeringFillContainer">
+
+              <select id="customFingeringFill" onChange="modal(22)">
+				  <option disabled selected value="12">Select to repopulate chart:</option>
+                <option value="2">Tin whistle/flute</option>   
+				  <option value="1">Tin whistle/flute minor</option>
+                  <option value="3">Blues hexatonic</option>
+                  <option value="0">Clear chart</option>
+              </select>
+
+            </div>
+ 		</div>
+     
+        
+           <button type="button" class="smallbutton noTouch customFingeringOkay" onClick="customFingeringOkay()">OK</button>
+        
+	   
+            <div class="bothLabel noTouch">Use both thumb and overblowing for register control</div>
+            
+		 <label class="switch" id="switch17">
+
+             <input type="checkbox" class="checkboxes" id="checkbox17" onChange="sendBoth(this.checked)">
+
+              <span class="slider round"></span>
+
+		  </label>
+	   
+		  		 <div class="R4Label noTouch">R4 finger flattens any note one semitome</div>
+            
+		 <label class="switch" id="switch18">
+
+             <input type="checkbox" class="checkboxes" id="checkbox18" onChange="sendR4flatten(this.checked)">
+	 
+			 
+              <span class="slider round"></span>
+
+		  </label>	
+		  
+		  
+		  
+		  
+	   
+     </div>
+        
+        
+        
+        <div id="topControls">
+
+			
+			
+			
           <div class="fingeringSelectLabel noTouch">Fingering pattern</div>
 
           <button type="button" class="defaultInstrumentButton headerbuttons noTouch" id="defaultInstrument" onClick="defaultInstrument()">Set as Default</button>
+
+  
 
           <div class="fingeringSelectContainer">
 
@@ -142,6 +499,9 @@
                 <option value="14">Saxophone, basic</option>
                 <option value="15">Trumpet/EVI</option>
                 <option value="16">Shakuhachi</option>
+                <option value="17">Säckpipa (major)</option>
+                <option value="18">Säckpipa (minor)</option> 
+                <option value="19">Custom</option>           
               </select>
 
             </div>
@@ -165,6 +525,9 @@
                 <option value="14">Saxophone, basic</option>
                 <option value="15">Trumpet/EVI</option>
                 <option value="16">Shakuhachi</option>
+                <option value="17">Säckpipa (major)</option>
+                <option value="18">Säckpipa (minor)</option>
+                <option value="19">Custom</option>    
               </select>
 
             </div>
@@ -188,6 +551,9 @@
                 <option value="14">Saxophone, basic</option>
                 <option value="15">Trumpet/EVI</option>
                 <option value="16">Shakuhachi</option>
+                <option value="17">Säckpipa (major)</option>
+                <option value="18">Säckpipa (minor)</option>
+                 <option value="19">Custom</option>    
               </select>
 
             </div>
@@ -302,6 +668,10 @@
 
           </div>
           
+          
+          
+          
+        
           <div class="notechannellabel noTouch">Note Channel</div>
 
           <div class="noteChannelContainer">
@@ -309,40 +679,10 @@
             <input class="channelInput" type="text" onChange="sendNoteChannel(value)" id="noteChannel" value="1">
 
           </div>
+          
+           <button type="button" class="headerbuttons noTouch" id="configureCustomFingering" onClick="configureCustomFingering()">Configure custom fingering...</button>
 		  
-          <div class="fingeringRadio">
-
-            <div class="tab tab0">
-
-              <input type="radio" value="0" name="quality" id="fingering0" onChange="sendFingeringRadio(value)" checked>
-
-              <label for="fingering0"> <span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel1">Tin whistle/flute</div><div class="instrument" id=instrument1Label>Instrument 1:</div></label>
-
-            </div>
-
-            <div class="tab tab1">
-
-              <input type="radio" value="1" name="quality" id="fingering1" onChange="sendFingeringRadio(value)">
-
-              <label for="fingering1"><span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel2">Tin whistle/flute</div><div class="instrument" id=instrument2Label>Instrument 2:</div></label>
-
-            </div>
-
-            <div class="tab tab2">
-
-              <input type="radio" value="2" name="quality" id="fingering2" onChange="sendFingeringRadio(value)">
-
-              <label for="fingering2"><span><span></span></span><div class="fingeringLabelDiv" id="fingeringLabel3">Tin whistle/flute</div><div class="instrument" id=instrument3Label>Instrument 3:</div></label>
-
-            </div>
-
-          </div>
-
-          <div class="tabBorder"></div>
-          
-          <div class="tabBorder1"></div>
-          
-          <div class="headerbuttonwrapper">
+                     <div class="headerbuttonwrapper">
 
             <button type="button" class="headerbuttons noTouch" id="saveasdefaults" onClick="modal(2)">Save settings for current instrument</button>
 
@@ -359,8 +699,20 @@
             <button type="button" class="headerbuttons noTouch" id="restoreall" onClick="modal(4)">Restore all factory settings</button>
 
           </div>
+            
+           </div>
           
-          <div class="leftsmallcontrolbox" id="box1">
+          
+    
+          
+
+          
+          
+ 
+          
+          
+          
+          <div class="smallcontrolbox" id="box1">
 
             <h2 class="controlboxtitle noTouch">Note Trigger and Register Control
 
@@ -482,7 +834,7 @@
 
           </div>
 
-          <div class="leftsmallcontrolbox" id="box2">
+          <div class="smallcontrolbox" id="box2">
 
             <h2 class="controlboxtitle noTouch">Advanced Register Control Settings
               
@@ -666,7 +1018,7 @@
 
           </div>
 
-          <div class="leftsmallcontrolbox" id="pressuregraph">
+          <div class="smallcontrolbox" id="pressuregraph">
 
             <h2 class="controlboxtitle noTouch">Pressure Graph
               
@@ -679,8 +1031,10 @@
             </h2>
 
           </div>
+          
+          
 
-          <div class="rightsmallcontrolbox" id="box5">
+          <div class="smallcontrolbox" id="box5">
 
             <h2 class="controlboxtitle noTouch">Vibrato and Slide
 
@@ -848,9 +1202,9 @@
           
                    
           
-                  <div class="rightsmallcontrolbox" id="box4">
+                  <div class="smallcontrolbox" id="box4">
 
-            <h2 class="controlboxtitle noTouch">Advanced Pitchbend Settings
+            <h2 class="controlboxtitle noTouch">Advanced Pitch Bend Settings
               
               <button type="button" class="infocircle" onClick="modal(17)"><i class="fa fa-info-circle"></i></button>
 
@@ -866,7 +1220,7 @@
                       <button type="button" class="smallbutton noTouch advancedOkayPB" onClick="advancedOkayPB()">OK</button>
             
             
-             <div class="hack1Label noTouch">Send pitchbend immmediately before Note On</div>
+             <div class="hack1Label noTouch">Send pitch bend immmediately before Note On</div>
             <label class="switch" id="switch14">
 
              <input type="checkbox" class="checkboxes" id="checkbox14" onChange="sendHack1(this.checked)">
@@ -889,7 +1243,7 @@
           
           
 
-          <div class="rightsmallcontrolbox expressionBox">
+          <div class="smallcontrolbox expressionBox"  id="box6">
 
             <h2 class="controlboxtitle noTouch">Expression
 
@@ -906,6 +1260,8 @@
             <div id="forceVelocityLabel" class="forceVelocityLabel noTouch">
               Force max velocity
             </div>
+            
+            <button type="button" id="overrideExpression" class="smallbutton noTouch override" onClick="overRideExpression()">Override...</button>
 
             <div class="expressionDepthLabel noTouch">Pitch expression depth</div>
 
@@ -919,9 +1275,7 @@
 
             <div id="polyAftertouchLabel" class="sendPolyAftertouchLabel noTouch">Key Pressure</div>
 
-            <div class="expressionChannelLabel noTouch">CC Channel</div>
 
-            <div class="highByteLabel noTouch">CC number</div>
 
             <label class="switch" id="switch12">
 
@@ -971,8 +1325,57 @@
 
             </label>
 
+            <button type="button" id="CCmapButton" class="smallbutton noTouch mapCC" onClick="mapCC()">Map...</button>
+             
+             <button type="button" id="velocityMapButton" class="smallbutton noTouch mapVelocity" onClick="mapVelocity()">Map...</button>
+             
+             <button type="button" id="aftertouchMapButton" class="smallbutton noTouch mapAftertouch" onClick="mapAftertouch()">Map...</button>
+             
+             <button type="button" id="polyMapButton" class="smallbutton noTouch mapPoly" onClick="mapPoly()">Map...</button>
+            
+          </div>
+          
+          
+          
+          
+                      <div class="smallcontrolbox expressionBox" id="box7">
+  
+              <h2 class="controlboxtitle noTouch">
+              
+              <span id="pressureMappingHeader">
+              Pressure Mapping
+              </span>
+                
+                <button type="button" class="infocircle" onClick="modal(21)"><i class="fa fa-info-circle"></i></button>
+  
+              </h2>
+              
+              
+         <div class="linear"> <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 	width="792px" height="612px" viewBox="0 0 792 612" enable-background="new 0 0 792 612" xml:space="preserve">
+        <line fill="none" stroke="#c3c0c0" stroke-miterlimit="10" x1="162.655" y1="198.241" x2="187.655" y2="198.241"/>
+		<line fill="none" stroke="#c3c0c0" stroke-miterlimit="10" x1="162.655" y1="198.241" x2="162.655" y2="173.241"/>
+		<line fill="none" stroke="#c3c0c0" stroke-miterlimit="10" x1="162.655" y1="198.241" x2="182.052" y2="178.845"/>
+		</svg>
+		</div>
 
-            <div class="radiogroup7">
+		<div class="curve2"> <svg version="1.1" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+		 x="0px" y="0px" width="792px" height="612px" viewBox="0 0 792 612" xml:space="preserve">
+		<line fill="none" stroke="#c3c0c0" stroke-miterlimit="10" x1="162.655" y1="198.241" x2="187.655" y2="198.241"/>
+		<path fill="none" stroke="#c3c0c0" stroke-miterlimit="10" d="M162.655,173.241v25c13.208-3.773,20.16-8.307,25.601-23.418"/>
+		</svg>
+		</div>
+
+		<div class="curve3"> <svg version="1.1" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 	x="0px" y="0px" width="792px" height="612px" viewBox="0 0 792 612" xml:space="preserve">
+		<line fill="none" stroke="#c3c0c0" stroke-miterlimit="10" x1="162.655" y1="198.241" x2="187.655" y2="198.241"/>
+		<path fill="none" stroke="#c3c0c0" stroke-miterlimit="10" d="M162.655,173.241v25c4.343-12.5,9.783-20.295,25.601-23.418"/>
+		</svg>
+		y</div>
+              
+              
+              
+                        <div class="radiogroup7">
 
               <fieldset>
 
@@ -980,14 +1383,14 @@
 
                   <input type="radio" value="0" name="curveRadio" id="curveRadio0" onChange="sendCurveRadio(value)" checked>
 
-                  <label for="curveRadio0"> <span><span></span></span>Linear &nbsp; </label>
+                  <label for="curveRadio0"> <span><span></span></span><p class="curveLabel">Linear &nbsp;<p> </label>
 
                 </div>
 
               </fieldset>
 
             </div>
-
+            
             <div class="radiogroup8">
 
               <fieldset>
@@ -996,7 +1399,7 @@
 
                   <input type="radio" value="1" name="curveRadio" id="curveRadio1" onChange="sendCurveRadio(value)">
 
-                  <label for="curveRadio1"> <span><span></span></span>Curve 2 &nbsp; </label>
+                  <label for="curveRadio1"> <span><span></span></span><p class="curveLabel">Curve 2 &nbsp;<p></label>
 
                 </div>
 
@@ -1012,37 +1415,80 @@
 
                   <input type="radio" checked value="2" name="curveRadio" id="curveRadio2" onChange="sendCurveRadio(value)">
 
-                  <label for="curveRadio2"> <span><span></span></span>Curve 3 &nbsp; </label>
+                  <label for="curveRadio2"> <span><span></span></span><p class="curveLabel">Curve 3 &nbsp;<p></label>
 
                 </div>
 
               </fieldset>
 
             </div>
+            
+            
+            <div class="jumpvalues noTouch" id="slider-value-min"></div>
+            <div class="jumpvalues noTouch" id="slider-value-max"></div>
+            <div class="jumpvalues noTouch" id="slider2-value-min"></div>
+            <div class="jumpvalues noTouch" id="slider2-value-max"></div>
+            
+              
+              <div class="maxMinContainer" id="slider"></div>
+  
+              <div class="maxMinContainer2" id="slider2"></div>
+  
+              <div class="rangeLabel noTouch">Input pressure range (inH<sub>2</sub>0)</div>
+  
+                <div class="rangeLabel2 noTouch">Output range</div>
+         
+               <button type="button" class="smallbutton noTouch advancedOkayCC" onClick="okayCCmap()">OK</button>
+                           
+            <div class="expressionChannelLabel noTouch" id="expressionChannel">CC Channel</div>
 
-            <div class="expressionChannelInputContainer">
+            <div class="highByteLabel noTouch" id="highByte">CC number</div>
+                       
+             <div class="expressionChannelInputContainer">
 
-              <input class="expressionInput" type="text" onChange="sendPressureChannel(value)" id="pressureChannel" value="1" disabled>
+              <input class="expressionInput" type="text" onChange="sendPressureChannel(value)" id="pressureChannel" value="1">
 
             </div>
 
             <div class="expressionHighByteInputContainer">
 
-              <input class="expressionInput" type="text" onChange="sendPressureCC(value)" id="pressureCC" value="2" disabled>
+              <input class="expressionInput" type="text" onChange="sendPressureCC(value)" id="pressureCC" value="2" hidden>
 
             </div>
-
-            <div class="maxMinContainer" id="slider"></div>
-
-            <div class="maxMinContainer2" id="slider2"></div>
-
-            <div class="rangeLabel noTouch">Input pressure range</div>
-
-            <div class="rangeLabel2 noTouch">Output range</div>
-            
-          </div>
+              
+         </div>
           
-          <div class="leftsmallcontrolbox dronescontrolBox" id="box3">
+   
+          
+ 		<div class="smallcontrolbox expressionBox" id="box8">
+  
+              <h2 class="controlboxtitle noTouch"> Pitch Expression Pressure-Range Override
+				<button type="button" class="infocircle" onClick="modal(20)"><i class="fa fa-info-circle"></i></button>
+              </h2>
+              
+              <div id="overrideLabel" class="overrideLabel noTouch">Override pitch expression range</div>
+              <div id="overrideLabel2" class="overrideLabel2 noTouch">(not available with overblowing)</div>
+              
+              <label class="switch" id="switch16">
+
+              <input type="checkbox" class="checkboxes" id="checkbox16" onChange="sendOverride(this.checked)">
+
+              <span class="slider round"></span>
+
+            </label>
+
+            <div class="jumpvalues noTouch" id="slider3-value-min"></div>
+            <div class="jumpvalues noTouch" id="slider3-value-max"></div>
+             <div class="maxMinContainer3" id="slider3"></div>
+             <div class="overrideRangeLabel noTouch">Pressure range (inH<sub>2</sub>0)</div>
+            <button type="button" class="smallbutton noTouch advancedOkayPB" onClick="okayOverride()">OK</button>
+ 
+         </div>
+          
+          
+              
+          
+          <div class="smallcontrolbox dronescontrolBox" id="box3">
 
             <h2 class="controlboxtitle noTouch">Drones Control
 
@@ -1184,7 +1630,7 @@
 
           </div>
 
-          <div class="controlbox2">
+          <div class="controlbox2" id="buttonBox">
 
             <h2 class="controlboxtitle noTouch">Button Behavior
 
@@ -1192,9 +1638,11 @@
 
             </h2>
             
-            <div class="consoleLabel noTouch">MIDI console:</div>
             
-            <div class="console noTouch" id="console"></div>
+            <button type="button" class="smallbutton noTouch openConsole" onClick="modal(18)">MIDI Console...</button>
+            
+ 
+ 
             
             <div class="secretLabel noTouch">Use "secret" button commands</div>
             
@@ -1815,9 +2263,12 @@
           </p>
           
           <p>
-            You can choose <b>1. Slide and vibrato</b>, <b>2. Vibrato only</b>, or <b>3. No pitch bend</b>. The way <b>slide</b> works is that lowering the finger over the highest uncovered hole will gradually flatten the current note down to the next lower note on the scale, much like on a real instrument. This can also allow you to approximate "half-holing" accidentals. Because of the nature of note transitions in MIDI, sliding between notes can sometimes result in a slight "popping" sound when the new note is triggered. This is quite apparent with some sounds like whistles and less so with other sounds like reed instruments. Whether you choose to use slide may depend partly on the MIDI host and sounds that you're using.
+            You can choose <b>1. Slide and vibrato</b>, <b>2. Vibrato only</b>, or <b>3. No pitch bend</b>, or <b>4. Legato slide/vibrato</b>. The way <b>slide</b> works is that lowering the finger over the highest uncovered hole will gradually flatten the current note down to the next lower note on the scale, much like on a real instrument. This can also allow you to approximate "half-holing" accidentals. Because of the nature of note transitions in MIDI, sliding between notes can sometimes result in a slight "popping" sound when the new note is triggered. This is quite apparent with some sounds like whistles and less so with other sounds like reed instruments. Whether you choose to use slide may depend partly on the MIDI host and sounds that you're using. The normal slide feature is limited to a maximum of 2 semitones before a different MIDI note is triggered.
           </p>
 
+			<p>
+            	The <b>4. Legato slide/vibrato</b> feature is different from the normal slide in that it allows you to slide seamlessly over a range of more than 2 semitones. The sliding range is determined by the <b>MIDI bend range (semitones)</b> setting in the <b>Advanced Pitch Bend Settings</b> panel. For proper slide and vibrato results, the pitch bend range in the MIDI app or host that you are using must be set to the same number of semitones.
+			</p>
           <p>
             With <b>vibrato</b>, lowering fingers over any open holes (other than the "slide" hole, if you also have slide turned on) will gradually flatten the note down to the selected maximum vibrato depth. The pitch bend contributed by each hole is cumulative, meaning that lowering fingers over multiple holes simultaneously will flatten the note more than lowering just one finger. This gives control over the amount of vibrato, and can be used to simulate sliding even when "slide" isn't turned on. If a finger is covering a hole when a note is triggered and subsequently lifting that finger doesn't cause a different note to be triggered, then that finger will be available to use for vibrato. However, to enable that finger, you first must remove it completely, past where WARBL can first detect it. This is to prevent problems with closed fingering patterns. As an example of how this works, if you trigger a note, completely remove a finger (one that doesn't change the current note), and then place it back down, the resulting pitch will be lower than the originally triggered note because vibrato has been enabled. This is usually intuitive, but it's important to understand because in certain cases it might not be immediately apparent why the resulting pitch is lower than the original pitch.
           </p>
@@ -1835,7 +2286,7 @@
           </p>
           
           <p>
-            <b>Note:</b> For MIDI host apps that allow you to choose the maximum pitch bend depth, you should choose 2 semitones as the maximum depth so that WARBL pitch bend will function as intended.
+            <b>Note:</b> For MIDI host apps that allow you to choose the maximum pitch bend depth, you should always set the maximum depth to the same as the <b>MIDI bend range (semitones)</b> setting in the <b>Advanced Pitch Bend Settings</b> panel so that WARBL pitch bend will function as intended.
           </p>
 
         </div>
@@ -1843,6 +2294,48 @@
       </div>
 
     </div>
+    
+    
+    
+    
+     <div id="open-modal17" onClick="" class="modal-window">
+
+        <div id="modal-center17">
+
+          <h2 title="Close" onClick="modalclose(17)" class="modal-close">Close</h2>
+
+          <h1>Advanced Pitch Bend Settings</h1>
+
+          <div>
+ 
+
+            <p>
+              These settings can be left unchanged by many users, but give more control over how WARBL sends pitch bend messages. The <b>MIDI bend range (semitones)</b> should typically be left to 2, but should correspond to the the pitch bend range setting in whatever MIDI app or host you are using. For some apps this can't be changed, so you can change the WARBL setting to correspond to the app. This will ensure that the expected amount of pitch bend occurs when using vibrato or slide.
+            </p>
+            
+             <p>
+              You may also want to change the <b>MIDI bend range (semitones)</b> setting if you are using the <b>4. Legato slide/vibrato</b> option for pitch bend. In that case, the MIDI bend range will also control the number of semitones that you can bend (slide) without triggering a different MIDI note. You must set the MIDI pitch bend range in whatever MIDI app or host you are using to the same value. 
+             </p>
+             
+             <p>
+              Normally WARBL sends a pitc hbend message after a new MIDI note is turned on. Some users may instead wish to send pitch bend before the note is turned on by using the <b>Send pitch bend immediately before Note On</b> switch. This may cause pitch bend audio artifacts with some MIDI apps but is the recommended setting for MIDI MPE.
+              </p>
+              
+              <p>
+              The <b>Send notes as legato</b> switch cause WARBL to wait to turn off each MIDI note until after the next note is sent. This is the recommended setting for most apps and allows many apps to interpret the notes as legato, allowing them to flow seamlessly together.
+               </p>
+             
+ 
+          </div>
+          </div>
+
+        </div>
+
+    
+    
+    
+    
+    
 
     <div id="open-modal8" onClick="" class="modal-window">
 
@@ -1885,6 +2378,10 @@
           <p>
             The "secret" button commands are a few additional hard-coded actions that involve covering certain tone holes while clicking button 1. These can be useful if normal button actions are used for other functions. They give you an alternative way of changing slide/vibrato mode and instrument. With the “secret” commands turned on, covering only hole L3 while pressing button 1 will change the slide/vibrato mode, and covering only R3 while pressing button 1 will change the instrument. Note that the <b>Use "secret" button commands</b> switch does not have to be on to use the "secret" drone control button, if that option is selected in the Drone Control panel.
           </p>
+          
+           <p>
+           The <b>MIDI Console</b> will display up to 300 MIDI messages from WARBL, which can be useful for testing your MIDI setup.
+            </p>
            
         </div>
 
@@ -1953,9 +2450,17 @@
           <p>
             Selecting the tab for each instrument allows you to change the settings for that instrument. You can apply changes to settings to the current instrument, or you can choose to apply them to all three instruments. This can be useful if you want to make three instruments that are the same except for minor differences (which can be changed after applying the initial settings to all three instruments). You can also restore the original factory settings. Please note that WARBL responds immediately to changes to settings, but if you don't save them, those changes will be lost when you unplug WARBL.
           </p>
+          
+          <p>
+			The <b>Configure custom fingering...</b> button will show a panel for designing a custom fingering chart that is only activated if you have also chosen <b>Custom</b> in the <b>Fingering pattern</b> dropdown menu.
+       		</p>
+          
+           <p>
+			The <b>Note channel</b> input allows you to select the MIDI channel (1-16) used for sending notes from WARBL. This should typically be left set to "1".
+          </p>
 
           <p>
-            Beginning with firmware V. 1.7, you can set the <b>"Default instrument"</b> that will be active when WARBL is plugged in. This prevents having to click a button to switch instruments if your current favorite instrument is not instrument 1. To set the default instrument, simply click the tab for that instrument and then click <b>"Set as Default".</b>  This change will be saved immediately.
+            Beginning with firmware V. 1.7, you can set the <b>Default instrument</b> that will be active when WARBL is plugged in. This prevents having to click a button to switch instruments if your current favorite instrument is not instrument 1. To set the default instrument, simply click the tab for that instrument and then click <b>Set as Default.</b>  This change will be saved immediately.
           </p>
 
           <p>
@@ -2010,6 +2515,9 @@
         </div>
 
       </div>
+      
+      
+      
 
       <div id="open-modal12" onClick="" class="modal-window">
 
@@ -2026,11 +2534,11 @@
             </p>
 
             <p>
-              Turning on the <b>Send expression as pitch bend</b> switch will cause WARBL to send pitch bend messages based on pressure. This means that for a given note, blowing (or squeezing a bag) gently will cause the note to play slightly flat, while blowing with excess force will cause it to be slightly sharp. This is meant to simulate the way that pressure is used to fine-tune the pitch of real instruments, and can make WARBL sound more lifelike. The <b>Expression depth</b> slider controls the amount of pitch bend. The pitch bend is added to any that is contributed by vibrato and slide, so they can all be used simultaneously.
+              Turning on the <b>Send expression as pitch bend</b> switch will cause WARBL to send pitch bend messages based on pressure. This means that for a given note, blowing (or squeezing a bag) gently will cause the note to play slightly flat, while blowing with excess force will cause it to be slightly sharp. This is meant to simulate the way that pressure is used to fine-tune the pitch of real instruments, and can make WARBL sound more lifelike. The <b>Expression depth</b> slider controls the amount of pitch bend. The pitch bend is added to any that is contributed by vibrato and slide, so they can all be used simultaneously. If overblowing is not being used, you have the option of changing the default pressure range used for Expression by clicking the <b>Override...</b> button.
             </p>
 
             <p>
-              WARBL also has the ability to map pressure sensor values to a MIDI Continuous Controller (CC) note-on velocity, and/or aftertouch (channel pressure), allowing it to function as a MIDI breath controller. An example would be to send pressure data to CC 7 to control the volume of notes with pressure. The input pressure range can be mapped to the output CC range using one of three curves: linear, a power curve (curve 2), or an inverse power curve (curve 3). Please see the user manual for diagrams of these curves. Note that you can select a channel for sending CC messages, but the channel selection will be ignored for note-on velocity, because velocity is always sent on channel 1. Typically you would use channel 1 for all three options. The <b>"Send Pressure as Velocity"</b> option overrides the <b>"Force Max Velocity"</b> switch (above).
+              WARBL also has the ability to map pressure sensor values to a MIDI Continuous Controller (CC) note-on velocity, channel pressure, and key pressure, allowing it to function as a MIDI breath controller. These are advanced settings and not needed by many WARBL users. An example would be to send pressure data to CC 7 to control the volume of notes with pressure. The <b>"Send Pressure as Velocity"</b> option overrides the <b>"Force Max Velocity"</b> switch (above).
             </p>
             
           </div>
@@ -2038,6 +2546,9 @@
         </div>
 
       </div>
+      
+      
+      
 
       <div id="open-modal13" onClick="" class="modal-window">
 
@@ -2055,6 +2566,10 @@
             
             <p>
               The commands used for turning drones on and off will depend on the MIDI host app. For example, the Celtic Sounds app uses a Note On command both for turning drones on and turning them off. In some apps such as Universal Piper, you can choose which command you'll use to control the drones.
+            </p>
+            
+             <p>
+              To assign a specific button action to control the drones, select <b>No drone control</b> but then assign a button action to <b>Turn drones on/off</b> in the <b>Button Behavior</b> panel.
             </p>
 
             <p>
@@ -2154,25 +2669,146 @@
 
         </div>
         </div>
-        <div id="open-modal17" onClick="" class="modal-window">
+        
+      
 
-        <div id="modal-center17">
 
-          <h2 title="Close" onClick="modalclose(17)" class="modal-close">Close</h2>
 
-          <h1>Advanced Pitchbend Settings</h1>
+
+                  <div id="open-modal18" onClick="" class="modal-window">
+
+        <div id="modal-center18">
+
+          <h2 title="Close" onClick="modalclose(18)" class="modal-close">Close</h2>
+          <h2 title="Clear" onClick="clearConsole()" class="modal-close" id="clear">Clear</h2>
+
+
+          <h1 class="consoleLabel">MIDI Console</h1>
 
           <div>
-
+ 
             <p>
-              blah.
+                         <div class="console" id="console"></div>
             </p>
 
           </div>
           </div>
 
         </div>
+ 
 
+
+
+        <div id="open-modal19" onClick="" class="modal-window">
+
+        <div id="modal-center19">
+
+          <h2 title="Close" onClick="modalclose(19)" class="modal-close">Close</h2>
+
+
+          <h1>Custom Fingering Configuration</h1>
+
+          <div>
+ 
+            <p>
+               These controls are for creating a custom fingering chart based on a simple pattern of finger positions that are similar to those used for tin whistle, flute, recorder, and many other wind instruments. This can be useful for creating special scales, for example a mixolydian or blues scale, or arpeggios, that are difficult to play on an acoustic instrument or with other existing fingering patterns. You may also be able to emulate real instruments that aren't available in the standard fingering patterns. To use the custom chart, be sure to choose "Custom" for the fingering pattern.       
+            </p>
+            
+            <p>
+            You can enter any MIDI note (from 0-127) for each fingering pattern. Tone holes shown in gray will be ignored, so for most patterns only the highest uncovered tone hole is used to determine the note. There are also a few cross-fingering patterns, which can be used for accidentals. To have WARBL ignore any pattern in the chart, simply repeat the MIDI note from the next highest note in the chart. To have WARBL ignore the left thumb hole, enter a value of "0" for that pattern (the top one in the list). 
+            </p>
+            
+            <p>
+            By turning on the <b>Use both thumb and overblowing for register control</b> switch, it is possible to play three registers by using a combination or overblowing and the left thumb. Then, if you have selected either <b>2. Overblow</b> or <b>3. Thumb register</b>  in the <b>Note Trigger and Register Control</b> panel, both will be used to give a combined range of three registers. As with other fingering patterns, you can also use the <b>Invert thumb/bell</b> switch to reverse the thumb functionality so that covering the hole raises the register instead of vice versa.
+            </p>
+            
+            <p>
+            You can choose to use the right fourth finger (pinky) to flatten any note one semitone. If this switch is turned on, the MIDI note assigned to the bottom entry in the chart will be ignored.
+			</p>
+            
+           <p>
+           It is also possible to fill the chart with presets listed in the dropdown menu. More of these options will continue to be added.	
+           </p>
+            
+            <p>
+            <b>Note:</b> If you are using a custom fingering chart, the default in the <b>Key</b> dropdown menu will be D, but you can still change keys. Any key change will be relative to the default key of D. For example, choosing the key of E will transpose all notes in your custom chart up two semitones.
+            </p>
+            
+          </div>
+          </div>
+
+        </div>
+ 
+ 
+ 
+         <div id="open-modal20" onClick="" class="modal-window">
+
+        <div id="modal-center20">
+
+          <h2 title="Close" onClick="modalclose(20)" class="modal-close">Close</h2>
+
+
+          <h1>Pitch Expression Pressure-Range Override</h1>
+
+          <div>
+ 
+            <p>
+            By turning on the <b>Override pitch expression range</b> switch and using the sliders, you can override the default pressure range used for pitch expression. This is not available if overblowing is being used, because in that case the pressure range has to be calculated in real time based on the current register and overblowing settings.
+            </p>
+            
+ 
+          </div>
+          </div>
+
+        </div>
+        
+        
+        
+           <div id="open-modal21" onClick="" class="modal-window">
+
+        <div id="modal-center21">
+
+          <h2 title="Close" onClick="modalclose(21)" class="modal-close">Close</h2>
+
+
+          <h1>Pressure Mapping</h1>
+
+          <div>
+ 
+            <p>
+             The input pressure range can be mapped to the output (CC, velocity, channel pressure, or key pressure) range using one of three curves: linear, a power curve (curve 2), or an inverse power curve (curve 3). Adjusting the sliders controls which portion of the overall breath/bag pressure is mapped to which portion of the possible MIDI output range of 0-127. 
+            </p>
+            
+ 
+          </div>
+          </div>
+
+        </div>
+        
+        
+        
+           <div id="open-modal22" onClick="" class="modal-window">
+
+      <div id="modal-center22">
+
+        <h1></h1>
+
+        <div>Overwrite existing entries?</div>
+
+        <div class="modal-footer">
+
+          <button type="submit" class="smallbutton noTouch okay" onClick="sendCustomFingeringFill()">OK</button>
+
+          <button type="button" class="smallbutton noTouch cancel" onClick="modalclose(22)">Cancel</button>
+
+        </div>
+
+      </div>
+
+    </div>
+ 
+ 
+ 
 
       </div>
 
@@ -2187,11 +2823,11 @@
 
       var slider = document.getElementById('slider');
         noUiSlider.create(slider, {
-        start: [1, 100],
+        start: [0, 100],
         step: 1,
         connect: true,
         range: {
-        'min': 1,
+        'min': 0,
         'max': 100
         }
       });
@@ -2202,12 +2838,27 @@
 
       var slider2 = document.getElementById('slider2');
         noUiSlider.create(slider2, {
-        start: [1, 127],
+        start: [0, 127],
         step: 1,
         connect: true,
         range: {
-        'min': 1,
+        'min': 0,
         'max': 127
+        }
+      });
+
+    </script>
+    
+        <script>
+
+      var slider3 = document.getElementById('slider3');
+        noUiSlider.create(slider3, {
+        start: [0, 100],
+        step: 1,
+        connect: true,
+        range: {
+        'min': 0,
+        'max': 100
         }
       });
 
