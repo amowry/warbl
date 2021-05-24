@@ -5,9 +5,19 @@
 
 //debugger;
 
+
+var mapSelection; //keeps track of which pressure output we're mapping (CC, vel, aftertouch, poly)
+var curve = [0,0,0,0]; //which curve is selected for CC, vel, aftertouch, poly
+var inputSliderMin = [0,0,0,0]; //settings for sliders
+var inputSliderMax = [100,100,100,100];
+var outputSliderMin = [0,0,0,0];
+var outputSliderMax = [127,127,127,127];
+var consoleEntries = 0; //number of lines in MIDI console
+var customFingeringFills = [[null,null,null,null,null,null,null,null,null,null,null],[0,74,73,72,71,69,67,66,64,62,61],[0,74,72,72,70,68,67,65,64,62,61],[0,74,74,72,72,69,68,67,65,62,60]];
+
 var midiNotes = [];
 
-var currentVersion = 19
+var currentVersion = 20
 
 var midiAccess = null; // the MIDIAccess object.
 
@@ -51,16 +61,23 @@ var defaultInstr = 0; //default instrument
 
 var modals = new Array();
 
-for (var i = 1; i <= 18; i++) {
+for (var i = 1; i <= 23; i++) {
 
 	modals[i] = document.getElementById("open-modal" + i);
 
 }
 
+//hide some stuff for app version
+if (platform == "app") {
+	document.getElementById("myTopnav").style.display = "none";
+	document.getElementById("topLogo").style.display = "none";
+	document.getElementById("importexport").style.display = "none";
+}
+
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
 	
-	for (var i = 1; i <= 18; i++) {
+	for (var i = 1; i <= 23; i++) {
 
 		if (event.target == modals[i]) {
 
@@ -80,7 +97,12 @@ window.addEventListener('load', function() {
 
 	updateCells(); // set selects and radio buttons to initial values and enabled/disabled states
 	
-	updateSliders();
+	for (var i = 1; i < 13; i++) { //trigger input event for sliders to display values
+		var k = document.getElementById("jumpFactor" + (i));
+		k.dispatchEvent(new Event('input'));
+	}
+	
+	depth.dispatchEvent(new Event('input'));
 
 	$(".volume").click(function() {
 		toggleOn();
@@ -129,7 +151,7 @@ function connect() {
 	//debugger;
 
 	//console.log("connect");
-
+	//alert("connect");
 	// Clear the midiAccess object callbacks
 	if (midiAccess){
 
@@ -175,7 +197,7 @@ function onMIDIInit(midi) {
 	//debugger;
 
 	//console.log("onMIDIInit");
-
+//alert("onMiDIInitl");
 	// Save off the MIDI access object
 	midiAccess = midi;
 
@@ -194,6 +216,7 @@ function onMIDIInit(midi) {
 		deviceName = input.value.name;
 
 		//console.log("deviceName = "+deviceName);
+		//alert("deviceName = "+deviceName);
 			
 		setPing(); //start checking to make sure WARBL is still connected   
 		
@@ -204,7 +227,7 @@ function onMIDIInit(midi) {
 	if (foundMIDIDevice){
 
 		sendToAll(102, 126); //tell WARBL to enter communications mode
-		
+		//alert("sending connect to WARBL");
 	}
 	else{
 
@@ -223,6 +246,8 @@ function onMIDIReject(err) {
 }
 
 function midiOnStateChange(event) {
+	
+	//console.log("state change");
 
 	if (ping == 1) {
 
@@ -307,32 +332,46 @@ function sendToAll(byte2, byte3) {
 
 // Send a command to only the WARBL output port
 function sendToWARBL(byte2, byte3) {
+	
+	if (platform = "app") {
+		var cc = buildMessage(byte2,byte3);
+		var iter = midiAccess.outputs.values();
+		for (var o = iter.next(); !o.done; o = iter.next()) {
+		o.value.send(cc, window.performance.now()); //send CC message
+		
+	}}
+	
+	else {
 
 	//console.log("sendToWARBL");
 
 	// Make sure we have a WARBL output port
-	if (!WARBLout){
+		if (!WARBLout){
 
-		console.error("sendToWARBL: No MIDI port selected!")
+			console.error("sendToWARBL: No MIDI port selected!")
 		
-		return;
+			return;
 
+		}
+
+		var cc = buildMessage(byte2,byte3);
+
+		// Send to only WARBL MIDI output port
+		WARBLout.send(cc, window.performance.now()); //send CC message
 	}
-
-	var cc = buildMessage(byte2,byte3);
-
-	// Send to only WARBL MIDI output port
-	WARBLout.send(cc, window.performance.now()); //send CC message
-
 }
 
 function WARBL_Receive(event) {
 	
 	//debugger;
+	
+	//alert("received");
 
 	var data0 = event.data[0];
 	var data1 = event.data[1];
 	var data2 = event.data[2];
+	
+	//alert(WARBLout);
 
 	// If we're exporting a preset, send the data to the exporter instead
 	if (gExportProxy){
@@ -347,8 +386,13 @@ function WARBL_Receive(event) {
 	// If we haven't established the WARBL output port and we get a received message on channel 7
 	// find the port by name by walking the output ports and matching the input port name
 	if ((!WARBLout) && ((data0 & 0x0F) == 6)){
+		//alert(data0 & 0x0F);
+		
+	if (platform == "web"){
 
+		//alert(input.value.name);
 	 	var inputName = event.target.name;
+
 
 	 	// Strip any [] postfix
 	 	
@@ -361,7 +405,7 @@ function WARBL_Receive(event) {
 	 	}
 
 		//console.log("Searching for WARBL output port matching input port name: "+targetName);
-
+//alert("Searching for WARBL output port matching input port name: "+targetName);
 		// Send to all MIDI output ports
 		var iter = midiAccess.outputs.values();
 
@@ -397,14 +441,24 @@ function WARBL_Receive(event) {
 
 		} 	
 	}
+	
+	else{ //app version
+	WARBLout = 1; //for app version we don't worry about the device name or port, just that it's sending on channel 7.
+	}
+	
+	
+	}
 
 	var e;
 	var f;
-	if (data2 == "undefined") {
+	var g;
+	
+	if (isNaN(data2)) {
 		f = " ";
 	} else {
 		f = data2;
 	}
+
 	if ((data0 & 0xf0) == 144) {
 		e = "On";
 	} //update the MIDI console
@@ -430,7 +484,15 @@ function WARBL_Receive(event) {
 	
 	
 	if (!(e == "CC" && ((parseFloat(data0 & 0x0f) == 6)))) { //as long as it's not a CC on channel 7, show in the MIDI console.
-		document.getElementById("console").innerHTML = (e + " " + ((data0 & 0x0f) + 1) + " " + data1 + " " + f);
+		var elem = document.getElementById('modal-center18');
+		consoleEntries++;
+			if(consoleEntries < 301){
+				document.getElementById("console").innerHTML += (e + " " + ((data0 & 0x0f) + 1) + " " + data1 + " " + f);
+				document.getElementById("console").innerHTML += "<br>";	 
+			}
+			else if (consoleEntries == 301) {document.getElementById("console").innerHTML += "max lines reached";
+			}
+		elem.scrollTop = elem.scrollHeight;	
 	}
 
 	// Mask off the lower nibble (MIDI channel, which we don't care about yet)
@@ -525,6 +587,10 @@ function WARBL_Receive(event) {
 						advancedOkay(); //turn off the advanced tab	
 						pressureOkay();	
 						updateCells();
+						okayCCmap();
+						okayOverride();
+						advancedOkayPB();
+						customFingeringOkay();
 					}
 					if (data2 == 61) {
 						document.getElementById("fingering1").checked = true;
@@ -538,7 +604,11 @@ function WARBL_Receive(event) {
 						advancedOkay(); //turn off the advanced tab	
 						pressureOkay();	
 						updateCells();
+						advancedOkayPB();
+						okayCCmap();
+						okayOverride();
 						handleDefault();
+						customFingeringOkay();
 					}
 					if (data2 == 62) {
 						document.getElementById("fingering2").checked = true;
@@ -552,11 +622,15 @@ function WARBL_Receive(event) {
 						advancedOkay(); //turn off the advanced tab	
 						pressureOkay();	
 						updateCells();
+						advancedOkayPB();
+						okayCCmap();
+						okayOverride();
 						handleDefault();
+						customFingeringOkay();
 					}
 
 
-					if (data2 == 85) { //receive and handle default instrument setting
+					if (data2 == 85) { //receive and handle default instrument settings
 						defaultInstr = 0;
 						handleDefault();
 					}
@@ -661,43 +735,48 @@ function WARBL_Receive(event) {
 				else if (data1 == 117) {
 					document.getElementById("depth").value = data2 + 1;
 					var output = document.getElementById("demo14");
+					depth.dispatchEvent(new Event('input'));
 					output.innerHTML = data2 + 1;
 				} //set vibrato depth  
 				else if (data1 == 104) {
 					jumpFactorWrite = data2;
 				} // so we know which pressure setting is going to be received.
-				else if (data1 == 105 && jumpFactorWrite < 13) {
+				else if (data1 == 105 && jumpFactorWrite < 13) {	
 					document.getElementById("jumpFactor" + jumpFactorWrite).value = data2;
-					var output = document.getElementById("demo" + jumpFactorWrite);
-					output.innerHTML = data2;
+					for (var i = 1; i < 13; i++) {
+					var k = document.getElementById("jumpFactor" + (i));
+					k.dispatchEvent(new Event('input'));}
 				}
 
 				if (data1 == 105) {
 
 					if (jumpFactorWrite == 13) {
 						document.getElementById("checkbox6").checked = data2;
+						//if (data2 == 1) {
+							//document.getElementById("overrideExpression").disabled = false;
+						//} else (document.getElementById("overrideExpression").disabled = true);
 					} else if (jumpFactorWrite == 14) {
 						document.getElementById("expressionDepth").value = data2;
 					} else if (jumpFactorWrite == 15) {
 						document.getElementById("checkbox7").checked = data2;
 						updateCustom();
-					} else if (jumpFactorWrite == 16 && data2 == 0) {
-						document.getElementById("curveRadio0").checked = true;
-					} else if (jumpFactorWrite == 16 && data2 == 1) {
-						document.getElementById("curveRadio1").checked = true;
-					} else if (jumpFactorWrite == 16 && data2 == 2) {
-						document.getElementById("curveRadio2").checked = true;
+					} else if (jumpFactorWrite == 16) {
+						curve[0] = data2;
 					} else if (jumpFactorWrite == 17) {
 						document.getElementById("pressureChannel").value = data2;
 					} else if (jumpFactorWrite == 18) {
 						document.getElementById("pressureCC").value = data2;
 					} else if (jumpFactorWrite == 19) {
+						inputSliderMin[0] = data2;
 						slider.noUiSlider.set([data2, null]);
 					} else if (jumpFactorWrite == 20) {
+						inputSliderMax[0] = data2;
 						slider.noUiSlider.set([null, data2]);
 					} else if (jumpFactorWrite == 21) {
+						outputSliderMin[0] = data2;
 						slider2.noUiSlider.set([data2, null]);
 					} else if (jumpFactorWrite == 22) {
+						outputSliderMax[0] = data2;
 						slider2.noUiSlider.set([null, data2]);
 					} else if (jumpFactorWrite == 23) {
 						document.getElementById("dronesOnCommand").value = data2;
@@ -768,11 +847,24 @@ function WARBL_Receive(event) {
 					
 					else if (jumpFactorWrite == 48) {
 						document.getElementById("checkbox14").checked = data2;
-					} //force max velocity
+					} //immediate pitchbend
 					
 					else if (jumpFactorWrite == 49) {
 						document.getElementById("checkbox15").checked = data2;
-					} //force max velocity
+					} //legato
+	
+					else if (jumpFactorWrite == 50) {
+						document.getElementById("checkbox16").checked = data2;
+					} //override expression pressure range
+					
+					else if (jumpFactorWrite == 51) {
+						document.getElementById("checkbox17").checked = data2;
+					} //both thumb and overblow
+					
+					else if (jumpFactorWrite == 52) {
+						document.getElementById("checkbox18").checked = data2;
+						updateCustom();
+					} //R4 flattens
 						
 					else if (jumpFactorWrite == 61) {
 						document.getElementById("midiBendRange").value = data2;
@@ -780,10 +872,76 @@ function WARBL_Receive(event) {
 					else if (jumpFactorWrite == 62) {
 						document.getElementById("noteChannel").value = data2;
 					}
+					else if (jumpFactorWrite == 70) {
+						inputSliderMin[1] = data2;
+						slider.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 71) {
+						inputSliderMax[1] = data2;
+						slider.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 72) {
+						outputSliderMin[1] = data2;
+						slider2.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 73) {
+						outputSliderMax[1] = data2;
+						slider2.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 74) {
+						inputSliderMin[2] = data2;
+						slider.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 75) {
+						inputSliderMax[2] = data2;
+						slider.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 76) {
+						outputSliderMin[2] = data2;
+						slider2.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 77) {
+						outputSliderMax[2] = data2;
+						slider2.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 78) {
+						inputSliderMin[3] = data2;
+						slider.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 79) {
+						inputSliderMax[3] = data2;
+						slider.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 80) {
+						outputSliderMin[3] = data2;
+						slider2.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 81) {
+						outputSliderMax[3] = data2;
+						slider2.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 85) {
+						slider3.noUiSlider.set([data2, null]);
+					}
+					else if (jumpFactorWrite == 86) {
+						slider3.noUiSlider.set([null, data2]);
+					}
+					else if (jumpFactorWrite == 82) {
+						curve[1] = data2;
+					}
+					else if (jumpFactorWrite == 83) {
+						curve[2] = data2;
+					}
+					else if (jumpFactorWrite == 84) {
+						curve[3] = data2;
+					}
+					
+					else if (jumpFactorWrite > 86 && jumpFactorWrite < 98) { //custom fingering chart inputs
+						document.getElementById("fingeringInput" + (jumpFactorWrite - 86)).value = data2;								
+					}
+					
 				}
-				//else if (data1 == 109){document.getElementById("hysteresis").value = data2;
-				//var output = document.getElementById("demo13");
-				//output.innerHTML = data2;}  	
+ 	
 				else if (data1 == 110) {
 
 					version = data2;
@@ -791,6 +949,10 @@ function WARBL_Receive(event) {
 					if (version >= currentVersion) {
 					
 					
+						document.getElementById("overrideExpression").disabled = false;
+						document.getElementById("polyMapButton").disabled = false;
+						document.getElementById("velocityMapButton").disabled = false;
+						document.getElementById("aftertouchMapButton").disabled = false;
 						document.getElementById("noteChannel").disabled = false;
 						document.getElementById("checkbox13").disabled = false;
 						document.getElementById("switch13").style.cursor = "pointer";
@@ -801,7 +963,14 @@ function WARBL_Receive(event) {
 						document.getElementById("current").style.visibility = "visible";
 						document.getElementById("status").style.visibility = "hidden";
 						document.getElementById("current").style.color = "#f7c839";
-					} else {
+						document.getElementById("configureCustomFingering").disabled = false;
+						
+					} 
+					else {
+						document.getElementById("overrideExpression").disabled = true;
+						document.getElementById("polyMapButton").disabled = true;
+						document.getElementById("velocityMapButton").disabled = true;
+						document.getElementById("aftertouchMapButton").disabled = true;
 						document.getElementById("noteChannel").disabled = true;
 						document.getElementById("checkbox13").disabled = true;
 						document.getElementById("switch13").style.cursor = "default";
@@ -812,11 +981,13 @@ function WARBL_Receive(event) {
 						document.getElementById("current").style.visibility = "visible";
 						document.getElementById("status").style.visibility = "hidden";
 						document.getElementById("current").style.color = "#F78339";
+						document.getElementById("configureCustomFingering").disabled = true;
 					}
 
 
 					version = version / 10;
-					document.getElementById("version").innerHTML = version;
+					var n = version.toFixed(1)
+					document.getElementById("version").innerHTML = n;
 					document.getElementById("version").style.color = "#f7c839";
 
 					if (version < 1.5) {
@@ -862,6 +1033,21 @@ function WARBL_Receive(event) {
 						document.getElementById("fingeringSelect0").options[15].disabled = true;
 						document.getElementById("fingeringSelect1").options[15].disabled = true;
 						document.getElementById("fingeringSelect2").options[15].disabled = true;
+					}
+					
+					
+					if (version < 2.0) {
+						document.getElementById("fingeringSelect0").options[16].disabled = true;
+						document.getElementById("fingeringSelect1").options[16].disabled = true;
+						document.getElementById("fingeringSelect2").options[16].disabled = true;
+												
+						document.getElementById("fingeringSelect0").options[17].disabled = true;
+						document.getElementById("fingeringSelect1").options[17].disabled = true;
+						document.getElementById("fingeringSelect2").options[17].disabled = true;
+						
+						document.getElementById("fingeringSelect0").options[18].disabled = true;
+						document.getElementById("fingeringSelect1").options[18].disabled = true;
+						document.getElementById("fingeringSelect2").options[18].disabled = true;
 					}
 
 				} else if (data1 == 111) {
@@ -969,6 +1155,17 @@ function bit_test(num, bit) {
 }
 
 
+function sendCustomFingeringFill(){
+	
+	modalclose(22);	
+	var value = document.getElementById("customFingeringFill").value;
+	for (i = 1; i < 12; ++i) {
+		document.getElementById("fingeringInput" + i).value = customFingeringFills[value][i - 1];
+		fingeringInput(i, customFingeringFills[value][i - 1]);
+	}
+}
+
+
 function sendFingeringSelect(row, selection) {
 	selection = parseFloat(selection);
 	updateCells();
@@ -997,6 +1194,9 @@ function sendFingeringSelect(row, selection) {
 	else if (selection == 12 || selection == 14 || selection == 15) {
 		key = 123;
 	} //Sax
+	else if (selection == 17 || selection == 18) {
+		key = 2;
+	} //Sackpipa
 	else {
 		key = 0;
 	} //default key of D for many patterns
@@ -1007,6 +1207,22 @@ function sendFingeringSelect(row, selection) {
 	sendToWARBL(102, 33 + selection);
 
 	sendKey(row, key);
+}
+
+
+function fingeringInput(input, selection) { 	//send the custom fingering input entry
+
+		var x = document.getElementById("fingeringInput" + input).value;
+		if (x < 0 || x > 127 || isNaN(x)) {
+			alert("Value must be 0-127.");
+			document.getElementById("fingeringInput" + input).value = null;
+		}		
+		else{
+	blink(1);
+	document.getElementById("customFingeringFill").value = "12";
+	sendToWARBL(104, 86 + input);
+	sendToWARBL(105, selection);
+		}
 }
 
 
@@ -1071,13 +1287,12 @@ function sendKey(row, selection) {
 
 function sendFingeringRadio(tab) { //change instruments, showing the correct tab for each instrument.
 
-
 	instrument = tab;
 	updateCustom();
 	advancedOkay(); //turn off the advanced tab
 	pressureOkay();	
 	handleDefault(); //display correct default instrument and "set default" buttons	
-
+	customFingeringOkay();
 	if (tab == 0) {
 		document.getElementById("instrument0").style.display = "block";
 		document.getElementById("instrument1").style.display = "none";
@@ -1122,7 +1337,6 @@ function sendSenseDistance(selection) {
 
 function sendDepth(selection) {
 	blink(1);
-	updateSliders();
 	selection = parseFloat(selection);
 	sendToWARBL(117, selection);
 }
@@ -1137,7 +1351,13 @@ function sendExpressionDepth(selection) {
 function sendCurveRadio(selection) {
 	blink(1);
 	selection = parseFloat(selection);
+	curve[mapSelection] = selection;
+	if(mapSelection == 0){
 	sendToWARBL(104, 16);
+	}
+	else{
+		sendToWARBL(104, 81 + mapSelection);
+	}
 	sendToWARBL(105, selection);
 }
 
@@ -1188,20 +1408,93 @@ function sendNoteChannel(selection) {
 //pressure input slider
 slider.noUiSlider.on('change', function(values) {
 	blink(1);
+	if(mapSelection == 0){
+	inputSliderMin[0] = parseInt(values[0]);
+	inputSliderMax[0] = parseInt(values[1]);	
 	sendToWARBL(104, 19);
 	sendToWARBL(105, parseInt(values[0]));
 	sendToWARBL(104, 20);
 	sendToWARBL(105, parseInt(values[1]));
+	}
+	else {
+	inputSliderMin[mapSelection] = parseInt(values[0]);
+	inputSliderMax[mapSelection] = parseInt(values[1]);
+	sendToWARBL(104, 70 + ((mapSelection-1)*4));
+	sendToWARBL(105, parseInt(values[0]));
+	sendToWARBL(104, 71 + ((mapSelection-1)*4));
+	sendToWARBL(105, parseInt(values[1]));		
+	}
 });
 
 //pressure output slider
 slider2.noUiSlider.on('change', function(values) {
 	blink(1);
+	if(mapSelection == 0){
+	outputSliderMin[0] = parseInt(values[0]);
+	outputSliderMax[0] = parseInt(values[1]);
 	sendToWARBL(104, 21);
 	sendToWARBL(105, parseInt(values[0]));
 	sendToWARBL(104, 22);
 	sendToWARBL(105, parseInt(values[1]));
+	}
+	else {
+	outputSliderMin[mapSelection] = parseInt(values[0]);
+	outputSliderMax[mapSelection] = parseInt(values[1]);
+	sendToWARBL(104, 72 + ((mapSelection-1)*4));
+	sendToWARBL(105, parseInt(values[0]));
+	sendToWARBL(104, 73 + ((mapSelection-1)*4));
+	sendToWARBL(105, parseInt(values[1]));		
+	}
 });
+
+//expression override slider
+slider3.noUiSlider.on('change', function(values) {
+	blink(1);
+	sendToWARBL(104, 85);
+	sendToWARBL(105, parseInt(values[0]));
+	sendToWARBL(104, 86);
+	sendToWARBL(105, parseInt(values[1]));
+});
+
+
+slider.noUiSlider.on('update', function (values, handle) {
+	var marginMin = document.getElementById('slider-value-min'),
+    marginMax = document.getElementById('slider-value-max');
+
+    if (handle) {
+			var min = parseFloat(values[handle] * 0.24).toFixed(1);
+        marginMax.innerHTML = min;
+    } else {
+			var max = parseFloat(values[handle] * 0.24).toFixed(1);
+        marginMin.innerHTML = max;
+    }
+
+});
+
+slider2.noUiSlider.on('update', function (values, handle) {
+	var marginMin = document.getElementById('slider2-value-min'),
+    marginMax = document.getElementById('slider2-value-max');
+    if (handle) {
+        marginMax.innerHTML = parseInt(values[handle]);
+    } else {
+        marginMin.innerHTML = parseInt(values[handle]);
+    }
+});
+
+slider3.noUiSlider.on('update', function (values, handle) {
+	var marginMin = document.getElementById('slider3-value-min'),
+    marginMax = document.getElementById('slider3-value-max');
+
+    if (handle) {
+			var min = parseFloat(values[handle] * 0.24).toFixed(1);
+        marginMax.innerHTML = min;
+    } else {
+			var max = parseFloat(values[handle] * 0.24).toFixed(1);
+        marginMin.innerHTML = max;
+    }
+
+});
+
 
 function sendDronesOnCommand(selection) {
 	blink(1);
@@ -1378,16 +1671,6 @@ function sendVibratoHoles(holeNumber, selection) {
 
 function updateCustom() { //keep correct settings enabled/disabled with respect to the custom vibrato switch and send pressure as CC switches.
 
-		var b = document.getElementById("checkbox7").checked //send pressure as CC switch
-		if (b == false) {
-			document.getElementById("pressureChannel").disabled = true;
-			document.getElementById("pressureCC").disabled = true;
-		}
-		else {
-			document.getElementById("pressureChannel").disabled = false;
-			document.getElementById("pressureCC").disabled = false;
-		}
-
 
 	var a = document.getElementById("fingeringSelect" + instrument).value;
 
@@ -1413,12 +1696,29 @@ function updateCustom() { //keep correct settings enabled/disabled with respect 
 			document.getElementById("vibratoCheckbox" + i).style.cursor = "pointer";
 		}
 	}
+	
+		if (document.getElementById("checkbox18").checked == true) {
+			document.getElementById("fingeringInput11").disabled = true;
+			document.getElementById("fingeringInput11").style.cursor = "default";
+		
+	} else {
+	
+			document.getElementById("fingeringInput11").disabled = false;
+			document.getElementById("fingeringInput11").style.cursor = "pointer";
+		
+	}
 }
 
 function sendBreathmodeRadio(selection) {
 	selection = parseFloat(selection);
 	if (selection > 0) {
 		blink(selection + 1);
+	}
+	if(document.getElementById("sensorradio1").checked == true) { //update override
+		document.getElementById("checkbox16").disabled = true;
+	}
+	else {
+		document.getElementById("checkbox16").disabled = false;
 	}
 	sendToWARBL(102, 80 + selection);
 
@@ -1441,10 +1741,129 @@ function advancedPB() {
 	}
 }
 
+
+function overRideExpression() {
+	if(version > 1.8 || version == "Unknown"){
+		if(document.getElementById("sensorradio1").checked == true) {
+			document.getElementById("checkbox16").disabled = true;
+		}
+		else {
+			document.getElementById("checkbox16").disabled = false;
+		}
+		document.getElementById("box8").style.display = "block";
+		document.getElementById("box6").style.display = "none";
+	}
+}
+
+function okayOverride() {
+	document.getElementById("box8").style.display = "none";
+	document.getElementById("box6").style.display = "block";
+}
+
+
 function advancedOkayPB() {
 	document.getElementById("box4").style.display = "none";
 	document.getElementById("box5").style.display = "block";
 }
+
+function configureCustomFingering() {
+	document.getElementById("topControls").style.display = "none";
+	document.getElementById("customControls").style.display = "block";
+	document.getElementById("box1").style.top = "740px";
+	document.getElementById("box2").style.top = "740px";
+	document.getElementById("box4").style.top = "740px";
+	document.getElementById("box5").style.top = "740px";
+	document.getElementById("pressuregraph").style.top = "740px";
+	document.getElementById("box3").style.top = "1200px";
+	document.getElementById("box6").style.top = "1200px";
+	document.getElementById("box7").style.top = "1200px";
+	document.getElementById("box8").style.top = "1200px";
+	document.getElementById("buttonBox").style.top = "1690px";
+	document.getElementById("topcontrolbox").style.height = "2085px";
+
+}
+
+function customFingeringOkay() {
+	document.getElementById("customControls").style.display = "none";
+	document.getElementById("topControls").style.display = "block";
+	document.getElementById("box1").style.top = "440px";
+	document.getElementById("box2").style.top = "440px";
+	document.getElementById("box4").style.top = "440px";
+	document.getElementById("box5").style.top = "440px";
+	document.getElementById("pressuregraph").style.top = "440px";
+	document.getElementById("box3").style.top = "900px";
+	document.getElementById("box6").style.top = "900px";
+	document.getElementById("box7").style.top = "900px";
+	document.getElementById("box8").style.top = "900px";
+	document.getElementById("buttonBox").style.top = "1390px";
+	document.getElementById("topcontrolbox").style.height = "1785px";
+	document.getElementById("customFingeringFill").value = "12";
+}
+
+
+function mapCC() {
+	mapSelection = 0;
+
+	slider.noUiSlider.set([inputSliderMin[0], inputSliderMax[0]]);
+	slider2.noUiSlider.set([outputSliderMin[0], outputSliderMax[0]]);
+	document.getElementById("pressureChannel").style.visibility = "visible";
+	document.getElementById("pressureCC").style.visibility = "visible";
+	document.getElementById("expressionChannel").style.visibility = "visible";
+	document.getElementById("highByte").style.visibility = "visible";	
+	document.getElementById("box7").style.display = "block";
+	document.getElementById("box6").style.display = "none";
+	if(curve[0] < 3) {document.getElementById("curveRadio" + curve[0]).checked = true;
+	}
+	if (version > 1.8){
+		document.getElementById("pressureMappingHeader").innerHTML="CC Mapping";
+	}
+}
+
+function mapVelocity() {
+	mapSelection = 1;
+	slider.noUiSlider.set([inputSliderMin[1], inputSliderMax[1]]);
+	slider2.noUiSlider.set([outputSliderMin[1], outputSliderMax[1]]);
+	if(curve[1] < 3) {document.getElementById("curveRadio" + curve[1]).checked = true;
+	}
+	document.getElementById("box7").style.display = "block";
+	document.getElementById("box6").style.display = "none";	
+	document.getElementById("pressureMappingHeader").innerHTML="Velocity Mapping";
+	//console.log(mapSelection);
+}
+
+function mapAftertouch() {
+	mapSelection = 2;
+	slider.noUiSlider.set([inputSliderMin[2], inputSliderMax[2]]);
+	slider2.noUiSlider.set([outputSliderMin[2], outputSliderMax[2]]);
+	if(curve[2] < 3) {document.getElementById("curveRadio" + curve[2]).checked = true;
+	}
+	document.getElementById("box7").style.display = "block";
+	document.getElementById("box6").style.display = "none";
+	document.getElementById("pressureMappingHeader").innerHTML="Channel Pressure Mapping";	
+}
+
+function mapPoly() {
+	mapSelection = 3;
+	slider.noUiSlider.set([inputSliderMin[3], inputSliderMax[3]]);
+	slider2.noUiSlider.set([outputSliderMin[3], outputSliderMax[3]]);
+	if(curve[3] < 3) {document.getElementById("curveRadio" + curve[3]).checked = true;
+	}
+	document.getElementById("box7").style.display = "block";
+	document.getElementById("box6").style.display = "none";	
+	document.getElementById("pressureMappingHeader").innerHTML="Key Pressure Mapping";
+}
+
+
+function okayCCmap() {
+	mapSelection = 4;
+	document.getElementById("box7").style.display = "none";
+	document.getElementById("box6").style.display = "block";
+	document.getElementById("pressureChannel").style.visibility = "hidden";
+	document.getElementById("pressureCC").style.visibility = "hidden";
+	document.getElementById("expressionChannel").style.visibility = "hidden";
+	document.getElementById("highByte").style.visibility = "hidden";
+}
+
 
 
 function pressureGraph() {
@@ -1493,9 +1912,10 @@ function advancedDefaults() {
 	document.getElementById("jumpFactor10").value = "7";
 	document.getElementById("jumpFactor11").value = "9";
 	document.getElementById("jumpFactor12").value = "9";
-	updateSliders();
 
 	for (var i = 1; i < 13; i++) {
+		var k = document.getElementById("jumpFactor" + (i));
+			k.dispatchEvent(new Event('input'));
 		var j = document.getElementById("jumpFactor" + (i)).value;
 		sendJumpFactor(i, j);
 	}
@@ -1514,26 +1934,24 @@ function advancedBagDefaults() {
 	document.getElementById("jumpFactor10").value = "7";
 	document.getElementById("jumpFactor11").value = "15";
 	document.getElementById("jumpFactor12").value = "22";
-	updateSliders();
+
 
 	for (var i = 1; i < 13; i++) {
+		var k = document.getElementById("jumpFactor" + (i));
+			k.dispatchEvent(new Event('input'));
 		var j = document.getElementById("jumpFactor" + (i)).value;
 		sendJumpFactor(i, j);
+
 	}
 }
 
 function sendJumpFactor(factor, selection) {
 	selection = parseFloat(selection);
 	blink(1);
-	updateSliders();
 	sendToWARBL(104, factor);
 	sendToWARBL(105, selection);
 }
 
-//function sendHysteresis() {
-//blink(1);
-//var x = parseFloat(document.getElementById("hysteresis").value);	
-//sendToWARBL(109,x);}
 
 function sendRow(rowNum) {
 	blink(1);
@@ -1642,6 +2060,9 @@ function sendCustom(selection) {
 function sendExpression(selection) {
 	selection = +selection; //convert true/false to 1/0
 	blink(1);
+	//if (selection == 1) {
+		//document.getElementById("overrideExpression").disabled = false;
+	//} else (document.getElementById("overrideExpression").disabled = true);
 	sendToWARBL(104, 13);
 	sendToWARBL(105, selection);
 }
@@ -1671,31 +2092,54 @@ function sendAftertouch(selection, polyselection) {
 }
 
 function sendForceVelocity(selection) {
-	selection = +selection; //convert true/false to 1/0
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 47);
 	sendToWARBL(105, selection);
 }
 
 function sendHack1(selection) {
-	selection = +selection; //convert true/false to 1/0
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 48);
 	sendToWARBL(105, selection);
 }
 
 function sendHack2(selection) {
-	selection = +selection; //convert true/false to 1/0
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 49);
 	sendToWARBL(105, selection);
 }
 
+function sendOverride(selection) {
+	selection = +selection; 
+	blink(1);
+	sendToWARBL(104, 50);
+	sendToWARBL(105, selection);
+}
 
+function sendBoth(selection) {
+	selection = +selection; 
+	blink(1);
+	sendToWARBL(104, 51);
+	sendToWARBL(105, selection);
+}
+
+
+function sendR4flatten(selection) {
+	selection = +selection; 
+	blink(1);
+	updateCustom();
+	sendToWARBL(104, 52);
+	sendToWARBL(105, selection);
+}
 
 
 
 //end switches
+
+
 
 function saveAsDefaults() {
 	modalclose(2);
@@ -1713,6 +2157,9 @@ function restoreAll() {
 	modalclose(4);
 	blink(3);
 	sendToWARBL(102, 125);
+	if (version > 1.9) { //WARBL will restart, so try to reconnect to it.
+		setTimeout(connect, 3000);
+	}
 }
 
 function autoCalibrateBell() {
@@ -1733,6 +2180,7 @@ function frequencyFromNoteNumber(note) {
 
 function modal(modalId) {
 	document.getElementById("open-modal" + modalId).classList.add('modal-window-open');
+	if(modalId == 18){clearConsole()};
 }
 
 function modalclose(modalId) {
@@ -1839,18 +2287,105 @@ function noteOff(pitch) {
 	}
 }
 
-function updateSliders() {
-
-	for (var i = 1; i < 13; i++) {
-		var slider1 = document.getElementById("jumpFactor" + i);
-		var output1 = document.getElementById("demo" + i);
-		output1.innerHTML = slider1.value;
-	}
-
-	var slider14 = document.getElementById("depth");
-	var output14 = document.getElementById("demo14");
-	output14.innerHTML = slider14.value;
+var output14 = document.getElementById("demo14");
+var depthSlider = document.getElementById('depth');
+depthSlider.addEventListener('input', sliderChange);
+function sliderChange() {
+  output14.innerHTML = depthSlider.value;
 }
+
+var output1 = document.getElementById("demo1");
+var jumpSlider1 = document.getElementById('jumpFactor1');
+jumpSlider1.addEventListener('input', slider1Change);
+function slider1Change() {
+  output1.innerHTML = jumpSlider1.value;
+}
+
+var output2 = document.getElementById("demo2");
+var jumpSlider2 = document.getElementById('jumpFactor2');
+jumpSlider2.addEventListener('input', slider2Change);
+function slider2Change() {
+  output2.innerHTML = jumpSlider2.value;
+}
+
+var output3 = document.getElementById("demo3");
+var jumpSlider3 = document.getElementById('jumpFactor3');
+jumpSlider3.addEventListener('input', slider3Change);
+function slider3Change() {
+  output3.innerHTML = jumpSlider3.value;
+}
+
+var output4 = document.getElementById("demo4");
+var jumpSlider4 = document.getElementById('jumpFactor4');
+jumpSlider4.addEventListener('input', slider4Change);
+function slider4Change() {
+  output4.innerHTML = jumpSlider4.value;
+}
+
+var output5 = document.getElementById("demo5");
+var jumpSlider5 = document.getElementById('jumpFactor5');
+jumpSlider5.addEventListener('input', slider5Change);
+function slider5Change() {
+  output5.innerHTML = jumpSlider5.value;
+}
+
+var output6 = document.getElementById("demo6");
+var jumpSlider6 = document.getElementById('jumpFactor6');
+jumpSlider6.addEventListener('input', slider6Change);
+function slider6Change() {
+  output6.innerHTML = jumpSlider6.value;
+}
+
+var output7 = document.getElementById("demo7");
+var jumpSlider7 = document.getElementById('jumpFactor7');
+jumpSlider7.addEventListener('input', slider7Change);
+function slider7Change() {
+  output7.innerHTML = jumpSlider7.value;
+}
+
+var output8 = document.getElementById("demo8");
+var jumpSlider8 = document.getElementById('jumpFactor8');
+jumpSlider8.addEventListener('input', slider8Change);
+function slider8Change() {
+  output8.innerHTML = jumpSlider8.value;
+}
+
+var output9 = document.getElementById("demo9");
+var jumpSlider9 = document.getElementById('jumpFactor9');
+jumpSlider9.addEventListener('input', slider9Change);
+function slider9Change() {
+  output9.innerHTML = jumpSlider9.value;
+}
+
+var output10 = document.getElementById("demo10");
+var jumpSlider10 = document.getElementById('jumpFactor10');
+jumpSlider10.addEventListener('input', slider10Change);
+function slider10Change() {
+  output10.innerHTML = jumpSlider10.value;
+}
+
+var output11 = document.getElementById("demo11");
+var jumpSlider11 = document.getElementById('jumpFactor11');
+jumpSlider11.addEventListener('input', slider11Change);
+function slider11Change() {
+  output11.innerHTML = jumpSlider11.value;
+}
+
+var output12 = document.getElementById("demo12");
+var jumpSlider12 = document.getElementById('jumpFactor12');
+jumpSlider12.addEventListener('input', slider12Change);
+function slider12Change() {
+  output12.innerHTML = jumpSlider12.value;
+}
+
+
+
+function clearConsole() { //clear MIDI console
+document.getElementById("console").innerHTML = "";
+consoleEntries = 0;	
+}
+
+
 
 //sets up initial values for selects/fields/radios and constantly keeps the proper options enabled/disabled
 function updateCells() {
