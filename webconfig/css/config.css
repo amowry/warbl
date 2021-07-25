@@ -376,7 +376,7 @@ input {
 	top: 280px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 .MIDILabel {
@@ -386,7 +386,7 @@ input {
 	top: 280px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 .customThumbLabel {
@@ -396,7 +396,7 @@ input {
 	top: 305px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 
@@ -407,7 +407,7 @@ input {
 	top: 305px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 
@@ -418,7 +418,7 @@ input {
 	top: 492px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 .whiteHoleLabel {
@@ -428,7 +428,7 @@ input {
 	top: 542px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 .grayHoleLabel {
@@ -438,7 +438,7 @@ input {
 	top: 592px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 
@@ -449,7 +449,7 @@ input {
 	top: 510px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 .asteriskLabel {
@@ -459,7 +459,7 @@ input {
 	top: 655px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 .asterisk {
@@ -469,7 +469,7 @@ input {
 	top: 316px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;	
+	font-size: 14px;
 }
 
 
@@ -2608,7 +2608,7 @@ h2 {
 	left: 215px;
 	padding: 0px;
 }
-	
+
 
 .maxMinContainer {
 	display: block;
@@ -2989,7 +2989,7 @@ input[type=range]::-moz-range-track {
 	line-height: 21px;
 }
 
-	
+
 #modal-center18 {
 	height: 800px;
 	width: 200px;
@@ -3349,7 +3349,7 @@ input[type="file"] {
 	height: 320px;
 }
 
-ath { 
+ath {
     stroke: white;
     stroke-width: 1;
     fill: none;
