@@ -682,12 +682,15 @@ void findStepsDown()
 void handleCustomPitchBend()
 {
 
+  iPitchBend[2] = 0; //reset pitchbend for the holes that are being used
+  iPitchBend[3] = 0;
+
     if (pitchBendMode == kPitchBendSlideVibrato || pitchBendMode == kPitchBendLegatoSlideVibrato) { //calculate slide if necessary.
         getSlide();
     }
 
 
-    if (modeSelector[mode] != kModeGHB && modeSelector[mode] != kModeNorthumbrian) { //used for whistle and uilleann
+    if (modeSelector[mode] != kModeGHB && modeSelector[mode] != kModeNorthumbrian) { //only used for whistle and uilleann
         if (vibratoEnable == 1) { //if it's a vibrato fingering pattern
             if (slideHole != 2) {
                 iPitchBend[2] = adjvibdepth; //just assign max vibrato depth to a hole that isn't being used for sliding (it doesn't matter which hole, it's just so it will be added in later).
@@ -698,13 +701,15 @@ void handleCustomPitchBend()
             }
         }
 
+  
+
 
         if (vibratoEnable == 0b000010) { //used for whistle and uilleann, indicates that it's a pattern where lowering finger 2 or 3 partway would trigger progressive vibrato.
 
             if (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic) {
                 for (byte i = 2; i < 4; i++) {
                     if ((toneholeRead[i] > senseDistance) && (bitRead(holeCovered, i) != 1 && (i != slideHole))) { //if the hole is contributing, bend down
-                        iPitchBend[i] = ((toneholeRead[i] - senseDistance) * vibratoScale[i]) >> 2;
+                        iPitchBend[i] = ((toneholeRead[i] - senseDistance) * vibratoScale[i]) >> 3;
                     } else if (i != slideHole) {
                         iPitchBend[i] = 0;
                     }
@@ -725,27 +730,29 @@ void handleCustomPitchBend()
                     } else {
                         // Otherwise, bend down proportional to distance
                         if (toneholeRead[3] > senseDistance) {
-                            iPitchBend[3] = adjvibdepth - (((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2);
+                            iPitchBend[3] = adjvibdepth - (((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 3);
                         } else {
                             iPitchBend[3] = adjvibdepth;
                         }
                     }
                 } else {
 
-                    if ((toneholeRead[3] > senseDistance) && (bitRead(holeCovered, 3) != 1) && (pitchBendMode == kPitchBendVibrato || 3 != slideHole)) {
-                        iPitchBend[3] = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 2;
+                    if ((toneholeRead[3] > senseDistance) && (bitRead(holeCovered, 3) != 1) && 3 != slideHole) {
+                        iPitchBend[3] = ((toneholeRead[3] - senseDistance) * vibratoScale[3]) >> 3;
                     }
 
                     else if ((toneholeRead[3] < senseDistance) || (bitRead(holeCovered, 3) == 1)) {
                         iPitchBend[3] = 0; // If the finger is removed or the hole is fully covered, there's no pitchbend contributed by that hole.
                     }
 
-                    if (pitchBend > 8191) {
-                        iPitchBend[3] = 8191; //cap at 8191 (no pitchbend) if for some reason they add up to more than that
-                    }
+                    //if (iPitchBend[3] > adjvibdepth) {
+                       // iPitchBend[3] = adjvibdepth; //cap at 8191 (no pitchbend) if for some reason they add up to more than that
+                    //}
                 }
             }
+            
         }
+        
     }
 
 
@@ -760,7 +767,7 @@ void handleCustomPitchBend()
                     }
                     if (testNote == newNote) { //if the hole is uncovered and covering the hole wouldn't change the current note (or the left thumb hole is uncovered, because that case isn't included in the fingering chart)
                         if (toneholeRead[i] > senseDistance) {
-                            iPitchBend[i] = 0 - (((toneholeCovered[i] - 50 - toneholeRead[i]) * vibratoScale[i]) >> 2); //bend up, yielding a negative pitchbend value
+                            iPitchBend[i] = 0 - (((toneholeCovered[i] - 50 - toneholeRead[i]) * vibratoScale[i]) >> 3); //bend up, yielding a negative pitchbend value
                         } else {
                             iPitchBend[i] = 0 - adjvibdepth; //if the hole is totally uncovered, max the pitchbend
                         }
@@ -802,7 +809,7 @@ void handlePitchBend()
         if (bitRead(vibratoHoles, i) == 1 && bitRead(holeLatched, i) == 0 && (pitchBendMode == kPitchBendVibrato || i != slideHole)) { //if this is a vibrato hole and we're in a mode that uses vibrato, and the hole is unlatched
             if (toneholeRead[i] > senseDistance) {
                 if (bitRead(holeCovered, i) != 1) {
-                    iPitchBend[i] = (((toneholeRead[i] - senseDistance) * vibratoScale[i]) >> 2); //bend downward
+                    iPitchBend[i] = (((toneholeRead[i] - senseDistance) * vibratoScale[i]) >> 3); //bend downward
                     pitchBendOn[i] = 1;
                 }
             } else {
