@@ -11,9 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
--Breton bombarde fingering chart
--Reworked register jump/drop algorithm based on contributions from Louis Barman. There are now only two controls: jump time and drop time. 
--Added key delay feature for filtering out transient notes, also contributed by Louis Barman.
+- Breton bombarde fingering chart
+- Reworked register jump/drop algorithm. There are now only two controls: jump time and drop time. 
+- Added key delay feature for filtering out transient notes. This is useful when using notation software.
 
 
 ## [Released]
