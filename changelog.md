@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
+## [2.1] - 
+### Changed
+
+-There is no longer a USBCore.cpp file included with the sketch, because the newest Arduino IDE reintroduced the ability to turn off the CDC class in the USBDesc.h file. 
+
+### Added
+
+-Breton bombarde fingering chart
+-Reworked register jump/drop algorithm based on contributions from Louis Barman. There are now only two controls: jump time and drop time. 
+-Added key delay feature for filtering out transient notes, also contributed by Louis Barman.
+
+
 ## [Released]
 
 
