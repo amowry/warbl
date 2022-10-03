@@ -1,8 +1,9 @@
 
+
 /*
     Copyright (C) 2018-2021 Andrew Mowry warbl.xyz
 
-    Many thanks to Michael Eskin and Jesse Chappell for their additions and debugging help.
+    Many thanks to Michael Eskin, Jesse Chappell, and Louis Barman for their additions.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,8 +19,6 @@
     along with this program.  If not, see http://www.gnu.org/licenses/
 */
 
-
-
 //#include <MemoryUsage.h> //can be used to show free RAM
 #include <avr/wdt.h> //for resetting with watchdog
 #include <TimerOne.h> //for timer interrupt for reading sensors at a regular interval
@@ -30,12 +29,12 @@
 
 #define  GPIO2_PREFER_SPEED  1 //digitalread speed, see: https://github.com/Locoduino/DIO2/blob/master/examples/standard_outputs/standard_outputs.ino
 
-#define DEBOUNCE_TIME    0.02  //debounce time, in seconds---Integrating debouncing algorithm is taken from debounce.c, written by Kenneth A. Kuhn:http://www.kennethkuhn.com/electronics/debounce.c
+#define DEBOUNCE_TIME    0.02  //button debounce time, in seconds---Integrating debouncing algorithm is taken from debounce.c, written by Kenneth A. Kuhn:http://www.kennethkuhn.com/electronics/debounce.c
 #define SAMPLE_FREQUENCY  200 //button sample frequency, in Hz
 
 #define MAXIMUM  (DEBOUNCE_TIME * SAMPLE_FREQUENCY) //the integrator value required to register a button press
 
-#define VERSION 20 //software version number (without decimal point)
+#define VERSION 21 //software version number (without decimal point)
 
 //MIDI commands
 #define NOTE_OFF 0x80 //127
@@ -67,7 +66,8 @@
 #define kModeSackpipaMajor 17
 #define kModeSackpipaMinor 18
 #define kModeCustom 19
-#define kModeNModes 20
+#define kModeBombarde 20
+#define kModeNModes 21
 
 // Pitch bend modes
 #define kPitchBendSlideVibrato 0
@@ -94,6 +94,14 @@
 #define kBaglessDroneControl 2
 #define kPressureDroneControl 3
 #define kDroneNModes 4
+
+//used in register state machine
+#define SILENCE         1
+#define BOTTOM_REGISTER 2
+#define TOP_REGISTER    3
+#define SILENCE_HYSTERESIS 1
+#define JUMP 0
+#define DROP 1
 
 //Variables in the switches array (settings for the swiches in the slide/vibrato and register control panels)
 #define VENTED 0
@@ -295,7 +303,7 @@ byte pressureSelector[3][12] = //a selector array for all the register control v
     {
         15, 15, 15, 15, 30, 30, //closed mouthpiece: offset, multiplier, jump, drop, jump time, drop time
         3, 7, 100, 7, 9, 9
-    }, //vented mouthpiece: offset, multiplier, jump, drop, jump time, drop time
+    }, //vented mouthpiece: offset, multiplier, jump, **now used for keyDelay**, jump time, drop time
     //instrument 1
     {
         15, 15, 15, 15, 30, 30,
@@ -347,28 +355,31 @@ volatile unsigned int tempSensorValue = 0; //for holding the pressure sensor val
 int sensorValue = 0;  // first value read from the pressure sensor
 int sensorValue2 = 0; // second value read from the pressure sensor, for measuring rate of change in pressure
 int prevSensorValue = 0; // previous sensor reading, used to tell if the pressure has changed and should be sent.
-int pressureChangeRate = 0; //the difference between current and previous sensor readings
 int sensorCalibration = 0; //the sensor reading at startup, used as a base value
-byte offset = 15;
+byte offset = 15; //called "threshold" in the Configuration Tool-- used along with the multiplier for calculating the transition to the second register
+byte multiplier = 15; //controls how much more difficult it is to jump to second octave from higher first-octave notes than from lower first-octave notes. Increasing this makes playing with a bag more forgiving but requires more force to reach highest second-octave notes. Can be set according to fingering mode and breath mode (i.e. a higher jump factor may be used for playing with a bag). Array indices 1-3 are for breath mode jump factor, indices 4-6 are for bag mode jump factor.
 byte customScalePosition; //used to indicate the position of the current note on the custom chart scale (needed for state calculation)
 int sensorThreshold[] = {260, 0}; //the pressure sensor thresholds for initial note on and shift from register 1 to register 2, before some transformations.
 int upperBound = 255; //this represents the pressure transition between the first and second registers. It is calculated on the fly as: (sensorThreshold[1] + ((newNote - 60) * multiplier))
 byte newState; //the note/octave state based on the sensor readings (1=not enough force to sound note, 2=enough force to sound first octave, 3 = enough force to sound second octave)
 byte prevState = 1; //the previous state, used to monitor change necessary for adding a small delay when a note is turned on from silence and we're sending not on velocity based on pressure.
-boolean sensorDataReady = 0; //tells us that pressure data is available
-boolean velocityDelay = 0; //whether we are currently waiting for the pressure to rise after crossing the threshold from having no note playing to have a note playing. This is only used if we're sending velocity based on pressure.
 unsigned long velocityDelayTimer = 0; //a timer for the above delay.
-bool jump = 0; //whether we jumped directly to second octave from note off because of rapidly increasing pressure.
-unsigned long jumpTimer = 0; //records time when we dropped to note off.
+boolean sensorDataReady = 0; //tells us that pressure data is available
 int jumpTime = 15; //the amount of time to wait before dropping back down from an octave jump to first octave because of insufficient pressure
-bool drop = 0; //whether we dropped directly from second octave to note off
-unsigned long dropTimer = 0; //time when we jumped to second octave.
 int dropTime = 15 ; //the amount of time to wait (ms) before turning a note back on after dropping directly from second octave to note off
-byte jumpValue = 15;
-byte dropValue = 15;
-byte multiplier = 15; //controls how much more difficult it is to jump to second octave from higher first-octave notes than from lower first-octave notes. Increasing this makes playing with a bag more forgiving but requires more force to reach highest second-octave notes. Can be set according to fingering mode and breath mode (i.e. a higher jump factor may be used for playing with a bag). Array indices 1-3 are for breath mode jump factor, indices 4-6 are for bag mode jump factor.
+byte hysteresis = 15; //register hysteresis
 byte soundTriggerOffset = 3; //the number of sensor values above the calibration setting at which a note on will be triggered (first octave)
 int learnedPressure = 0; //the learned pressure reading, used as a base value
+int currentState; //these several are used by the new state machine
+int rateChangeIdx = 0;
+int previousPressure = 0;
+int previousAverage1 = 0;
+int previousAverage2 = 0;
+bool holdoffActive = false;
+int holdoffCounter = 0;
+int upperBoundHigh; //register boundary for moving up
+int upperBoundLow; //register boudary for moving down (with hysteresis)
+unsigned long fingeringChangeTimer; //times how long it's been since the most recent fingering change. Used to hold off the register drop feature until we've "settled" in to a fingering pattern
 
 unsigned int inputPressureBounds[4][4] = { //for mapping pressure input range to output range. Dimension 1 is CC, velocity, aftertouch, poly. Dimension 2 is minIn, maxIn, scaledMinIn, mappedPressure
     {100, 800, 0, 0},
@@ -397,6 +408,8 @@ int toneholeBaseline[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //baseline (uncovered) hol
 volatile int tempToneholeRead[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //temporary storage for tonehole sensor readings with IR LED on, written during the timer ISR
 int toneholeRead[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //storage for tonehole sensor readings, transferred from the above volatile variable
 volatile int tempToneholeReadA[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; //temporary storage for ambient light tonehole sensor readings, written during the timer ISR
+bool toneholesReady = false; // Indicates when a fresh reading of the tone holes is available
+bool toneholesReadyInterupt = false;
 unsigned int holeCovered = 0; //whether each hole is covered-- each bit corresponds to a tonehole.
 uint8_t tempCovered = 0; //used when masking holeCovered to ignore certain holes depending on the fingering pattern.
 bool fingersChanged = 1; //keeps track of when the fingering pattern has changed.
@@ -407,6 +420,7 @@ byte newNote = -1; //the next note to be played, based on the fingering chart (d
 byte notePlaying; //the actual MIDI note being played, which we remember so we can turn it off again.
 volatile bool firstTime = 1; // we have the LEDs off ~50% of the time. This bool keeps track of whether each LED is off or on at the end of each timer cycle
 volatile byte timerCycle = 0; //the number of times we've entered the timer ISR with the new sensors.
+byte keyDelay = 1; // small delay for filtering out transient notes
 
 //pitchbend variables
 unsigned long pitchBendTimer = 0; //to keep track of the last time we sent a pitchbend message
@@ -462,6 +476,7 @@ byte buttonReceiveMode = 100; //which row in the button configuration matrix for
 byte pressureReceiveMode = 100; //which pressure variable we're currently receiving date for. From 1-12: Closed: offset, multiplier, jump, drop, jump time, drop time, Vented: offset, multiplier, jump, drop, jump time, drop time
 byte counter = 0; // We use this to know when to send a new pressure reading to the configuration tool. We increment it every time we send a pitchBend message, to use as a simple timer wihout needing to set another actual timer.
 byte fingeringReceiveMode = 0; // indicates the mode (instrument) for which a fingering pattern is going to be sent
+byte holeDebounceCounter = 0;  // countdown of idenitical tone holes readings before they are accepted.
 
 void setup()
 {
@@ -543,6 +558,8 @@ void loop()
     for (byte i = 0; i < 9; i++) {
         toneholeRead[i] = tempToneholeRead[i]; //transfer sensor readings to a variable that won't get modified in the ISR
     }
+    toneholesReady = toneholesReadyInterupt;
+    toneholesReadyInterupt = false;
     interrupts();
 
 
@@ -555,18 +572,22 @@ void loop()
         }
     }
 
+
     get_fingers(); //find which holes are covered
 
 
-    if (prevHoleCovered != holeCovered) {
+    unsigned long nowtime = millis(); //get the current time for the timers used below
+
+
+    if (debounceFingerHoles()) {
         fingersChanged = 1;
 
         tempNewNote = get_note(holeCovered); //get the next MIDI note from the fingering pattern if it has changed
         send_fingers(); //send new fingering pattern to the Configuration Tool
-        prevHoleCovered = holeCovered;
         if (pitchBendMode == kPitchBendSlideVibrato || pitchBendMode == kPitchBendLegatoSlideVibrato) {
             findStepsDown();
         }
+
 
 
         if (tempNewNote != -1 && newNote != tempNewNote) { //If a new note has been triggered
@@ -578,15 +599,22 @@ void loop()
                 }
             }
         }
-        newNote = tempNewNote; //update the next note if the fingering pattern is valid
+
+
+        newNote = tempNewNote;
+        tempNewNote = -1;
+        fingeringChangeTimer = nowtime; //start timing after the fingering pattern has changed
+
+        get_state(); //recalculate state if the fingering has changed
     }
 
 
     if (sensorDataReady) {
         get_state();//get the breath state from the pressure sensor if there's been a reading.
+
     }
 
-    unsigned long nowtime = millis();
+
 
     if (switches[mode][SEND_VELOCITY]) { //if we're sending NoteOn velocity based on pressure
         if (prevState == 1 && newState != 1) {
@@ -644,17 +672,14 @@ void loop()
             }
 
 
-            //Serial.println(newState);
-            //Serial.println(ED[mode][VELOCITY_INPUT_PRESSURE_MIN]);
-            //Serial.println(outputBounds[0][0]);
-            //Serial.println(inputPressureBounds[0][3]);
+            
             //FREERAM_PRINT
-
 
 
         }
     }
 
     sendNote(); //send the MIDI note
+
 
 }
