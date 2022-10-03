@@ -24,27 +24,27 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 
-* Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here: 
+* Now, we need to change some USB settings, so we first edit the boards.txt file, which typically is found here (on Windows--Mac locations of the files below may be similar): 
 
   `C:\Users\(username)\AppData\Local\Arduino15\packages\adafruit\hardware\avr\1.4.12` 
 
-    I use the free NotePad++ app to edit this. First, change lines 296 and 297 to these to use the WARBL USB VID and PID:
+    I use the free NotePad++ app to edit this. First, change the VID and PID to the WARBL USB VID and PID:
 
        itsybitsy32u4_3V.build.vid=0x04D8
   
        itsybitsy32u4_3V.build.pid=0xEE87
   
-    Next, make the same changes to lines 311 and 312:
+    Next, make the same changes to these lines:
   
        itsybitsy32u4_3V.vid.0=0x04D8
   
        itsybitsy32u4_3V.pid.0=0xEE87
  
-    Then change the product name on line 301:
+    Then change the product name:
   
        itsybitsy32u4_3V.build.usb_product="WARBL"
   
-    And finally the manufacturer on line 302:
+    And finally the manufacturer:
   
        itsybitsy32u4_3V.build.usb_manufacturer="Mowry Stringed Instruments"
 
@@ -57,7 +57,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
   
     > **Please note:** You may want to make a backup copy of this file before changing it. Changing it will affect all USB boards that you program with the IDE. The setting that we’re changing probably won’t make a difference in most cases, but it’s important to know this. 
 
-    At the end of line 270, change the power consumption request to: 
+    Find this line and change the power consumption request to 20: 
      
         USB_CONFIG_POWER_MA(20) 
 
@@ -99,13 +99,17 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 
 
 
+
+
 ### A few additional notes:
-By default, the serial CDC class on WARBL is turned off, which makes it a USB MIDI class-compliant device. This also means that you can’t use the serial monitor in Arduino IDE. To turn serial on you can comment out the following line in the USBCore.cpp tab:
+The serial CDC class on WARBL needs to be turned off to make it a USB MIDI class-compliant device. This also means that you won't be able to use the serial monitor in Arduino IDE, and you'll have to double-click the programming button to install firmware. To turn serial off on the newest version of the Arduino IDE, you can uncomment the following line in the USBDesc.h file:
  
-    #define CDCCON_DISABLE 
+ #define CDC_DISABLED
+ 
+ The above file should be located here: C:\Program Files (x86)\Arduino\hardware\arduino\avr\cores\arduino
 
-Then you will be able to print to the serial monitor for debugging. Doing this may also make it so that you don’t have to double-click the reset button to upload code (though it doesn’t always work). 
+Note: turning off the CDC class will turn it off for any Arduino that you program with the IDE, so you'll need to remember to turn it back on after programming the WARBL. You can leave the USBDesc.h file open and comment/uncomment the line and save it as necessary without having to close/reopen the IDE. I keep a shortcut to USBDesc.h on my desktop for this purpose.
 
-Turning on the CDC class will also make so that Windows 7 will require the drivers to be installed for normal MIDI operation to work, and may interfere with MIDI modules (I’m not sure about this).
+Turning off the CDC class will also make it so that Windows 7 won't require drivers to be installed for WARBL to work in normal MIDI mode.
 
 Have fun!
