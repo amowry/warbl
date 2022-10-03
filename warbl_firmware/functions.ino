@@ -2436,6 +2436,9 @@ void calculatePressure(byte pressureOption)
 
     if (pressureOption == 1) { //set velocity to mapped pressure if desired
         velocity = inputPressureBounds[pressureOption][3];
+        if (velocity == 0){ //use a minumum of 1 for velocity so a note is still turned on (changed in v. 2.1)
+          velocity = 1;
+        }
     }
 }
 
