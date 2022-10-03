@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - There is no longer a USBCore.cpp file included with the sketch, because the newest Arduino IDE reintroduced the ability to turn off the CDC class in the USBDesc.h file. 
 - Changed uilleann fingering X OXXXXOO from C to C#
 - Reworked register jump/drop algorithm. There are now only two controls: jump time and drop time.
+- Various bug fixes
 
 ### Added
 
