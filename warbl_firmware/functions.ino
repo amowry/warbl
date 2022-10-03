@@ -64,6 +64,29 @@ void checkButtons()
 
 
 
+//Key delay feature for delaying response to tone holes and filtering out transient notes
+bool debounceFingerHoles()
+{
+
+    if (toneholesReady) {
+        if (prevHoleCovered != holeCovered) {
+            prevHoleCovered = holeCovered;
+            holeDebounceCounter = keyDelay + 1;
+        } else if (holeDebounceCounter > 0) {
+            holeDebounceCounter--;
+            if (holeDebounceCounter == 0) {
+                return true;
+
+            }
+        }
+    }
+    return false;
+}
+
+
+
+
+
 // ADC complete ISR for reading sensors. We read the sensors asynchronously by starting a conversion and then coming back by interrupt when it is complete.
 ISR (ADC_vect)
 {
@@ -82,6 +105,7 @@ ISR (ADC_vect)
 
         digitalWrite2f(pins[8], LOW); //turn off the previous LED
         tempToneholeRead[8] = (ADC) - tempToneholeReadA[8]; //get the previous illuminated reading and subtract the ambient light reading
+        toneholesReadyInterupt = true;
         Timer1.resume(); //start the timer to take a short break, conserving some power.
         return;
     }
@@ -108,6 +132,8 @@ ISR (ADC_vect)
     firstTime = 1;
     lastRead ++;
 }
+
+
 
 
 //Timer ISR for adding a small delay after reading new sensors, to conserve a bit of power and give the processor time to catch up if necesary.
@@ -181,6 +207,9 @@ int get_note(unsigned int fingerPattern)
 
         case kModeChromatic:
 
+
+        case kModeBombarde: //this one is very similar-- a modification will be made below.
+
             tempCovered = (0b011111100 & fingerPattern) >> 2; //use bitmask and bitshift to ignore thumb sensor, R4 sensor, and bell sensor when using tinwhistle fingering. The R4 value will be checked later to see if a note needs to be flattened.
             ret = pgm_read_byte(&tinwhistle_explicit[tempCovered].midi_note);
             if (modeSelector[mode] == kModeChromatic && bitRead(fingerPattern, 1) == 1) {
@@ -189,8 +218,10 @@ int get_note(unsigned int fingerPattern)
             if (fingerPattern == holeCovered) {
                 vibratoEnable = pgm_read_byte(&tinwhistle_explicit[tempCovered].vibrato);
             }
+            if (modeSelector[mode] == kModeBombarde && (0b011111110 & fingerPattern) >> 1 == 0b1111111) {
+                ret = 61;    //
+            }
             return ret;
-
 
 
         case kModeUilleann: //these two are the same, with the exception of cancelling accidentals.
@@ -239,7 +270,12 @@ int get_note(unsigned int fingerPattern)
 
             //If back thumb and L1 are open
             if ((((fingerPattern & 0b110000000) == 0) && (fingerPattern & 0b011111111) != 0) && (fingerPattern >> 1) != 0b00101100) {
-                return 76; //play D
+                if (fingerPattern >> 1 == 0b00110000) { //special fingering for D#
+                    return 77;
+                } else {
+                    return 76 //play D
+                           ;
+                }
             }
             if (fingerPattern  >> 1 == 0b01011010) return 88; //special fingering for high D
             if (fingerPattern  >> 1 == 0b01001100) return 86; //special fingering for high C
@@ -511,8 +547,8 @@ void get_shift()
 
 
 
-
 //State machine that models the way that a tinwhistle etc. begins sounding and jumps octaves in response to breath pressure.
+//The jump/drop behavior is from Louis Barman
 void get_state()
 {
 
@@ -520,9 +556,6 @@ void get_state()
     sensorValue2 = tempSensorValue; //transfer last reading to a non-volatile variable
     interrupts();
 
-    if (sensorValue == sensorValue2) {
-        return; //don't bother going further if the pressure hasn't changed.
-    }
 
     byte scalePosition;
 
@@ -532,75 +565,171 @@ void get_state()
         scalePosition = newNote;
     }
 
-    pressureChangeRate = sensorValue2 - sensorValue; //calculate the rate of change
-
     if (ED[mode][DRONES_CONTROL_MODE] == 3) { //use pressure to control drones if that option has been selected. There's a small amount of hysteresis added.
 
-        if (!dronesState && sensorValue2 > 5 + (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
-            dronesState = 1;
-            if (!dronesOn) {
-                startDrones();
-            }
-
+        if (!dronesOn && sensorValue2 > 5 + (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
+            startDrones();
         }
 
-        else if (dronesState && sensorValue2 < (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
-            dronesState = 0;
-            if (dronesOn) {
-                stopDrones();
-            }
+        else if (dronesOn && sensorValue2 < (ED[mode][DRONES_PRESSURE_HIGH_BYTE] << 7 | ED[mode][DRONES_PRESSURE_LOW_BYTE])) {
+            stopDrones();
+
         }
     }
 
 
-    upperBound = (sensorThreshold[1] + ((scalePosition - 60) * multiplier)); //calculate the threshold between state 2 and state 3. This will also be used to calculate expression.
+
+    upperBound = (sensorThreshold[1] + ((scalePosition - 60) * multiplier)); //calculate the threshold between state 2 (bottom register) and state 3 (top register). This will also be used to calculate expression.
 
 
-    if (jump && ((millis() - jumpTimer) >= jumpTime)) {
-        jump = 0; //make it okay to switch registers again if some time has past since we "jumped" or "dropped" because of rapid pressure change.
-    }
+    newState = currentState;
 
-    else if (drop && ((millis() - dropTimer) >= dropTime)) {
-        drop = 0;
-    }
-
-
-    if (!jump && !drop) {
-
-        if ((breathMode == kPressureBreath || (breathMode == kPressureThumb && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) && ((sensorValue2 - sensorValue) > jumpValue) && (sensorValue2 > sensorThreshold[0])) {  //if the pressure has increased rapidly (since the last reading) and there's a least enough pressure to turn a note on, jump immediately to the second register
-            newState = 3;
-            jump = 1;
-            jumpTimer = millis();
-            sensorValue = sensorValue2;
-            return;
-        }
-
-        if (newState == 3 && breathMode > kPressureSingle && ((sensorValue - sensorValue2) > dropValue)) {  //if we're in second register and the pressure has dropped rapidly, turn the note off (this lets us drop directly from the second register to note off).
-            newState = 1;
-            drop = 1;
-            dropTimer = millis();
-            sensorValue = sensorValue2;
-            return;
-        }
-    }
-
-    //if there haven't been rapid pressure changes and we haven't just jumped registers, choose the state based solely on current pressure.
     if (sensorValue2 <= sensorThreshold[0]) {
-        newState = 1;
+        newState = SILENCE;
+        holdoffActive = false; //no need to wait if we've already crossed the threshold for silence
+    } else if (sensorValue2 > sensorThreshold[0] + SILENCE_HYSTERESIS) {
+        if (currentState == SILENCE) {
+            newState = BOTTOM_REGISTER;
+        }
+
+
+        if (breathMode == kPressureBreath || (breathMode == kPressureThumb && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) { //if overblowing is enabled
+            upperBoundHigh = calcHysteresis(upperBound, true);
+            upperBoundLow = calcHysteresis(upperBound, false);
+            if (sensorValue2 > upperBoundHigh) {
+                newState = TOP_REGISTER;
+                holdoffActive = false;
+            } else if (sensorValue2 <= upperBoundLow) {
+                newState = BOTTOM_REGISTER;
+
+
+                //wait to decide about jump or drop if necessary
+                if (currentState == SILENCE && newState == BOTTOM_REGISTER) {
+                    newState = delayStateChange(JUMP, sensorValue2, upperBoundHigh);
+                } else if (currentState == TOP_REGISTER && newState == BOTTOM_REGISTER && (millis() - fingeringChangeTimer) > 50) { //only delay for drop if the note has been playing for a bit. This fixes erroneous high-register notes
+                    newState = delayStateChange(DROP, sensorValue2, upperBoundLow);
+                }
+            }
+        }
     }
 
-    //added very small amount of hysteresis for state 2, 4/25/20
-    else if (sensorValue2 > sensorThreshold[0] + 1 && (((breathMode != kPressureBreath) && !(breathMode == kPressureThumb && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) || (!jump && !drop  && (breathMode > kPressureSingle) && (sensorValue2 <= upperBound)))) { //single register mode or within the bounds for state 2
-        newState = 2;
-    } else if (!drop && (sensorValue2 > upperBound)) { //we're in two-register mode and above the upper bound for state 2
-        newState = 3;
-    }
-
+    currentState = newState;
     sensorValue = sensorValue2; //we'll use the current reading as the baseline next time around, so we can monitor the rate of change.
     sensorDataReady = 0; //we've used the sensor reading, so don't use it again
 
 
+
 }
+
+
+
+
+
+/**
+    @brief delayStateChange delay the overblow state until either it has timedout or the pressure has leveled off.
+    @param jumpDrop either JUMP, DROP
+    @param pressure
+    @param upper
+    @return the current state to be used
+*/
+byte delayStateChange(byte jumpDrop, int pressure, int upper)
+{
+
+
+    if (!holdoffActive) { //start our timer if we haven't already
+        holdoffActive = true;
+        if (jumpDrop == JUMP) {
+            holdoffCounter = jumpTime;
+        } else {
+            holdoffCounter = dropTime;
+        }
+        rateChangeIdx = 0;
+        previousPressure = 0;
+        previousAverage1 = 0;
+        previousAverage2 = 0;
+    }
+
+    if (holdoffCounter > 0) {
+        holdoffCounter--;
+
+        bool exitEarly = false;
+
+        //if we've paused long enough or the pressure has stabilized, go to the bottom register
+        int rateChange = pressureRateChange(pressure);
+        if (rateChange != 2000) { //make sure it's valid
+            if (jumpDrop == JUMP && rateChange <= 0) {
+                exitEarly = true;
+            } else if (jumpDrop == DROP && rateChange >= 0) {
+                exitEarly = true;
+            }
+        }
+
+
+        if (holdoffCounter == 0 || exitEarly) {
+            holdoffActive = false;
+            return BOTTOM_REGISTER;
+        }
+    }
+    return currentState; //stay in the current state if we haven't waited the total time and the pressure hasn't yet leveled off.
+}
+
+
+
+
+
+
+
+//Calculates how fast (the rate) pressures is changing, from Louis Barman
+int pressureRateChange(int pressure)
+{
+
+    int rateChange = 2000; //if not valid
+    if (rateChangeIdx == 0) {
+        rateChangeIdx = 1;
+        previousPressure = pressure;
+    } else {
+        rateChangeIdx = 0;
+        // no need to divide the average by the number of entrees so we dont loose resolution
+        int average = pressure + previousPressure;
+
+        // check we have enough readings to be valid
+        if (previousAverage2 > 0) {
+            rateChange = average - previousAverage2;
+        }
+
+        // this works as a very fast FIFO (first in first out) with a length 3
+        previousAverage2 = previousAverage1;
+        previousAverage1 = average;
+
+    }
+    return rateChange;
+}
+
+
+
+
+
+
+
+
+
+//calculate the upper boundary for the register when hysteresis is applied, from Louis Barman
+int calcHysteresis(int currentUpperBound, bool high)
+{
+    int hysteresisPercent = hysteresis;
+    if (hysteresisPercent == 0 ) {
+        return currentUpperBound;
+    }
+    int range = currentUpperBound - sensorThreshold[0];
+    int newUpperBound;
+    if (high) {
+        newUpperBound = currentUpperBound + (range *  hysteresisPercent ) / 400;
+    } else {
+        newUpperBound = currentUpperBound - (range *  hysteresisPercent * 3 ) / 400;
+    }
+    return newUpperBound;
+}
+
 
 
 
@@ -621,11 +750,14 @@ void getExpression()
         useUpperBound = (ED[mode][EXPRESSION_MAX] * 9) + 100;
     } else {
         lowerBound = sensorThreshold[0];
-        useUpperBound = upperBound;
-
+        if (newState == 3) {
+            useUpperBound = upperBoundLow; //get the register boundary taking hysteresis into consideration
+        } else {
+            useUpperBound = upperBoundHigh;
+        }
     }
 
-    unsigned int halfway = ((useUpperBound - lowerBound) >> 1) + lowerBound;
+    unsigned int halfway = ((useUpperBound - lowerBound) >> 1) + lowerBound; //calculate the midpoint of the curent register, where the note should play in tune.
 
     if (newState == 3) {
         halfway = useUpperBound + halfway;
@@ -656,7 +788,7 @@ void getExpression()
 
 
 
-//find how many steps down to the next lower note on the scale. Doing this in a function because the fingering charts can't be read from the main page, due to compilation order.
+//find how many steps down to the next lower note on the scale.
 void findStepsDown()
 {
 
@@ -682,8 +814,8 @@ void findStepsDown()
 void handleCustomPitchBend()
 {
 
-  iPitchBend[2] = 0; //reset pitchbend for the holes that are being used
-  iPitchBend[3] = 0;
+    iPitchBend[2] = 0; //reset pitchbend for the holes that are being used
+    iPitchBend[3] = 0;
 
     if (pitchBendMode == kPitchBendSlideVibrato || pitchBendMode == kPitchBendLegatoSlideVibrato) { //calculate slide if necessary.
         getSlide();
@@ -701,7 +833,7 @@ void handleCustomPitchBend()
             }
         }
 
-  
+
 
 
         if (vibratoEnable == 0b000010) { //used for whistle and uilleann, indicates that it's a pattern where lowering finger 2 or 3 partway would trigger progressive vibrato.
@@ -744,15 +876,11 @@ void handleCustomPitchBend()
                     else if ((toneholeRead[3] < senseDistance) || (bitRead(holeCovered, 3) == 1)) {
                         iPitchBend[3] = 0; // If the finger is removed or the hole is fully covered, there's no pitchbend contributed by that hole.
                     }
-
-                    //if (iPitchBend[3] > adjvibdepth) {
-                       // iPitchBend[3] = adjvibdepth; //cap at 8191 (no pitchbend) if for some reason they add up to more than that
-                    //}
                 }
             }
-            
+
         }
-        
+
     }
 
 
@@ -790,7 +918,7 @@ void handleCustomPitchBend()
 
 
 
-//Andrew's version
+//Andrew's version of vibrato
 void handlePitchBend()
 {
 
@@ -919,6 +1047,7 @@ void sendNote()
 
         int notewason = noteon;
         int notewasplaying = notePlaying;
+
 
         // if this is a fresh/tongued note calculate pressure now to get the freshest initial velocity/pressure
         if (!notewason) {
@@ -2104,7 +2233,7 @@ void ADC_init(void)
 {
 
     ADCSRA &= ~(bit (ADPS0) | bit (ADPS1) | bit (ADPS2)); // clear ADC prescaler bits
-    ADCSRA = (1 << ADEN) | ((1 << ADPS2)); // enable ADC Division Factor 16 (36 us)
+    ADCSRA = (1 << ADEN) | ((1 << ADPS2)); // enable ADC Division Factor 16 (36 uS)
     ADMUX = (1 << REFS0); //Voltage reference from Avcc (3.3v)
     ADC_read(1); //start an initial conversion (pressure sensor), which will also enable the ADC complete interrupt and trigger subsequent conversions.
 
@@ -2184,15 +2313,16 @@ void loadPrefs()
     breathMode = breathModeSelector[mode];
     midiBendRange = midiBendRangeSelector[mode];
     mainMidiChannel = midiChannelSelector[mode];
-
+    keyDelay = pressureSelector[mode][9]; //this variable was formerly used for vented dropTime (unvented is now unused)
 
     //set these variables depending on whether "vented" is selected
     offset = pressureSelector[mode][(switches[mode][VENTED] * 6) + 0];
     multiplier = pressureSelector[mode][(switches[mode][VENTED] * 6) + 1];
-    jumpValue = pressureSelector[mode][(switches[mode][VENTED] * 6) + 2];
-    dropValue = pressureSelector[mode][(switches[mode][VENTED] * 6) + 3];
+    hysteresis = pressureSelector[mode][(switches[mode][VENTED] * 6) + 2];
     jumpTime = pressureSelector[mode][(switches[mode][VENTED] * 6) + 4];
     dropTime = pressureSelector[mode][(switches[mode][VENTED] * 6) + 5];
+
+
 
 
     pitchBend = 8192;
@@ -2279,7 +2409,7 @@ void calculatePressure(byte pressureOption)
         scaledPressure = ((scaledPressure * scaledPressure * scaledPressure)  >> 20);
     }
 
-    else if (curve[pressureOption] == 2) { //approximates a log curve with a piecewise linear function.
+    else if (curve[pressureOption] == 2) { //approximates a log curve with a piecewise linear function, avoiding division
         switch (scaledPressure >> 6) {
             case 0:
                 scaledPressure = scaledPressure << 3;
