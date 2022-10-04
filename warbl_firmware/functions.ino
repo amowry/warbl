@@ -577,7 +577,7 @@ void get_state()
         }
     }
 
-
+    //Serial.println(sensorThreshold[0]);
 
     upperBound = (sensorThreshold[1] + ((scalePosition - 60) * multiplier)); //calculate the threshold between state 2 (bottom register) and state 3 (top register). This will also be used to calculate expression.
 
@@ -639,9 +639,9 @@ byte delayStateChange(byte jumpDrop, int pressure, int upper)
     if (!holdoffActive) { //start our timer if we haven't already
         holdoffActive = true;
         if (jumpDrop == JUMP) {
-            holdoffCounter = jumpTime;
+            holdoffCounter = jumpTime + 1; //AM added 1 to these because they don't work if set to 0.
         } else {
-            holdoffCounter = dropTime;
+            holdoffCounter = dropTime + 1;
         }
         rateChangeIdx = 0;
         previousPressure = 0;
@@ -670,6 +670,7 @@ byte delayStateChange(byte jumpDrop, int pressure, int upper)
             return BOTTOM_REGISTER;
         }
     }
+
     return currentState; //stay in the current state if we haven't waited the total time and the pressure hasn't yet leveled off.
 }
 
@@ -729,6 +730,8 @@ int calcHysteresis(int currentUpperBound, bool high)
     }
     return newUpperBound;
 }
+
+
 
 
 
@@ -2436,8 +2439,8 @@ void calculatePressure(byte pressureOption)
 
     if (pressureOption == 1) { //set velocity to mapped pressure if desired
         velocity = inputPressureBounds[pressureOption][3];
-        if (velocity == 0){ //use a minumum of 1 for velocity so a note is still turned on (changed in v. 2.1)
-          velocity = 1;
+        if (velocity == 0) { //use a minumum of 1 for velocity so a note is still turned on (changed in v. 2.1)
+            velocity = 1;
         }
     }
 }
