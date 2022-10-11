@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Changed uilleann fingering X OXXXXOO from C to C#
 - Reworked register jump/drop algorithm. There are now only two controls: jump time and drop time.
 - Set velocity to a minimum of 1 so that notes are still turned on at lowest pressures.
+- Changed the "Vented" switch in the Config Tool to radio buttons for Bag vs. Breath. The functionality is the same, but this seems more logical, as the "Closed" vs. "Vented setting was a holdover from the old mouthpiece options.
+- When connected to the WARBL, the "Connect" button now changes to read "Disconnect". Clicking it will force the WARBL to stop sending CC messages for communication with the Config Tool. Note that this does not release the MIDI ports, so it is still necessary to unplug the WARBL to release the ports (and, for example, use the WARBL with another app on Windows).
 - Various bug fixes
 
 ### Added
