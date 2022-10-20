@@ -18,8 +18,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Hysteresis for overblowing
-- Breton bombarde fingering chart 
 - Key delay feature for filtering out brief notes. This is useful when using notation software.
+- Breton bombarde fingering chart 
+- Baroque flute fingering chart 
 
 
 ## [Released]
