@@ -14,7 +14,7 @@ Advanced users can use the Arduino IDE to modify and upload the code. WARBL uses
 * Install the latest version of the Arduino IDE. [You can download the latest version of the Arduino IDE here](https://www.arduino.cc/en/Main/Software)
 
 
-* If you plan to do editing, please note that we are using 4-space indentation with a specific formatting style. To use this style in the Arduino editor, go to the Arduino preferences, and at the bottom where it says `More preferences can be edited directly in the file`, open and edit the preferences.txt file mentioned there, and add or change the `editor.tabs.size=4` line as shown. Also, copy the file **formatter.conf** from this repository to the same directory that the preferences.txt is, this will let you use the Auto Format feature in the Arduino Tools menu to properly format the code.
+* If you plan to do editing, please note that we are using 4-space indentation with a specific formatting style. To use this style in the Arduino editor, go to the Arduino preferences, and at the bottom where it says `More preferences can be edited directly in the file`, open and edit the preferences.txt file mentioned there, and add or change the `editor.tabs.size=4` line as shown. Also, copy the file **formatter.conf** from this repository to the same directory that the preferences.txt is, this will let you use the Auto Format feature in the Arduino Tools menu to properly format the code. ToDO: add .clang-format file for IDE 2.0
 
 
 * Next you can open the 'warbl_firmware' project from the Arduino IDE
