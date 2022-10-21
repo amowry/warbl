@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Hysteresis for overblowing
-- Key delay feature for filtering out brief notes. This is useful when using notation software.
+- Transient note filter (key delay) feature for filtering out brief notes. This is useful when using notation software or MIDI sounds that are unforgiving of very brief "crossing noise".
 - Breton bombarde fingering chart 
 - Baroque flute fingering chart 
 
