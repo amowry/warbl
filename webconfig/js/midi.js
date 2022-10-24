@@ -1,5 +1,4 @@
 
-//
 // WARBL Web Configuration Tool MIDI Support Routines
 //
 
@@ -14,10 +13,11 @@ var outputSliderMin = [0,0,0,0];
 var outputSliderMax = [127,127,127,127];
 var consoleEntries = 0; //number of lines in MIDI console
 var customFingeringFills = [[null,null,null,null,null,null,null,null,null,null,null],[0,74,73,72,71,69,67,66,64,62,61],[0,74,72,72,70,68,67,65,64,62,61],[0,74,74,72,72,69,68,67,65,62,60]];
+var communicationMode = false; //if we're communicating with WARBL
 
 var midiNotes = [];
 
-var currentVersion = 20
+var currentVersion = 21
 
 var midiAccess = null; // the MIDIAccess object.
 
@@ -61,9 +61,9 @@ var defaultInstr = 0; //default instrument
 
 var modals = new Array();
 
-for (var i = 1; i <= 23; i++) {
+for (var w = 1; w <= 23; w++) {
 
-	modals[i] = document.getElementById("open-modal" + i);
+	modals[w] = document.getElementById("open-modal" + w);
 
 }
 
@@ -76,7 +76,7 @@ if (platform == "app") {
 
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
-
+	
 	for (var i = 1; i <= 23; i++) {
 
 		if (event.target == modals[i]) {
@@ -89,19 +89,24 @@ window.onclick = function(event) {
 }
 
 window.addEventListener('load', function() {
-
+	
 	//console.log("window onLoad");
 
 	// Clear the WARBL output port
 	WARBLout = null;
 
 	updateCells(); // set selects and radio buttons to initial values and enabled/disabled states
-
+	
 	for (var i = 1; i < 13; i++) { //trigger input event for sliders to display values
 		var k = document.getElementById("jumpFactor" + (i));
 		k.dispatchEvent(new Event('input'));
+		if (i == 10) {
+			var k = document.getElementById("jumpFactor10b"); //special case for key delay slider
+			k.dispatchEvent(new Event('input'));
+		}
+		
 	}
-
+	
 	depth.dispatchEvent(new Event('input'));
 
 	$(".volume").click(function() {
@@ -109,9 +114,10 @@ window.addEventListener('load', function() {
 		$(this).find('i').toggleClass('fa-volume-up fa-volume-off')
 	});
 
+	
 	if (navigator.requestMIDIAccess)
 		navigator.requestMIDIAccess({
-			sysex: true
+			sysex: false
 		}).then(onMIDIInit, onMIDIReject);
 	else
 		alert("Your browser does not support MIDI. Please use Chrome or Opera, or the free WARBL iOS app.")
@@ -123,10 +129,20 @@ window.addEventListener('load', function() {
 //
 function showWARBLNotDetected(){
 
+	communicationMode = false; //make sure we know we're not connected
 	document.getElementById("status").innerHTML = "WARBL not detected.";
 	document.getElementById("status").style.color = "#F78339";
 	document.getElementById("version").style.color = "#F78339";
+	document.getElementById("connect").innerHTML = "Connect to WARBL";	//make sure the connect button shows the correct text
+	document.getElementById("pressure").innerHTML = "";
+	for (var m = 0; m < 9; m++) { //turn off toneholes
+		document.getElementById("dot" + m).style.backgroundColor = "#333";
+		if (m == 0) {
+			document.getElementById("dot0").style.opacity = "0";					
+		}
+	}
 
+	
 	// Disable the import preset button
 	$('#importPreset').attr('disabled','disabled');
 
@@ -140,6 +156,8 @@ function showWARBLUnknown(){
 	document.getElementById("version").innerHTML = "Unknown";
 	document.getElementById("current").style.visibility = "hidden";
 	document.getElementById("status").style.visibility = "visible";
+	document.getElementById("connect").innerHTML = "Connect to WARBL";	//make sure the connect button shows the correct text
+	
 
 	// Disable the import preset button
 	$('#importPreset').attr('disabled','disabled');
@@ -147,6 +165,37 @@ function showWARBLUnknown(){
 }
 
 function connect() {
+	
+	if (communicationMode && version > 2.0) {sendToAll(102, 99); //tell WARBL to exit communications mode if the "connect" button currently reads "Disconnect"
+		communicationMode = false;
+		showWARBLNotDetected();
+		showWARBLUnknown();
+		WARBLout = null;
+		document.getElementById("connect").innerHTML = "Connect to WARBL";	//make sure the connect button shows the correct text
+			if (midiAccess){
+
+		//console.log("connect: Have a midiAccess, clearing the receive callbacks");
+
+		// Walk the inputs and clear any receive callbacks
+		var inputs = midiAccess.inputs.values();
+
+		for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
+
+			input.value.onmidimessage = null;
+
+		}
+	}
+
+	midiAccess = null;
+
+	// Clear the WARBL output port
+	WARBLout = null;
+
+	ping = 0;
+	
+		}
+		
+	else{
 
 	//debugger;
 
@@ -181,10 +230,11 @@ function connect() {
 	// If availabe in the browser, request MIDI access with sysex support
 	if (navigator.requestMIDIAccess)
 		navigator.requestMIDIAccess({
-			sysex: true
+			sysex: false
 		}).then(onMIDIInit, onMIDIReject);
 	else{
 		alert("Your browser does not support MIDI. Please use Chrome or Opera, or the free WARBL iOS app.");
+	}
 	}
 
 }
@@ -205,34 +255,40 @@ function onMIDIInit(midi) {
 	WARBLout = null;
 
 	var foundMIDIInputDevice = false;
-
+	
 	// Walk the inputs and see if a WARBL is connected
 	var inputs = midiAccess.inputs.values();
 
 	for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
 
-		foundMIDIDevice = true;
+		foundMIDIInputDevice = true;
 
 		deviceName = input.value.name;
 
 		//console.log("deviceName = "+deviceName);
 		//alert("deviceName = "+deviceName);
-
-		setPing(); //start checking to make sure WARBL is still connected
-
+			
+		setPing(); //start checking to make sure WARBL is still connected   
+		
 		input.value.onmidimessage = WARBL_Receive;
 
 	}
 
-	if (foundMIDIDevice){
+	if (foundMIDIInputDevice){
+		
+		if (!communicationMode || version < 2.1 || version == "Unknown"){
 
 		sendToAll(102, 126); //tell WARBL to enter communications mode
-		//alert("sending connect to WARBL");
+		
+		} 
+		
+
 	}
 	else{
 
 		showWARBLNotDetected();
-
+		
+		
 	}
 
 	midi.onstatechange = midiOnStateChange;
@@ -246,16 +302,15 @@ function onMIDIReject(err) {
 }
 
 function midiOnStateChange(event) {
-
+	
 	//console.log("state change");
 
 	if (ping == 1) {
 
 		showWARBLNotDetected();
-
 		showWARBLUnknown();
-
-		WARBLout = null;
+		WARBLout = null;	
+		document.getElementById("connect").innerHTML = "Connect to WARBL";	//make sure the connect button shows the correct text
 
 	}
 
@@ -332,15 +387,15 @@ function sendToAll(byte2, byte3) {
 
 // Send a command to only the WARBL output port
 function sendToWARBL(byte2, byte3) {
-
+	if(communicationMode){
 	if (platform = "app") {
 		var cc = buildMessage(byte2,byte3);
 		var iter = midiAccess.outputs.values();
 		for (var o = iter.next(); !o.done; o = iter.next()) {
 		o.value.send(cc, window.performance.now()); //send CC message
-
+		
 	}}
-
+	
 	else {
 
 	//console.log("sendToWARBL");
@@ -349,7 +404,7 @@ function sendToWARBL(byte2, byte3) {
 		if (!WARBLout){
 
 			console.error("sendToWARBL: No MIDI port selected!")
-
+		
 			return;
 
 		}
@@ -360,17 +415,19 @@ function sendToWARBL(byte2, byte3) {
 		WARBLout.send(cc, window.performance.now()); //send CC message
 	}
 }
+}
+
 
 function WARBL_Receive(event) {
-
+	
 	//debugger;
-
+	
 	//alert("received");
 
 	var data0 = event.data[0];
 	var data1 = event.data[1];
 	var data2 = event.data[2];
-
+	
 	//alert(WARBLout);
 
 	// If we're exporting a preset, send the data to the exporter instead
@@ -387,7 +444,7 @@ function WARBL_Receive(event) {
 	// find the port by name by walking the output ports and matching the input port name
 	if ((!WARBLout) && ((data0 & 0x0F) == 6)){
 		//alert(data0 & 0x0F);
-
+		
 	if (platform == "web"){
 
 		//alert(input.value.name);
@@ -395,13 +452,13 @@ function WARBL_Receive(event) {
 
 
 	 	// Strip any [] postfix
-
+	 	
 	 	var inputBracketIndex = inputName.indexOf("[");
 
 	 	if (inputName.indexOf("[")!=-1){
 
 	 		inputName = inputName.substr(0,inputBracketIndex);
-
+	 		
 	 	}
 
 		//console.log("Searching for WARBL output port matching input port name: "+targetName);
@@ -414,7 +471,7 @@ function WARBL_Receive(event) {
 			var outputName = o.value.name;
 
 		 	// Strip any [] postfix
-
+		 	
 		 	var outputBracketIndex = outputName.indexOf("[");
 
 		 	if (outputName.indexOf("[")!=-1){
@@ -428,31 +485,31 @@ function WARBL_Receive(event) {
 				//console.log("Found the matching WARBL output port!")
 
 				WARBLout = o.value;
-
+				
 				break;
 			}
-		}
+		}	
 
 		if (!WARBLout){
 
 			//console.error("Failed to find the WARBL output port!")
-
+			
 			showWARBLNotDetected();
 
-		}
+		} 	
 	}
-
+	
 	else{ //app version
 	WARBLout = 1; //for app version we don't worry about the device name or port, just that it's sending on channel 7.
 	}
-
-
+	
+	
 	}
 
 	var e;
 	var f;
 	var g;
-
+	
 	if (isNaN(data2)) {
 		f = " ";
 	} else {
@@ -476,23 +533,23 @@ function WARBL_Receive(event) {
 	}
 	if ((data0 & 0xf0) == 208) {
 		e = "CP";
-	}
+	}	
 	if ((data0 & 0xf0) == 160) {
 		e = "KP";
 	}
-
-
-
+	
+	
+	
 	if (!(e == "CC" && ((parseFloat(data0 & 0x0f) == 6)))) { //as long as it's not a CC on channel 7, show in the MIDI console.
-		var elem = document.getElementById('modal-center18');
 		consoleEntries++;
 			if(consoleEntries < 301){
 				document.getElementById("console").innerHTML += (e + " " + ((data0 & 0x0f) + 1) + " " + data1 + " " + f);
-				document.getElementById("console").innerHTML += "<br>";
+				document.getElementById("console").innerHTML += "<br>";	 
 			}
 			else if (consoleEntries == 301) {document.getElementById("console").innerHTML += "max lines reached";
 			}
-		elem.scrollTop = elem.scrollHeight;
+			var elem2 = document.getElementById("console");
+		elem2.scrollTop = elem2.scrollHeight;	
 	}
 
 	// Mask off the lower nibble (MIDI channel, which we don't care about yet)
@@ -511,10 +568,9 @@ function WARBL_Receive(event) {
 
 		case 0xB0: //incoming CC from WARBL
 
-			if (parseFloat(data0 & 0x0f) == 6) { //if it's channel 7 it's from WARBL
+			if (parseFloat(data0 & 0x0f) == 6) { //if it's channel 7 it's from WARBL 
 
-				document.getElementById("status").innerHTML = "WARBL Connected.";
-				document.getElementById("status").style.color = "#f7c839";
+
 
 				// Enable the import preset button
 				$('#importPreset').removeAttr('disabled')
@@ -569,7 +625,7 @@ function WARBL_Receive(event) {
 								document.getElementById("fingeringSelect" + i).value = data2 - 33;
 							}
 							updateCells();
-						} //update any dependant fields
+						} //update any dependant fields	
 					}
 
 
@@ -584,8 +640,8 @@ function WARBL_Receive(event) {
 						document.getElementById("key1").style.display = "none";
 						document.getElementById("key2").style.display = "none";
 						handleDefault();
-						advancedOkay(); //turn off the advanced tab
-						pressureOkay();
+						advancedOkay(); //turn off the advanced tab	
+						pressureOkay();	
 						updateCells();
 						okayCCmap();
 						okayOverride();
@@ -601,8 +657,8 @@ function WARBL_Receive(event) {
 						document.getElementById("key0").style.display = "none";
 						document.getElementById("key1").style.display = "block";
 						document.getElementById("key2").style.display = "none";
-						advancedOkay(); //turn off the advanced tab
-						pressureOkay();
+						advancedOkay(); //turn off the advanced tab	
+						pressureOkay();	
 						updateCells();
 						advancedOkayPB();
 						okayCCmap();
@@ -619,8 +675,8 @@ function WARBL_Receive(event) {
 						document.getElementById("key0").style.display = "none";
 						document.getElementById("key1").style.display = "none";
 						document.getElementById("key2").style.display = "block";
-						advancedOkay(); //turn off the advanced tab
-						pressureOkay();
+						advancedOkay(); //turn off the advanced tab	
+						pressureOkay();	
 						updateCells();
 						advancedOkayPB();
 						okayCCmap();
@@ -691,13 +747,13 @@ function WARBL_Receive(event) {
 						document.getElementById("v1").classList.remove("sensorValueEnabled");
 					}
 
-					for (var i = 0; i < 8; i++) { //update button configuration
+					for (var i = 0; i < 8; i++) { //update button configuration	   
 						if (data2 == 90 + i) {
 							buttonRowWrite = i;
 						}
 					}
 
-					for (var j = 0; j < 8; j++) { //update button configuration
+					for (var j = 0; j < 8; j++) { //update button configuration	
 						if (buttonRowWrite == j) {
 
 							if (data2 == 119) { //special case for initiating autocalibration
@@ -714,7 +770,7 @@ function WARBL_Receive(event) {
 								}
 							}
 						}
-					} //update any dependant fields}
+					} //update any dependant fields}						
 
 
 					for (var l = 0; l < 3; l++) { //update momentary switches
@@ -731,30 +787,35 @@ function WARBL_Receive(event) {
 
 				} else if (data1 == 103) {
 					document.getElementById("senseDistance").value = 0 - data2;
-				} //set sensedistance
+				} //set sensedistance  
 				else if (data1 == 117) {
 					document.getElementById("depth").value = data2 + 1;
 					var output = document.getElementById("demo14");
 					depth.dispatchEvent(new Event('input'));
 					output.innerHTML = data2 + 1;
-				} //set vibrato depth
+				} //set vibrato depth  
 				else if (data1 == 104) {
 					jumpFactorWrite = data2;
 				} // so we know which pressure setting is going to be received.
-				else if (data1 == 105 && jumpFactorWrite < 13) {
+				else if (data1 == 105 && jumpFactorWrite < 13) {	
 					document.getElementById("jumpFactor" + jumpFactorWrite).value = data2;
+					if (jumpFactorWrite == 10) {
+						document.getElementById("jumpFactor10b").value = data2; //special case for hysteresis			
+					}
 					for (var i = 1; i < 13; i++) {
-					var k = document.getElementById("jumpFactor" + (i));
-					k.dispatchEvent(new Event('input'));}
+						var k = document.getElementById("jumpFactor" + (i));		
+						k.dispatchEvent(new Event('input'));
+						if (i == 10) {
+							var k = document.getElementById("jumpFactor10b"); //special case for key delay slider
+							k.dispatchEvent(new Event('input'));
+						}
+					}
 				}
 
 				if (data1 == 105) {
 
 					if (jumpFactorWrite == 13) {
 						document.getElementById("checkbox6").checked = data2;
-						//if (data2 == 1) {
-							//document.getElementById("overrideExpression").disabled = false;
-						//} else (document.getElementById("overrideExpression").disabled = true);
 					} else if (jumpFactorWrite == 14) {
 						document.getElementById("expressionDepth").value = data2;
 					} else if (jumpFactorWrite == 15) {
@@ -821,51 +882,59 @@ function WARBL_Receive(event) {
 						document.getElementById("octavePressureInput").value = p;
 					} else if (jumpFactorWrite == 43) {
 						document.getElementById("checkbox9").checked = data2;
-					} //invert
+					} //invert											
 					else if (jumpFactorWrite == 44) {
 						document.getElementById("checkbox5").checked = data2; //custom
 						updateCustom();
 					} else if (jumpFactorWrite == 42) {
 						document.getElementById("checkbox3").checked = data2;
-					} //secret
+					} //secret										
 					else if (jumpFactorWrite == 40) {
 						document.getElementById("checkbox4").checked = data2;
-					} //vented
+						if (data2 == 0) {
+							document.getElementById("bagBreath0").checked = true;
+						} else {document.getElementById("bagBreath1").checked = true;}
+					} //vented							 			
 					else if (jumpFactorWrite == 41) {
 						document.getElementById("checkbox8").checked = data2;
-					} //bagless
+					} //bagless						 	
 					else if (jumpFactorWrite == 45) {
 						document.getElementById("checkbox10").checked = data2;
-					} //velocity
-					else if (jumpFactorWrite == 46) {
+					} //velocity	
+					else if (jumpFactorWrite == 46) {						
 						document.getElementById("checkbox11").checked = (data2 & 0x1);
 						document.getElementById("checkbox13").checked = (data2 & 0x2);
-					} //aftertouch
+					} //aftertouch	
 					else if (jumpFactorWrite == 47) {
 						document.getElementById("checkbox12").checked = data2;
 					} //force max velocity
-
+					
 					else if (jumpFactorWrite == 48) {
 						document.getElementById("checkbox14").checked = data2;
 					} //immediate pitchbend
-
+					
 					else if (jumpFactorWrite == 49) {
 						document.getElementById("checkbox15").checked = data2;
 					} //legato
-
+	
 					else if (jumpFactorWrite == 50) {
 						document.getElementById("checkbox16").checked = data2;
 					} //override expression pressure range
-
+					
 					else if (jumpFactorWrite == 51) {
 						document.getElementById("checkbox17").checked = data2;
 					} //both thumb and overblow
-
+					
 					else if (jumpFactorWrite == 52) {
 						document.getElementById("checkbox18").checked = data2;
 						updateCustom();
 					} //R4 flattens
-
+					
+					else if (jumpFactorWrite == 53) {
+						document.getElementById("checkbox19").checked = data2;
+						updateCustom();
+					} //R4 Invert
+						
 					else if (jumpFactorWrite == 61) {
 						document.getElementById("midiBendRange").value = data2;
 					}
@@ -935,38 +1004,106 @@ function WARBL_Receive(event) {
 					else if (jumpFactorWrite == 84) {
 						curve[3] = data2;
 					}
-
+					
 					else if (jumpFactorWrite > 86 && jumpFactorWrite < 98) { //custom fingering chart inputs
-						document.getElementById("fingeringInput" + (jumpFactorWrite - 86)).value = data2;
+						document.getElementById("fingeringInput" + (jumpFactorWrite - 86)).value = data2;								
 					}
-
+					
 				}
-
-				else if (data1 == 110) {
+ 	
+				else if (data1 == 110) { //receiving firmware version from WARBL
+				
 
 					version = data2;
-
-					if (version >= currentVersion) {
-
-
-						document.getElementById("overrideExpression").disabled = false;
-						document.getElementById("polyMapButton").disabled = false;
-						document.getElementById("velocityMapButton").disabled = false;
-						document.getElementById("aftertouchMapButton").disabled = false;
-						document.getElementById("noteChannel").disabled = false;
-						document.getElementById("checkbox13").disabled = false;
-						document.getElementById("switch13").style.cursor = "pointer";
-						document.getElementById("advancedPBbutton").disabled = false;
-						document.getElementById("pitchbendradio3").disabled = false;
+					
+					if (version == currentVersion) { //display the appropriate messages
 						document.getElementById("current").innerHTML = "Your firmware is up to date.";
 						document.getElementById("current").style.left = "710px";
 						document.getElementById("current").style.visibility = "visible";
 						document.getElementById("status").style.visibility = "hidden";
 						document.getElementById("current").style.color = "#f7c839";
-						document.getElementById("configureCustomFingering").disabled = false;
-
 					}
 					else {
+						document.getElementById("current").innerHTML = "There is a firmware update available.";				
+						document.getElementById("current").style.left = "690px";
+						document.getElementById("current").style.visibility = "visible";
+						document.getElementById("status").style.visibility = "hidden";
+						document.getElementById("current").style.color = "#F78339";
+					}
+					
+					
+					version = version / 10;
+					var n = version.toFixed(1)
+					document.getElementById("version").innerHTML = n;
+					document.getElementById("version").style.color = "#f7c839";
+					
+					
+				//show that the WARBL is connected when we receive the firmware version.
+				document.getElementById("status").innerHTML = "WARBL Connected.";
+				document.getElementById("status").style.color = "#f7c839";
+				communicationMode = true;
+				if(version > 2.0){
+				document.getElementById("connect").innerHTML = "Disconnect";
+				}
+					
+					
+					//Lots of UI changes based on the current firmware version of the connected WARBL
+					
+						if (version < 2.1) {
+						document.getElementById("jumpfactor10Container").style.visibility = "visible";
+						document.getElementById("jumpfactor4Container").style.visibility = "visible";
+						document.getElementById("jumpValue4").style.visibility = "visible";
+						document.getElementById("jumpValue10").style.visibility = "visible";				
+						document.getElementById("jumpfactor10bContainer").style.visibility = "hidden";
+						document.getElementById("jumpLabel8").style.visibility = "hidden";
+						document.getElementById("jumpLabel5").style.visibility = "visible";									
+						document.getElementById("demo10b").style.visibility = "hidden";				
+						document.getElementById("jumpLabel4").innerHTML = "Jump";
+						document.getElementById("jumpfactor5Container").style.top = "240px";											
+						document.getElementById("jumpfactor6Container").style.top = "275px";						
+						document.getElementById("jumpfactor11Container").style.top = "240px";											
+						document.getElementById("jumpfactor12Container").style.top = "275px";														
+						document.getElementById("jumplabel6").style.top = "242px";						
+						document.getElementById("jumplabel7").style.top = "277px";												
+						document.getElementById("jumpValue5").style.top = "225px";						
+						document.getElementById("jumpValue6").style.top = "260px";												
+						document.getElementById("jumpValue11").style.top = "225px";						
+						document.getElementById("jumpValue12").style.top = "260px";
+						document.getElementById("jumpFactor3").min = "1";										
+						document.getElementById("jumpFactor3").max = "175";		
+						document.getElementById("jumpFactor9").min = "1";										
+						document.getElementById("jumpFactor9").max = "175";	
+						document.getElementById("jumpFactor5").min = "1";											
+						document.getElementById("jumpFactor6").min = "1";											
+						document.getElementById("jumpFactor11").min = "1";												
+						document.getElementById("jumpFactor12").min = "1";										
+						document.getElementById("breathSlider").classList.remove('slider2');
+						document.getElementById("breathSlider").classList.add('slider');
+						document.getElementById("pressureGroup").style.top = "0px";
+						document.getElementById("ventedLabel").style.visibility = "visible";
+						document.getElementById("switch4").style.visibility = "visible";
+						document.getElementById("radioGroup10").style.visibility = "hidden";
+						document.getElementById("jumplabel10").innerHTML = "Closed";
+						document.getElementById("jumplabel11").innerHTML = "Vented";
+						document.getElementById("jumplabel10").style.left = "170px";
+						document.getElementById("jumplabel11").style.left = "340px";
+						document.getElementById("advancedSliders").style.top = "-125px";	
+
+											
+						
+						//disable bombarde and baroque flute fingering option
+						document.getElementById("fingeringSelect0").options[19].disabled = true;
+						document.getElementById("fingeringSelect1").options[19].disabled = true;
+						document.getElementById("fingeringSelect2").options[19].disabled = true;
+						document.getElementById("fingeringSelect0").options[20].disabled = true;
+						document.getElementById("fingeringSelect1").options[20].disabled = true;
+						document.getElementById("fingeringSelect2").options[20].disabled = true;
+																																
+					}
+					
+					
+
+					if (version < 2.0) {
 						document.getElementById("overrideExpression").disabled = true;
 						document.getElementById("polyMapButton").disabled = true;
 						document.getElementById("velocityMapButton").disabled = true;
@@ -976,19 +1113,10 @@ function WARBL_Receive(event) {
 						document.getElementById("switch13").style.cursor = "default";
 						document.getElementById("advancedPBbutton").disabled = true;
 						document.getElementById("pitchbendradio3").disabled = true;
-						document.getElementById("current").innerHTML = "There is a firmware update available.";
-						document.getElementById("current").style.left = "690px";
-						document.getElementById("current").style.visibility = "visible";
-						document.getElementById("status").style.visibility = "hidden";
-						document.getElementById("current").style.color = "#F78339";
 						document.getElementById("configureCustomFingering").disabled = true;
 					}
-
-
-					version = version / 10;
-					var n = version.toFixed(1)
-					document.getElementById("version").innerHTML = n;
-					document.getElementById("version").style.color = "#f7c839";
+					
+					
 
 					if (version < 1.5) {
 						document.getElementById("fingeringSelect0").options[2].disabled = true;
@@ -1034,21 +1162,24 @@ function WARBL_Receive(event) {
 						document.getElementById("fingeringSelect1").options[15].disabled = true;
 						document.getElementById("fingeringSelect2").options[15].disabled = true;
 					}
-
-
+					
+					
 					if (version < 2.0) {
 						document.getElementById("fingeringSelect0").options[16].disabled = true;
 						document.getElementById("fingeringSelect1").options[16].disabled = true;
 						document.getElementById("fingeringSelect2").options[16].disabled = true;
-
+												
 						document.getElementById("fingeringSelect0").options[17].disabled = true;
 						document.getElementById("fingeringSelect1").options[17].disabled = true;
 						document.getElementById("fingeringSelect2").options[17].disabled = true;
-
+						
 						document.getElementById("fingeringSelect0").options[18].disabled = true;
 						document.getElementById("fingeringSelect1").options[18].disabled = true;
 						document.getElementById("fingeringSelect2").options[18].disabled = true;
 					}
+					
+				
+					
 
 				} else if (data1 == 111) {
 					document.getElementById("keySelect0").value = data2;
@@ -1156,8 +1287,8 @@ function bit_test(num, bit) {
 
 
 function sendCustomFingeringFill(){
-
-	modalclose(22);
+	
+	modalclose(22);	
 	var value = document.getElementById("customFingeringFill").value;
 	for (i = 1; i < 12; ++i) {
 		document.getElementById("fingeringInput" + i).value = customFingeringFills[value][i - 1];
@@ -1197,6 +1328,9 @@ function sendFingeringSelect(row, selection) {
 	else if (selection == 17 || selection == 18) {
 		key = 2;
 	} //Sackpipa
+		else if (selection == 20) {
+		key = 123;
+	} //Bombarde
 	else {
 		key = 0;
 	} //default key of D for many patterns
@@ -1216,7 +1350,7 @@ function fingeringInput(input, selection) { 	//send the custom fingering input e
 		if (x < 0 || x > 127 || isNaN(x)) {
 			alert("Value must be 0-127.");
 			document.getElementById("fingeringInput" + input).value = null;
-		}
+		}		
 		else{
 	blink(1);
 	document.getElementById("customFingeringFill").value = "12";
@@ -1234,9 +1368,9 @@ function defaultInstrument() { //tell WARBL to set the current instrument as the
 
 }
 
-function handleDefault() { //display correct default instrument and "set default" buttons
+function handleDefault() { //display correct default instrument and "set default" buttons	
 
-	if (version > 1.6) {
+	if (version > 1.6 || version == "Unknown") {
 
 		if (defaultInstr != 0) {
 			document.getElementById("instrument1Label").innerHTML = "Instrument 1:";
@@ -1290,8 +1424,8 @@ function sendFingeringRadio(tab) { //change instruments, showing the correct tab
 	instrument = tab;
 	updateCustom();
 	advancedOkay(); //turn off the advanced tab
-	pressureOkay();
-	handleDefault(); //display correct default instrument and "set default" buttons
+	pressureOkay();	
+	handleDefault(); //display correct default instrument and "set default" buttons	
 	customFingeringOkay();
 	if (tab == 0) {
 		document.getElementById("instrument0").style.display = "block";
@@ -1410,7 +1544,7 @@ slider.noUiSlider.on('change', function(values) {
 	blink(1);
 	if(mapSelection == 0){
 	inputSliderMin[0] = parseInt(values[0]);
-	inputSliderMax[0] = parseInt(values[1]);
+	inputSliderMax[0] = parseInt(values[1]);	
 	sendToWARBL(104, 19);
 	sendToWARBL(105, parseInt(values[0]));
 	sendToWARBL(104, 20);
@@ -1422,7 +1556,7 @@ slider.noUiSlider.on('change', function(values) {
 	sendToWARBL(104, 70 + ((mapSelection-1)*4));
 	sendToWARBL(105, parseInt(values[0]));
 	sendToWARBL(104, 71 + ((mapSelection-1)*4));
-	sendToWARBL(105, parseInt(values[1]));
+	sendToWARBL(105, parseInt(values[1]));		
 	}
 });
 
@@ -1443,7 +1577,7 @@ slider2.noUiSlider.on('change', function(values) {
 	sendToWARBL(104, 72 + ((mapSelection-1)*4));
 	sendToWARBL(105, parseInt(values[0]));
 	sendToWARBL(104, 73 + ((mapSelection-1)*4));
-	sendToWARBL(105, parseInt(values[1]));
+	sendToWARBL(105, parseInt(values[1]));		
 	}
 });
 
@@ -1696,16 +1830,16 @@ function updateCustom() { //keep correct settings enabled/disabled with respect 
 			document.getElementById("vibratoCheckbox" + i).style.cursor = "pointer";
 		}
 	}
-
+	
 		if (document.getElementById("checkbox18").checked == true) {
 			document.getElementById("fingeringInput11").disabled = true;
 			document.getElementById("fingeringInput11").style.cursor = "default";
-
+		
 	} else {
-
+	
 			document.getElementById("fingeringInput11").disabled = false;
 			document.getElementById("fingeringInput11").style.cursor = "pointer";
-
+		
 	}
 }
 
@@ -1809,7 +1943,7 @@ function mapCC() {
 	document.getElementById("pressureChannel").style.visibility = "visible";
 	document.getElementById("pressureCC").style.visibility = "visible";
 	document.getElementById("expressionChannel").style.visibility = "visible";
-	document.getElementById("highByte").style.visibility = "visible";
+	document.getElementById("highByte").style.visibility = "visible";	
 	document.getElementById("box7").style.display = "block";
 	document.getElementById("box6").style.display = "none";
 	if(curve[0] < 3) {document.getElementById("curveRadio" + curve[0]).checked = true;
@@ -1826,7 +1960,7 @@ function mapVelocity() {
 	if(curve[1] < 3) {document.getElementById("curveRadio" + curve[1]).checked = true;
 	}
 	document.getElementById("box7").style.display = "block";
-	document.getElementById("box6").style.display = "none";
+	document.getElementById("box6").style.display = "none";	
 	document.getElementById("pressureMappingHeader").innerHTML="Velocity Mapping";
 	//console.log(mapSelection);
 }
@@ -1839,7 +1973,7 @@ function mapAftertouch() {
 	}
 	document.getElementById("box7").style.display = "block";
 	document.getElementById("box6").style.display = "none";
-	document.getElementById("pressureMappingHeader").innerHTML="Channel Pressure Mapping";
+	document.getElementById("pressureMappingHeader").innerHTML="Channel Pressure Mapping";	
 }
 
 function mapPoly() {
@@ -1849,7 +1983,7 @@ function mapPoly() {
 	if(curve[3] < 3) {document.getElementById("curveRadio" + curve[3]).checked = true;
 	}
 	document.getElementById("box7").style.display = "block";
-	document.getElementById("box6").style.display = "none";
+	document.getElementById("box6").style.display = "none";	
 	document.getElementById("pressureMappingHeader").innerHTML="Key Pressure Mapping";
 }
 
@@ -1867,19 +2001,7 @@ function okayCCmap() {
 
 
 function pressureGraph() {
-
-	// Put up error message if WARBL is not connected
-	if (!WARBLout){
-
-		document.getElementById("modal14-title").innerHTML="Pressure graph only available when WARBL is connected";
-
-		document.getElementById("modal14-ok").style.opacity = 1.0;
-
-		modal(14);
-
-		return;
-
-	}
+    
 
 	// Show the pressure graph
 	document.getElementById("pressuregraph").style.display = "block";
@@ -1900,6 +2022,27 @@ function pressureOkay() {
 }
 
 function advancedDefaults() {
+	if (version > 2.0 || version == "Unknown"){
+	document.getElementById("jumpFactor7").value = "3";
+	document.getElementById("jumpFactor8").value = "7";
+	document.getElementById("jumpFactor9").value = "20";
+	document.getElementById("jumpFactor11").value = "12";
+	document.getElementById("jumpFactor12").value = "50";
+	for (var i = 7; i < 10; i++) {
+		var k = document.getElementById("jumpFactor" + (i));
+			k.dispatchEvent(new Event('input'));
+		var j = document.getElementById("jumpFactor" + (i)).value;
+		sendJumpFactor(i, j);
+	}
+	for (var i = 11; i < 13; i++) {
+		var k = document.getElementById("jumpFactor" + (i));
+			k.dispatchEvent(new Event('input'));
+		var j = document.getElementById("jumpFactor" + (i)).value;
+		sendJumpFactor(i, j);
+	}		
+	}
+	
+	else{
 	document.getElementById("jumpFactor1").value = "25";
 	document.getElementById("jumpFactor2").value = "15";
 	document.getElementById("jumpFactor3").value = "15";
@@ -1919,9 +2062,29 @@ function advancedDefaults() {
 		var j = document.getElementById("jumpFactor" + (i)).value;
 		sendJumpFactor(i, j);
 	}
+	}
 }
 
 function advancedBagDefaults() {
+	
+	
+	if (version > 2.0 || version == "Unknown"){
+	document.getElementById("jumpFactor1").value = "50";
+	document.getElementById("jumpFactor2").value = "20";
+	document.getElementById("jumpFactor3").value = "20";
+	document.getElementById("jumpFactor4").value = "50";
+	document.getElementById("jumpFactor6").value = "75";
+
+	for (var i = 1; i < 7; i++) {
+		var k = document.getElementById("jumpFactor" + (i));
+			k.dispatchEvent(new Event('input'));
+		var j = document.getElementById("jumpFactor" + (i)).value;
+		sendJumpFactor(i, j);
+	}
+	}
+	
+	
+	else{
 	document.getElementById("jumpFactor1").value = "75";
 	document.getElementById("jumpFactor2").value = "25";
 	document.getElementById("jumpFactor3").value = "15";
@@ -1943,7 +2106,9 @@ function advancedBagDefaults() {
 		sendJumpFactor(i, j);
 
 	}
+	}
 }
+
 
 function sendJumpFactor(factor, selection) {
 	selection = parseFloat(selection);
@@ -2057,6 +2222,7 @@ function sendCustom(selection) {
 	sendToWARBL(105, selection);
 }
 
+
 function sendExpression(selection) {
 	selection = +selection; //convert true/false to 1/0
 	blink(1);
@@ -2092,49 +2258,56 @@ function sendAftertouch(selection, polyselection) {
 }
 
 function sendForceVelocity(selection) {
-	selection = +selection;
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 47);
 	sendToWARBL(105, selection);
 }
 
 function sendHack1(selection) {
-	selection = +selection;
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 48);
 	sendToWARBL(105, selection);
 }
 
 function sendHack2(selection) {
-	selection = +selection;
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 49);
 	sendToWARBL(105, selection);
 }
 
 function sendOverride(selection) {
-	selection = +selection;
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 50);
 	sendToWARBL(105, selection);
 }
 
 function sendBoth(selection) {
-	selection = +selection;
+	selection = +selection; 
 	blink(1);
 	sendToWARBL(104, 51);
 	sendToWARBL(105, selection);
 }
 
-
 function sendR4flatten(selection) {
-	selection = +selection;
+	selection = +selection; 
 	blink(1);
 	updateCustom();
 	sendToWARBL(104, 52);
 	sendToWARBL(105, selection);
 }
 
+/* //curently unused--can be used for an additional switch.
+function sendInvertR4(selection) {
+	selection = +selection;
+	blink(1);
+	sendToWARBL(104, 53);
+	sendToWARBL(105, selection);
+}
+*/
 
 
 //end switches
@@ -2157,19 +2330,22 @@ function restoreAll() {
 	modalclose(4);
 	blink(3);
 	sendToWARBL(102, 125);
+	communicationMode = 0;
 	if (version > 1.9) { //WARBL will restart, so try to reconnect to it.
 		setTimeout(connect, 3000);
 	}
 }
 
 function autoCalibrateBell() {
-	LEDon();
+	if(communicationMode){
+	LEDon();}
 	setTimeout(LEDoff, 5000);
 	sendToWARBL(106, 42);
 }
 
 function autoCalibrate() {
-	LEDon();
+	if(communicationMode){
+	LEDon();}
 	setTimeout(LEDoff, 10000);
 	sendToWARBL(102, 127);
 }
@@ -2188,6 +2364,7 @@ function modalclose(modalId) {
 }
 
 function blink(blinkNum) {
+	if (communicationMode){
 	LEDon();
 	setTimeout(LEDoff, 200);
 	if (blinkNum > 1) { //blink twice
@@ -2205,6 +2382,7 @@ function blink(blinkNum) {
 	if (blinkNum > 4) { //blink five times
 		setTimeout(LEDon, 1600);
 		setTimeout(LEDoff, 1800);
+	}
 	}
 }
 
@@ -2264,7 +2442,7 @@ function noteOn(pitch) {
 	currentNote = pitch;
 	if (volume) {
 		for (var i = 0; i < _tone_0650_SBLive_sf2.zones.length; i++) {
-			_tone_0650_SBLive_sf2.zones[i].ahdsr = false;
+			 _tone_0650_SBLive_sf2.zones[i].ahdsr = false;
 		}
 		var envelope = player.queueWaveTable(audioContext, audioContext.destination, _tone_0650_SBLive_sf2, 0, pitch, 999, 0.5, true);
 		var note = {
@@ -2364,6 +2542,13 @@ function slider10Change() {
   output10.innerHTML = jumpSlider10.value;
 }
 
+var output10b = document.getElementById("demo10b");
+var jumpSlider10b = document.getElementById('jumpFactor10b');
+jumpSlider10b.addEventListener('input', slider10bChange);
+function slider10bChange() {
+  output10b.innerHTML = jumpSlider10b.value;
+}
+
 var output11 = document.getElementById("demo11");
 var jumpSlider11 = document.getElementById('jumpFactor11');
 jumpSlider11.addEventListener('input', slider11Change);
@@ -2382,7 +2567,7 @@ function slider12Change() {
 
 function clearConsole() { //clear MIDI console
 document.getElementById("console").innerHTML = "";
-consoleEntries = 0;
+consoleEntries = 0;	
 }
 
 
@@ -2567,7 +2752,7 @@ player.loader.decodeAfterLoading(audioContext, '_tone_0650_SBLive_sf2');
 function topNavFunction() {
 
 	var x = document.getElementById("myTopnav");
-
+	
 	if (x.className === "topnav") {
 		x.className += " responsive";
 	} else {
@@ -2580,7 +2765,7 @@ function topNavFunction() {
 // Preset import/export features
 //
 
-//
+// 
 // Synchronous sleep (returns Promise for async/await use)
 //
 function sleep(ms) {
@@ -2600,7 +2785,7 @@ function importPreset(context){
 
 	// Put up error message if WARBL is not connected
 	if (!WARBLout){
-
+		
 		document.getElementById("modal14-title").innerHTML="Preset import only allowed when WARBL is connected";
 
 		document.getElementById("modal14-ok").style.opacity = 1.0;
@@ -2616,7 +2801,7 @@ function importPreset(context){
 
 	// How long to wait in msec between sending commands
 	var delay = 5;
-
+     
     //debugger;
 
     // Make sure there is a file selected
@@ -2636,7 +2821,7 @@ function importPreset(context){
 
 	  	var reader = new FileReader();
 
-	    reader.onload = async function(){
+	    reader.onload = async function(){ 
 
 	    	//debugger;
 
@@ -2695,7 +2880,7 @@ function importPreset(context){
     		byte1 = theImportObject.messages[0][1];
     		byte2 = theImportObject.messages[0][2];
 	    	sendToWARBL(byte1, byte2);
-
+	    	
     		// Synchronous sleep to allow command processing
     		await sleep(delay);
 
@@ -2711,7 +2896,7 @@ function importPreset(context){
 
 	  		// console.log("exportedInstrument = "+exportedInstrument);
 	  		// console.log("targetInstrument = "+(targetInstrument-30));
-
+	  		
 	  		//
 	  		// Determine the current target key shift
 	  		//
@@ -2730,25 +2915,25 @@ function importPreset(context){
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+		    		
 		    		byte0 = theImportObject.messages[2][0];
 		    		byte1 = theImportObject.messages[2][1];
 		    		byte2 = theImportObject.messages[2][2];
-
+			    	
 			    	sendToWARBL(byte1, byte2);
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+		    		
 		    		byte0 = theImportObject.messages[3][0];
-		    		byte1 = targetKey;
+		    		byte1 = targetKey;		
 		    		byte2 = theImportObject.messages[3][2];
-
+			    	
 			    	sendToWARBL(byte1, byte2);
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+					
 					break;
 
 				case 1:
@@ -2761,20 +2946,20 @@ function importPreset(context){
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+		    		
 		    		byte0 = theImportObject.messages[5][0];
 		    		byte1 = theImportObject.messages[5][1];
 		    		byte2 = theImportObject.messages[5][2];
-
+			    	
 			    	sendToWARBL(byte1, byte2);
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+		    		
 		    		byte0 = theImportObject.messages[6][0];
-		    		byte1 = targetKey;
+		    		byte1 = targetKey;		
 		    		byte2 = theImportObject.messages[6][2];
-
+			    	
 			    	sendToWARBL(byte1, byte2);
 
 		    		// Synchronous sleep to allow command processing
@@ -2792,20 +2977,20 @@ function importPreset(context){
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+		    		
 		    		byte0 = theImportObject.messages[8][0];
 		    		byte1 = theImportObject.messages[8][1];
 		    		byte2 = theImportObject.messages[8][2];
-
+			    	
 			    	sendToWARBL(byte1, byte2);
 
 		    		// Synchronous sleep to allow command processing
 		    		await sleep(delay);
-
+		    		
 		    		byte0 = theImportObject.messages[9][0];
-		    		byte1 = targetKey;
+		    		byte1 = targetKey;		
 		    		byte2 = theImportObject.messages[9][2];
-
+			    	
 			    	sendToWARBL(byte1, byte2);
 
 		    		// Synchronous sleep to allow command processing
@@ -2814,7 +2999,7 @@ function importPreset(context){
 					break;
 
 			}
-
+	    	
 			// Skip command 10 - Selected instrument at save time
 
 	    	// Skip command 11 - Sets default
@@ -2858,11 +3043,11 @@ function importPreset(context){
 
 	    	},500);
 
-	    }
+	    } 
 
     	reader.readAsText(context.files[0]);
 
-    }
+    } 
 
 }
 
@@ -2875,7 +3060,7 @@ function exportPreset(){
 
 	// Put up error message if WARBL is not connected
 	if (!WARBLout){
-
+		
 		document.getElementById("modal14-title").innerHTML="Preset export only allowed when WARBL is connected";
 
 		document.getElementById("modal14-ok").style.opacity = 1.0;
@@ -2895,7 +3080,7 @@ function exportPreset(){
 		messages:[]			// Preset messages
 	};
 
-	//
+	// 
 	// Download the exported preset to a file
 	//
 	function downloadPreset(content, filename, contentType){
@@ -2912,10 +3097,10 @@ function exportPreset(){
 
 		// Tell the user that the export is complete
 		document.getElementById("modal14-title").innerHTML="Preset Export Complete!";
-
+		
 		// Make sure the OK button is showing
 		document.getElementById("modal14-ok").style.opacity = 1.0;
-
+		
 		modal(14);
 
 	};
@@ -2933,7 +3118,7 @@ function exportPreset(){
 		nMessages++;
 
 		if (nMessages == 135){
-
+			
 			//debugger;
 
 			//console.log("exportMessageHandler: All messages received");
@@ -2955,7 +3140,7 @@ function exportPreset(){
 
 	// Tell WARBL to enter communications mode
 	// Received bytes will be forwarded to the export message handler instead
-	sendToWARBL(102, 126);
+	sendToWARBL(102, 126); 
 
 }
 
@@ -2963,7 +3148,7 @@ function exportPreset(){
 // Capture the incoming pressure
 //
 function capturePressure(val){
-
+	
 	//console.log("capturePressure: "+val);
 
 	gCurrentPressure = val;
@@ -2980,7 +3165,7 @@ function graphPressure(){
 
 	// Drop the last element of the array
 	gPressureReadings.pop();
-
+	
 	// Add the new value to the front of the array
 	gPressureReadings.unshift(gCurrentPressure);
 
@@ -3006,8 +3191,8 @@ function graphPressure(){
 	// X scale and Axis
 	var x = d3.scaleLinear()
 	    .domain([0, width])       // This is the min and the max of the data
-	    .range([0, width]);
-
+	    .range([0, width]);   
+	
 	svg.append('g')
 	  .attr("transform", "translate(0," + height + ")")
 	  .call(d3.axisBottom(x).tickSize(0).tickFormat(""));
@@ -3015,7 +3200,7 @@ function graphPressure(){
 	// Y scale and Axis
 	var y = d3.scaleLinear()
 	    .domain([0, gMaxPressure])  // This is the min and the max of the data: 0 to gMaxPressure
-	    .range([height, 0]);
+	    .range([height, 0]); 
 
 	svg.append('g')
 	  .call(d3.axisLeft(y));
@@ -3027,7 +3212,7 @@ function graphPressure(){
 	      .attr("dy", "1em")
 	      .style("text-anchor", "middle")
 	      .style("fill","white")
-	      .text("Time");
+	      .text("Time");      
 
 	// text label for the y axis
 	svg.append("text")
@@ -3037,32 +3222,32 @@ function graphPressure(){
 	      .attr("dy", "1em")
 	      .style("text-anchor", "middle")
 	      .style("fill","white")
-	      .text("Inches of H2O");
+	      .text("Inches of H₂O");      
 
 	// X scale will use the index of our data
 	var xScale = d3.scaleLinear()
 	    .domain([0, gNPressureReadings-1]) // input
 	    .range([0, width]); // output
 
-	// Y scale will use the pressure range from 0 - gMaxPressure
+	// Y scale will use the pressure range from 0 - gMaxPressure 
 	var yScale = d3.scaleLinear()
-	    .domain([0, gMaxPressure]) // input
-	    .range([height, 0]); // output
+	    .domain([0, gMaxPressure]) // input 
+	    .range([height, 0]); // output 
 
 	// d3's line generator
 	var line = d3.line()
 	    .x(function(d, i) { return xScale(i); }) // set the x values for the line generator
-	    .y(function(d) { return yScale(d.y); }) // set the y values for the line generator
+	    .y(function(d) { return yScale(d.y); }) // set the y values for the line generator 
 	    .curve(d3.curveMonotoneX); // apply smoothing to the line
 
 	// An array of objects of length N. Each object has key -> value pair, the key being "y" and the value is a pressure reading
 	var dataset = d3.range(gNPressureReadings).map(function(d) { return {"y":gPressureReadings[d] } });
 
-	// Append the path, bind the data, and call the line generator
+	// Append the path, bind the data, and call the line generator 
 	svg.append("path")
-	    .datum(dataset) // Binds data to the line
-	    .attr("class", "pressureline") // Assign a class for styling
-	    .attr("d", line); // Calls the line generator
+	    .datum(dataset) // Binds data to the line 
+	    .attr("class", "pressureline") // Assign a class for styling 
+	    .attr("d", line); // Calls the line generator 
 }
 
 //
