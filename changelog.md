@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
-## [2.1] - 
+
+## [Released]
+
+## [2.1] - 2021-10-24
 ### Changed
 
 - There is no longer a USBCore.cpp file included with the sketch, because the newest Arduino IDE reintroduced the ability to turn off the CDC class in the USBDesc.h file. 
@@ -22,8 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Breton bombarde fingering chart 
 - Baroque flute fingering chart 
 
-
-## [Released]
 
 
 ## [2.0] - 2021-5-13
