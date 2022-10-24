@@ -296,6 +296,12 @@ input {
 	color: var(--warning-color);
 }
 
+#updateInfocircle{
+	visibility: hidden;
+	top: -30px;
+	left: 420px;
+}
+
 #topControls {
 	display: block;
 }
@@ -376,7 +382,7 @@ input {
 	top: 280px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 .MIDILabel {
@@ -386,7 +392,7 @@ input {
 	top: 280px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 .customThumbLabel {
@@ -396,7 +402,7 @@ input {
 	top: 305px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 
@@ -407,7 +413,7 @@ input {
 	top: 305px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 
@@ -418,7 +424,7 @@ input {
 	top: 492px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 .whiteHoleLabel {
@@ -428,7 +434,7 @@ input {
 	top: 542px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 .grayHoleLabel {
@@ -438,7 +444,7 @@ input {
 	top: 592px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 
@@ -449,7 +455,7 @@ input {
 	top: 510px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 .asteriskLabel {
@@ -459,7 +465,7 @@ input {
 	top: 655px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 .asterisk {
@@ -469,7 +475,7 @@ input {
 	top: 316px;
 	width: 200px;
 	z-index: 99;
-	font-size: 14px;
+	font-size: 14px;	
 }
 
 
@@ -632,7 +638,7 @@ input {
 #configureCustomFingering{
 	display: block;
 	position: absolute;
-	width: 200px;
+	width: 230px;
 	height: 32px;
 	top: 370px;
 	left: 50px;
@@ -643,7 +649,7 @@ input {
 .notechannellabel {
 	display: block;
 	position: absolute;
-	left: 295px;
+	left: 315px;
 	top: 384px;
 	width: 100px;
 	z-index: 99;
@@ -653,7 +659,7 @@ input {
 .noteChannelContainer {
 	display: block;
 	position: absolute;
-	left: 400px;
+	left: 420px;
 	top: 380px;
 }
 
@@ -1533,21 +1539,15 @@ input:disabled + .vibratoSlider:before {
 	box-shadow: inset 0 0 15px #000000;
 }
 
-.mouthpiecerect {
+
+.mouthpiece {
 	position: absolute;
 	display: block;
-	top: 140px;
-	left: 125px;
-	width: 50px;
-	height: 18px;
-	color: var(--text-color);
-	background-color: #000;
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2f2f2f), color-stop(.5, #1e1f1f), color-stop(.51, #0c0c0c), to(#000));
-	background: -moz-linear-gradient(top, #2f2f2f, #1e1f1f 50%, #0c0c0c 51%, #000);
-	border-bottom: solid 2px #111;
-	-moz-box-shadow: inset 0 0 15px #000000;
-	-webkit-box-shadow: inset 0 0 15px #000000;
-	box-shadow: inset 0 0 15px #000000;
+	top: -130px;
+	left: -20px;
+	width: 20px;
+	//z-index: 999;
+	
 }
 
 .bellsensorrect {
@@ -1617,6 +1617,7 @@ input:disabled + .vibratoSlider:before {
 }
 
 #switch4 {
+	visibility:hidden;
 	top: 68px;
 	left: 377px;
 }
@@ -1628,12 +1629,17 @@ input:disabled + .vibratoSlider:before {
 
 
 #switch8 {
-	top: 255px;
+	top: 275px;
 	left: 160px;
 }
 
 #switch9 {
-	top: 220px;
+	top: 240px;
+	left: 160px;
+}
+
+#switch19 {
+	top: 290px;
 	left: 160px;
 }
 
@@ -1641,7 +1647,16 @@ input:disabled + .vibratoSlider:before {
 	display: block;
 	position: absolute;
 	left: 40px;
-	top: 223px;
+	top: 243px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.invertR4Label {
+	display: block;
+	position: absolute;
+	left: 85px;
+	top: 293px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1650,7 +1665,7 @@ input:disabled + .vibratoSlider:before {
 	display: block;
 	position: absolute;
 	left: 52px;
-	top: 258px;
+	top: 278px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1667,6 +1682,7 @@ input:disabled + .vibratoSlider:before {
 .ventedLabel {
 	display: block;
 	position: absolute;
+	visibility: hidden;
 	left: 245px;
 	top: 70px;
 	z-index: 99;
@@ -1678,8 +1694,8 @@ input:disabled + .vibratoSlider:before {
 	position: absolute;
 	height: 30px;
 	width: 60px;
-	top: 325px;
-	left: 250px;
+	top: 335px;
+	left: 370px;
 }
 
 
@@ -1695,16 +1711,16 @@ input:disabled + .vibratoSlider:before {
 	position: absolute;
 	height: 50px;
 	width: 80px;
-	top: 315px;
-	left: 30px;
+	top: 325px;
+	left: 265px;
 }
 
 .advancedBagDefaults {
 	position: absolute;
 	height: 50px;
 	width: 80px;
-	top: 315px;
-	left: 140px;
+	top: 325px;
+	left: 160px;
 }
 
 .learn {
@@ -1718,17 +1734,17 @@ input:disabled + .vibratoSlider:before {
 .advanced {
 	position: absolute;
 	height: 40px;
-	width: 90px;
-	top: 320px;
-	left: 220px;
+	width: 110px;
+	top: 340px;
+	left: 200px;
 }
 
 .advancedPB {
 	position: absolute;
 	height: 40px;
-	width: 90px;
+	width: 110px;
 	top: 250px;
-	left: 90px;
+	left: 70px;
 }
 
 .advancedOkayPB {
@@ -1800,7 +1816,7 @@ input:disabled + .vibratoSlider:before {
 	position: absolute;
 	height: 40px;
 	width: 90px;
-	top: 320px;
+	top: 340px;
 	left: 340px;
 }
 
@@ -1887,6 +1903,66 @@ input:disabled + .slider:before {
 	border: solid 2px #444;
 }
 
+
+/* Special slider for bag/breath switch which is a toggle */
+.slider2 {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border: solid 2px var(--main-bg-color);
+	background: var(--switch-bg-color);
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+
+.slider2:before {
+	position: absolute;
+	content: "";
+	height: 14px;
+	width: 14px;
+	left: 2px;
+	bottom: 1px;
+	background-color: var(--main-bg-color);
+	border: solid 2px var(--primary-color);
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+
+input:checked + .slider2 {
+	//background: var(--switch-bg-color));
+}
+
+input:focus + .slider2 {
+	box-shadow: 0 0 1px var(--secondary-color);
+}
+
+input:checked + .slider2:before {
+	-webkit-transform: translateX(22px);
+	-ms-transform: translateX(22px);
+	transform: translateX(22px);
+	border: solid 2px var(--primary-color);
+}
+
+/* Rounded sliders */
+.slider2.round {
+	border-radius: 30px;
+}
+
+.slider2.round:before {
+	border-radius: 50%;
+}
+
+
+input:disabled + .slider2 {
+	background-color: #444;
+}
+
+input:disabled + .slider2:before {
+	border: solid 2px #444;
+}
+
 .radiogroup {
 	display: block;
 	position: absolute;
@@ -1904,6 +1980,18 @@ input:disabled + .slider:before {
 	left: 215px;
 	padding: 0px;
 }
+
+
+
+.radiogroup10 {
+	display: block;
+	position: absolute;
+	width: 250px;
+	top: 230px;
+	left: 265px;
+	padding: 0px;
+}
+
 
 .radiogroup3 {
 	display: block;
@@ -2027,6 +2115,25 @@ h2 {
 	//margin-top: 100px !important;
 }
 
+
+.console {
+	display: block;
+	overflow-y: auto;
+	position: absolute;
+	margin: auto;
+	text-align: center;
+	width: 145px;
+	//height: 400px;
+	max-height: 70%;
+	left: 60px;
+	top: 160px;
+	color: black;
+	z-index: 99;
+	font-size: 14px;
+	line-height: 21px;
+}
+
+
 .modal-close {
 	color: black;
 	line-height: 50px;
@@ -2042,8 +2149,10 @@ h2 {
 }
 
 #clear {
+	//position: absolute;
 	left: 120px;
 	top: 80px;
+	//bottom: 20px;
 }
 
 
@@ -2063,6 +2172,12 @@ h2 {
 	width: 60%;
 }
 
+#advancedSliders{
+	display: block;
+	position: relative;
+	top: -105px;
+}
+
 .jumplabel {
 	display: block;
 	position: absolute;
@@ -2073,49 +2188,52 @@ h2 {
 }
 
 .jumplabel0 {
-	left: 135px;
-	top: 70px;
+	left: 145px;
+	top: 69px;
 }
 
 .jumplabel1 {
 	left: 310px;
-	top: 70px;
+	top: 69px;
 }
 
 .jumplabel2 {
 	left: 35px;
-	top: 102px;
+	top: 101px;
 }
 
 .jumplabel3 {
 	left: 35px;
-	top: 137px;
+	top: 136px;
 }
 
 .jumplabel4 {
 	left: 35px;
-	top: 172px;
+	top: 171px;
+
 }
 
 .jumplabel5 {
 	left: 35px;
-	top: 207px;
+	top: 206px;
+	visibility:hidden;
+
 }
 
 .jumplabel6 {
-	left: 35px;
-	top: 242px;
+	left: 22px;
+	top: 206px;
 }
 
 .jumplabel7 {
-	left: 35px;
-	top: 277px;
+	left: 25px;
+	top: 241px;
 }
 
 #jumpfactorContainer {
 	display: block;
 	position: absolute;
-	left: 110px;
+	left: 135px;
 	top: 100px;
 	z-index: 99;
 }
@@ -2123,7 +2241,7 @@ h2 {
 #jumpfactor2Container {
 	display: block;
 	position: absolute;
-	left: 110px;
+	left: 135px;
 	top: 135px;
 	z-index: 99;
 }
@@ -2131,7 +2249,7 @@ h2 {
 #jumpfactor3Container {
 	display: block;
 	position: absolute;
-	left: 110px;
+	left: 135px;
 	top: 170px;
 	z-index: 99;
 }
@@ -2139,31 +2257,32 @@ h2 {
 #jumpfactor4Container {
 	display: block;
 	position: absolute;
-	left: 110px;
+	left: 135px;
 	top: 205px;
 	z-index: 99;
+	visibility:hidden;
 }
 
 #jumpfactor5Container {
 	display: block;
 	position: absolute;
-	left: 110px;
-	top: 240px;
+	left: 135px;
+	top: 205px;
 	z-index: 99;
 }
 
 #jumpfactor6Container {
 	display: block;
 	position: absolute;
-	left: 110px;
-	top: 275px;
+	left: 135px;
+	top: 240px;
 	z-index: 99;
 }
 
 #jumpfactor7Container {
 	display: block;
 	position: absolute;
-	left: 280px;
+	left: 305px;
 	top: 100px;
 	z-index: 99;
 }
@@ -2171,7 +2290,7 @@ h2 {
 #jumpfactor8Container {
 	display: block;
 	position: absolute;
-	left: 280px;
+	left: 305px;
 	top: 135px;
 	z-index: 99;
 }
@@ -2179,7 +2298,7 @@ h2 {
 #jumpfactor9Container {
 	display: block;
 	position: absolute;
-	left: 280px;
+	left: 305px;
 	top: 170px;
 	z-index: 99;
 }
@@ -2187,24 +2306,27 @@ h2 {
 #jumpfactor10Container {
 	display: block;
 	position: absolute;
-	left: 280px;
+	left: 305px;
 	top: 205px;
 	z-index: 99;
+	visibility:hidden;
 }
+
+
 
 #jumpfactor11Container {
 	display: block;
 	position: absolute;
-	left: 280px;
-	top: 240px;
+	left: 305px;
+	top: 205px;
 	z-index: 99;
 }
 
 #jumpfactor12Container {
 	display: block;
 	position: absolute;
-	left: 280px;
-	top: 275px;
+	left: 305px;
+	top: 240px;
 	z-index: 99;
 }
 
@@ -2215,69 +2337,105 @@ h2 {
 }
 
 .jumpvalue {
-	left: 230px;
+	left: 250px;
 	top: 85px;
 }
 
 .jumpvalue2 {
-	left: 230px;
+	left: 250px;
 	top: 120px;
 }
 
 .jumpvalue3 {
-	left: 230px;
+	left: 250px;
 	top: 155px;
 }
 
 .jumpvalue4 {
-	left: 230px;
+	left: 250px;
 	top: 190px;
+	visibility:hidden;
+
 }
 
 .jumpvalue5 {
-	left: 230px;
-	top: 225px;
+	left: 250px;
+	top: 190px;
+
 }
 
 .jumpvalue6 {
-	left: 230px;
-	top: 260px;
+	left: 250px;
+	top: 225px;
 }
 
 .jumpvalue7 {
-	left: 400px;
+	left: 420px;
 	top: 85px;
 }
 
 .jumpvalue8 {
-	left: 400px;
+	left: 420px;
 	top: 120px;
 }
 
 .jumpvalue9 {
-	left: 400px;
+	left: 420px;
 	top: 155px;
 }
 
 .jumpvalue10 {
-	left: 400px;
+	left: 420px;
 	top: 190px;
+	visibility:hidden;
 }
 
 .jumpvalue11 {
-	left: 400px;
-	top: 225px;
+	left: 420px;
+	top: 190px;
 }
 
 .jumpvalue12 {
-	left: 400px;
-	top: 260px;
+	left: 420px;
+	top: 225px;
 }
 
 .jumpvalue14 {
 	left: 195px;
 	top: 165px;
 }
+
+/*transient filter value */
+.jumpvalue10b {
+	display: block;
+	position: absolute;
+	z-index: 99;
+	left: 890px;
+	top: 370px;
+}
+
+
+/*transient filter slider */
+#jumpfactor10bContainer {
+	display: block;
+	position: absolute;
+	left: 715px;
+	top: 385px;
+	width: 150px;
+	z-index: 99;
+}
+
+/*transient filter label */
+.jumplabel8 {
+	display: block;
+	position: absolute;
+	z-index: 99;
+	font-size: 14px;
+	left: 540px;
+	top: 385px;
+	width: 170px;
+}
+
 
 #pitchBendContainer {
 	display: block;
@@ -2608,7 +2766,7 @@ h2 {
 	left: 215px;
 	padding: 0px;
 }
-
+	
 
 .maxMinContainer {
 	display: block;
@@ -2869,11 +3027,18 @@ h2 {
 	top: 180px;
 }
 
+#pressureGroup{
+	display: block;
+	position: absolute;
+	left: 0px;
+	top: -50px;
+}
+
 .pressureLabel {
 	display: block;
 	position: absolute;
 	left: 60px;
-	top: 320px;
+	top: 330px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2881,8 +3046,8 @@ h2 {
 .pressureLabelAdvanced {
 	display: block;
 	position: absolute;
-	left: 330px;
-	top: 310px;
+	left: 30px;
+	top: 320px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2895,7 +3060,7 @@ h2 {
 	width: 60px;
 	height: 21px;
 	left: 79px;
-	top: 350px;
+	top: 360px;
 	color: var(--text-color);
 	z-index: 99;
 	font-size: 14px;
@@ -2912,8 +3077,8 @@ h2 {
 	text-align: center;
 	width: 60px;
 	height: 21px;
-	left: 349px;
-	top: 335px;
+	left: 49px;
+	top: 345px;
 	color: var(--text-color);
 	z-index: 99;
 	font-size: 14px;
@@ -2974,22 +3139,7 @@ input[type=range]::-moz-range-track {
 }
 
 
-.console {
-	display: block;
-	position: absolute;
-	margin: auto;
-	text-align: center;
-	width: 145px;
-	height: 100px;
-	left: 60px;
-	top: 160px;
-	color: black;
-	z-index: 99;
-	font-size: 14px;
-	line-height: 21px;
-}
-
-
+	
 #modal-center18 {
 	height: 800px;
 	width: 200px;
@@ -2998,7 +3148,7 @@ input[type=range]::-moz-range-track {
 .styled-select {
 	position: relative;
 	display: block;
-	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
+	background: url("../img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3019,7 +3169,7 @@ input[type=range]::-moz-range-track {
 .styled-key-select {
 	position: relative;
 	display: block;
-	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
+	background: url("../img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3041,7 +3191,7 @@ input[type=range]::-moz-range-track {
 .styled-fingering-select {
 	position: relative;
 	display: block;
-	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
+	background: url("../img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3063,7 +3213,7 @@ input[type=range]::-moz-range-track {
 .styled-select2 {
 	position: relative;
 	display: block;
-	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
+	background: url("../img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3349,7 +3499,7 @@ input[type="file"] {
 	height: 320px;
 }
 
-ath {
+ath { 
     stroke: white;
     stroke-width: 1;
     fill: none;
