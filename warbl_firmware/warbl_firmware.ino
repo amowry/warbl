@@ -491,12 +491,13 @@ void setup() {
     // EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for testing (after making changes to factory settings). Needs to be recommented again after.
 
 
-    if (EEPROM.read(44) != 3 || EEPROM.read(1011) < 20) {
+    if (EEPROM.read(44) != 3 || (EEPROM.read(1011) != 20 && EEPROM.read(1011) != 21)) {
         EEPROM.update(1011, VERSION);  //update the stored software version
         saveFactorySettings();         //If we're running the software for the first time, if a factory reset has been requested, or if the software version is less than 20, copy all settings to EEPROM.
     }
 
     if (EEPROM.read(1011) == 20) {
+        EEPROM.update(1011, VERSION);   //update the stored software version
         for (byte i = 0; i < 3; i++) {  //save new advanced overblowing settings for all three instruments if we've updated from version 20.
             mode = i;
             for (byte q = 0; q < 12; q++) {
