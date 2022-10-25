@@ -2172,6 +2172,19 @@ h2 {
 	width: 60%;
 }
 
+
+#selectedSettings{
+	display: block;
+	position: relative;
+	width: 162px;
+	height: 235px;	
+	top: 50px;
+	left: 285px;
+	border-style:solid;
+	border-width:thin;
+	border-color:  var(--text-color);
+}
+
 #advancedSliders{
 	display: block;
 	position: relative;
@@ -2221,12 +2234,12 @@ h2 {
 }
 
 .jumplabel6 {
-	left: 22px;
+	left: 17px;
 	top: 206px;
 }
 
 .jumplabel7 {
-	left: 25px;
+	left: 20px;
 	top: 241px;
 }
 
