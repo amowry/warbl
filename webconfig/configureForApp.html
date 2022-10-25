@@ -835,7 +835,7 @@
 
                 	<div>
 
-                  <input type="radio" value="0" name="bagBreath" id="bagBreath0" onChange="sendVented(false)" checked>
+                  <input type="radio" value="0" name="bagBreath" id="bagBreath0" onChange="sendVented(false)" >
 
                   <label for="bagBreath0"><span><span></span></span>Bag</label>
 
@@ -843,7 +843,7 @@
                 
                 	<div>
 
-                  <input type="radio" value="1" name="bagBreath" id="bagBreath1" onChange="sendVented(true)">
+                  <input type="radio" value="1" name="bagBreath" id="bagBreath1" onChange="sendVented(true)" checked>
 
                   <label for="bagBreath1"><span><span></span></span>Breath</label>
 
@@ -993,6 +993,8 @@
               <input type="range" min="0" max="125" value="50" class="ranger" id="jumpFactor12" onChange="sendJumpFactor(12, value)">
 
             </div>
+            
+            <div class="selectedSettings" id ="selectedSettings"></div>
 
             <div class="jumplabel noTouch jumplabel0" id = "jumplabel10">Bag settings</div>
 
