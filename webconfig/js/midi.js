@@ -890,6 +890,7 @@ function WARBL_Receive(event) {
 						document.getElementById("checkbox3").checked = data2;
 					} //secret										
 					else if (jumpFactorWrite == 40) {
+						updateSelected();
 						document.getElementById("checkbox4").checked = data2;
 						if (data2 == 0) {
 							document.getElementById("bagBreath0").checked = true;
@@ -1087,7 +1088,9 @@ function WARBL_Receive(event) {
 						document.getElementById("jumplabel11").innerHTML = "Vented";
 						document.getElementById("jumplabel10").style.left = "170px";
 						document.getElementById("jumplabel11").style.left = "340px";
-						document.getElementById("advancedSliders").style.top = "-125px";	
+						document.getElementById("advancedSliders").style.top = "-125px";
+						document.getElementById("selectedSettings").style.visibility = "hidden";
+							
 
 											
 						
@@ -1460,6 +1463,20 @@ function sendFingeringRadio(tab) { //change instruments, showing the correct tab
 	updateCells();
 	updateCustom();
 }
+
+
+//move selection box for advanced overblowing settings based on whether bag or breath is selected
+function updateSelected() {
+	if (document.getElementById("bagBreath0").checked == true) {
+		document.getElementById("selectedSettings").style.left = "125px";
+		document.getElementById("selectedSettings").style.width = "162px";
+	} else {
+		document.getElementById("selectedSettings").style.left = "285px";
+		document.getElementById("selectedSettings").style.width = "162px";	
+	}
+}
+
+						
 
 function sendSenseDistance(selection) {
 	blink(1);
@@ -1861,6 +1878,7 @@ function sendBreathmodeRadio(selection) {
 function advanced() {
 	document.getElementById("box2").style.display = "block";
 	document.getElementById("box1").style.display = "none";
+	updateSelected();
 }
 
 function advancedOkay() {
@@ -2191,6 +2209,7 @@ function sendVented(selection) {
 	blink(1);
 	sendToWARBL(104, 40);
 	sendToWARBL(105, selection);
+	updateSelected();
 }
 
 function sendBagless(selection) {
