@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Released]
 
-## [2.1] - 2021-10-24
+## [2.1] - 2022-10-24
 ### Changed
 
 - There is no longer a USBCore.cpp file included with the sketch, because the newest Arduino IDE reintroduced the ability to turn off the CDC class in the USBDesc.h file. 
