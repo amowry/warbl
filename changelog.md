@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Bombarde fingering X OXO OOOO now plays Ab instead of A (in the key of Bb)
+- Fixed a bug in the Custom fingering chart where the thumb hole MIDI note wasn't having any effect.
 
 ### Added
 
