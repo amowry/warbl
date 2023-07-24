@@ -32,7 +32,8 @@
 
 #define MAXIMUM (DEBOUNCE_TIME * SAMPLE_FREQUENCY)  //the integrator value required to register a button press
 
-#define VERSION 21  //software version number (without decimal point)
+#define VERSION 22  //software version number (without decimal point)
+#define hardwareRevision 31  //hardware revision number (without decimal point)
 
 //MIDI commands
 #define NOTE_OFF 0x80          //127
@@ -53,7 +54,7 @@
 #define kModeNAF 6
 #define kModeKaval 7
 #define kModeRecorder 8
-#define kModeRegulators 9         //only used for a custom regulators implementation, not the "official" software
+#define kModeBansuriWARBL 9       //only used for a custom regulators implementation, not the "official" software, or BansuriWARBL
 #define kModeUilleannStandard 10  //contains no accidentals
 #define kModeXiao 11
 #define kModeSax 12
@@ -66,7 +67,9 @@
 #define kModeCustom 19
 #define kModeBombarde 20
 #define kModeBaroqueFlute 21
-#define kModeNModes 22
+#define kModeMedievalPipes 22
+#define kModeBansuri 23
+#define kModeNModes 24
 
 // Pitch bend modes
 #define kPitchBendSlideVibrato 0
@@ -81,11 +84,6 @@
 #define kPressureThumb 2
 #define kPressureBell 3
 #define kPressureNModes 4
-
-// Secret function drone control MIDI parameters
-#define kDroneVelocity 36
-#define kLynchDroneMIDINote 50
-#define kCrowleyDroneMIDINote 51
 
 // Drones control mode
 #define kNoDroneControl 0
@@ -330,7 +328,7 @@ uint8_t buttonPrefs[3][8][5] =  //The button configuration settings (no default 
     { { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 } } };
 
 //other misc. variables
-byte hardwareRevision = 30;
+
 unsigned long ledTimer = 0;     //for blinking LED
 byte blinkNumber = 1;           //the number of remaining blinks when blinking LED to indicate control changes
 bool LEDon = 0;                 //whether the LED is currently on
@@ -469,10 +467,12 @@ bool communicationMode = 0;      //whether we are currently communicating with t
 byte buttonReceiveMode = 100;    //which row in the button configuration matrix for which we're currently receiving data.
 byte pressureReceiveMode = 100;  //which pressure variable we're currently receiving date for. From 1-12: Closed: offset, multiplier, jump, drop, jump time, drop time, Vented: offset, multiplier, jump, drop, jump time, drop time
 byte counter = 0;                // We use this to know when to send a new pressure reading to the configuration tool. We increment it every time we send a pitchBend message, to use as a simple timer wihout needing to set another actual timer.
-byte fingeringReceiveMode = 0;   // indicates the mode (instrument) for which a fingering pattern is going to be sent
+byte fingeringReceiveMode = 0;   // indicates the mode (instrument) for  which a fingering pattern is going to be sent
 byte holeDebounceCounter = 0;    // countdown of idenitical tone holes readings before they are accepted.
 
 void setup() {
+
+    //EEPROM.update(1012, hardwareRevision);  //this version has slightly different QRD1113 sensors
 
     DIDR0 = 0xff;  // disable digital input circuits for analog pins
     DIDR2 = 0xf3;
@@ -491,13 +491,12 @@ void setup() {
     // EEPROM.update(44,255); //can be uncommented to force factory settings to be resaved for testing (after making changes to factory settings). Needs to be recommented again after.
 
 
-    if (EEPROM.read(44) != 3 || (EEPROM.read(1011) != 20 && EEPROM.read(1011) != 21)) {
+    if (EEPROM.read(44) != 3 || EEPROM.read(1011) < 20) {
         EEPROM.update(1011, VERSION);  //update the stored software version
         saveFactorySettings();         //If we're running the software for the first time, if a factory reset has been requested, or if the software version is less than 20, copy all settings to EEPROM.
     }
 
     if (EEPROM.read(1011) == 20) {
-        EEPROM.update(1011, VERSION);   //update the stored software version
         for (byte i = 0; i < 3; i++) {  //save new advanced overblowing settings for all three instruments if we've updated from version 20.
             mode = i;
             for (byte q = 0; q < 12; q++) {
@@ -671,11 +670,15 @@ void loop() {
                 }
             }
 
-            //Serial.println(hysteresis);
-            //Serial.println(jumpTime);
-            //Serial.println(dropTime);
-            //Serial.println("");
+
             //FREERAM_PRINT
+/*
+            Serial.println(sensorValue);
+            Serial.println("");
+            for (byte i = 0; i < 9; i++) {  //test code only
+                Serial.println(toneholeRead[i]);
+            }
+*/
         }
     }
 

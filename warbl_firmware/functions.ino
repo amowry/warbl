@@ -225,8 +225,13 @@ int get_note(unsigned int fingerPattern) {
             if (fingerPattern == holeCovered) {
                 vibratoEnable = pgm_read_byte(&tinwhistle_explicit[tempCovered].vibrato);
             }
-            if (modeSelector[mode] == kModeBombarde && (0b011111110 & fingerPattern) >> 1 == 0b1111111) {
-                ret = 61;  //
+            if (modeSelector[mode] == kModeBombarde) {
+                if ((0b011111110 & fingerPattern) >> 1 == 0b1111111) {
+                    ret = 61;  //
+                }
+                if ((0b011111110 & fingerPattern) >> 1 == 0b0100000) {
+                    ret = 72;  //
+                }
             }
             return ret;
 
@@ -452,6 +457,52 @@ int get_note(unsigned int fingerPattern) {
 
 
 
+
+        case kModeMedievalPipes:
+            //If back A open, always play the A
+            if ((fingerPattern & 0b100000000) == 0) {
+                if ((fingerPattern & 0b010000000) == 0) {
+                    return 76;  //A if thumb and L1 are open
+                }
+                return 78;  //Bb if only thumb is open
+            }
+            tempCovered = (0b011111110 & fingerPattern) >> 1;  //ignore thumb hole and bell sensor
+            ret = pgm_read_byte(&medievalPipes_explicit[tempCovered].midi_note);
+            return ret;
+
+
+
+
+
+        case kModeBansuriWARBL:
+
+        case kModeBansuri:
+
+            //check the chart.
+            tempCovered = (0b011111100 & fingerPattern) >> 2;  //ignore thumb hole, R4 hole, and bell sensor
+            ret = pgm_read_byte(&bansuri_explicit[tempCovered].midi_note);
+
+
+            if ((fingerPattern & 0b111111110) >> 1 == 0b11111111) {  //play F# if all holes are covered
+                ret = 61;
+            }
+
+
+            if (modeSelector[mode] == kModeBansuri) {
+
+                if ((fingerPattern & 0b100000000) == 0) {  //if the thumb hole is open, play G
+                    ret = 74;
+                }
+
+                if (fingerPattern >> 1 != 0b11111111 && (bitRead(fingerPattern, 1) == 1)) {  //if R4 is covered and we're not playing an F#, raise the note one semitone
+                    ret--;
+                }
+            }
+            return ret;
+
+
+
+
         case kModeCustom:
             tempCovered = (0b011111110 & fingerPattern) >> 1;      //ignore thumb hole and bell sensor for now
             uint8_t leftmost = findleftmostunsetbit(tempCovered);  //here we find the index of the leftmost uncovered hole, which will be used to determine the note from the chart.
@@ -483,7 +534,8 @@ int get_note(unsigned int fingerPattern) {
                 }
             }
 
-            if (fingerPattern >> 8 == 0 && !switches[mode][THUMB_AND_OVERBLOW] && !breathMode == kPressureThumb && ED[mode][38] != 0) {  //thumb hole is open and we're not using it for register
+
+            if (fingerPattern >> 8 == 0 && !switches[mode][THUMB_AND_OVERBLOW] && breathMode != kPressureThumb && ED[mode][38] != 0) {  //thumb hole is open and we're not using it for register
                 customScalePosition = 38;
             }
 
@@ -528,7 +580,7 @@ void get_shift() {
         }
     }
 
-    else if ((breathMode == kPressureThumb && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeNAF || modeSelector[mode] == kModeCustom)) || (breathMode == kPressureBreath && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) {  //if we're using the left thumb to control the regiser with a fingering patern that doesn't normally use the thumb
+    else if ((breathMode == kPressureThumb && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic || modeSelector[mode] == kModeNAF || modeSelector[mode] == kModeBansuriWARBL || modeSelector[mode] == kModeCustom)) || (breathMode == kPressureBreath && modeSelector[mode] == kModeCustom && switches[mode][THUMB_AND_OVERBLOW])) {  //if we're using the left thumb to control the regiser with a fingering patern that doesn't normally use the thumb
 
         if (bitRead(holeCovered, 8) == switches[mode][INVERT]) {
             shift = shift + 12;  //add an octave jump to the transposition if necessary.
@@ -543,6 +595,13 @@ void get_shift() {
     if (modeSelector[mode] == kModeSax) {
         shift = shift + 2;
     }
+
+    if (modeSelector[mode] == kModeBansuri || modeSelector[mode] == kModeBansuriWARBL) {
+        shift = shift - 5;
+    }
+
+
+
 
     //  if ((holeCovered & 0b100000000) == 0 && (modeSelector[mode] == kModeWhistle || modeSelector[mode] == kModeChromatic) && newState == 3){ //with whistle, if we're overblowing and the thumb is uncovered, play the third octave.
     // shift = shift + 12;
@@ -908,6 +967,10 @@ void handleCustomPitchBend() {
 
 //Andrew's version of vibrato
 void handlePitchBend() {
+
+    for (byte i = 0; i < 9; i++) {  //reset
+        iPitchBend[i] = 0;
+    }
 
 
     if (pitchBendMode == kPitchBendSlideVibrato || pitchBendMode == kPitchBendLegatoSlideVibrato) {  //calculate slide if necessary.
@@ -1347,7 +1410,7 @@ void receiveMIDI() {
                                 for (byte j = 0; j < 12; j++) {  //update column 0 (action).
                                     if (rx.byte3 == 100 + j) {
                                         buttonPrefs[mode][i][0] = j;
-                                        blinkNumber = 0;
+                                        //blinkNumber = 0;
                                     }
                                 }
                                 for (byte k = 0; k < 5; k++) {  //update column 1 (MIDI action).
@@ -2179,13 +2242,17 @@ void debug_log(int msg) {
 
 
 
-//initialize the ADC with custom settings because we aren't using analogRead.
 void ADC_init(void) {
 
     ADCSRA &= ~(bit(ADPS0) | bit(ADPS1) | bit(ADPS2));  // clear ADC prescaler bits
-    ADCSRA = (1 << ADEN) | ((1 << ADPS2));              // enable ADC Division Factor 16 (36 uS)
-    ADMUX = (1 << REFS0);                               //Voltage reference from Avcc (3.3v)
-    ADC_read(1);                                        //start an initial conversion (pressure sensor), which will also enable the ADC complete interrupt and trigger subsequent conversions.
+    if (EEPROM.read(1012) == 31) {
+        ADCSRA = (1 << ADEN) | ((1 << ADPS2) | (1 << ADPS0));  //32 (60 uS) some versions of the tone hole sensors have a longer rise time
+        //ADCSRA |= bit(ADPS1) | bit(ADPS2);  //  64 (110 uS)
+    } else {
+        ADCSRA = (1 << ADEN) | ((1 << ADPS2));  // enable ADC Division Factor 16 (36 uS)
+    }
+    ADMUX = (1 << REFS0);  //Voltage reference from Avcc (3.3v)
+    ADC_read(1);           //start an initial conversion (pressure sensor), which will also enable the ADC complete interrupt and trigger subsequent conversions.
 }
 
 
