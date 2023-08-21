@@ -1403,9 +1403,9 @@ void receiveMIDI() {
 
                         for (byte i = 0; i < 8; i++) {  //update button configuration
                             if (buttonReceiveMode == i) {
-                                if (rx.byte3 == 119) {  //this is a special value for autocalibration because I ran out of values in teh range 0-12 below.
+                                if (rx.byte3 == 119) {  //this is a special value for autocalibration because I ran out of values in the range 0-12 below.
                                     buttonPrefs[mode][i][0] = 19;
-                                    blinkNumber = 0;
+                                    //blinkNumber = 0;
                                 }
                                 for (byte j = 0; j < 12; j++) {  //update column 0 (action).
                                     if (rx.byte3 == 100 + j) {
