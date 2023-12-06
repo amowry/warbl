@@ -472,6 +472,7 @@ byte holeDebounceCounter = 0;    // countdown of idenitical tone holes readings 
 
 void setup() {
 
+
     //EEPROM.update(1012, hardwareRevision);  //this version has slightly different QRD1113 sensors
 
     DIDR0 = 0xff;  // disable digital input circuits for analog pins
@@ -671,7 +672,6 @@ void loop() {
             }
 
 
-            //FREERAM_PRINT
 /*
             Serial.println(sensorValue);
             Serial.println("");

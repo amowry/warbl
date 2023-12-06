@@ -210,7 +210,6 @@ a {
 	height: 100px;
 	background: var(--main-bg-color);
 	border-radius: 5px 5px 0px 0px;
-	z-index: 1;
 }
 
 .volume {
@@ -294,373 +293,6 @@ input {
 	z-index: 9999;
 	line-height: normal;
 	color: var(--warning-color);
-}
-
-#updateInfocircle{
-	visibility: hidden;
-	top: -30px;
-	left: 420px;
-}
-
-#topControls {
-	display: block;
-}
-
-#customChart {
-	display: block;
-	position: absolute;
-	left: 50px;
-	top: -20px;
-}
-
-.customFingeringOkay{
-	display: block;
-	position: absolute;
-	width: 60px !important;
-	height: 30px !important;
-	top: 635px;
-	left: 820px;
-}
-
-#switch17 {
-	top: 370px;
-	left:  860px;
-	z-index: 99;
-}
-
-.bothLabel {
-	display: block;
-	position: absolute;
-	width: 400px;
-	left: 480px;
-	top: 372px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-
-#switch18 {
-	top: 420px;
-	left:  860px;
-	z-index:100;
-}
-
-.R4Label {
-	display: block;
-	position: absolute;
-	width: 400px;
-	left: 513px;
-	top: 422px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-
-
-.fingering{
-	display: block;
-	position: absolute;
-}
-
-.fingeringInput{
-	display: block;
-	position: absolute;
-	height: 23px;
-	border: none;
-	border-radius: 5px;
-	margin-bottom: 10px;
-	padding: 0px 0px 0px 0px;
-	text-align: center;
-	font-size: 14px;
-	width: 50px;
-}
-
-.customFingeringLabel {
-	display: block;
-	position: absolute;
-	left: 80px;
-	top: 280px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-.MIDILabel {
-	display: block;
-	position: absolute;
-	left: 240px;
-	top: 280px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-.customThumbLabel {
-	display: block;
-	position: absolute;
-	left: -40px;
-	top: 305px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-
-.customR4Label {
-	display: block;
-	position: absolute;
-	left: 170px;
-	top: 305px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-
-.blackHoleLabel {
-	display: block;
-	position: absolute;
-	left: 500px;
-	top: 492px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-.whiteHoleLabel {
-	display: block;
-	position: absolute;
-	left: 500px;
-	top: 542px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-.grayHoleLabel {
-	display: block;
-	position: absolute;
-	left: 500px;
-	top: 592px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-
-.customFingeringFillLabel {
-	display: block;
-	position: absolute;
-	left: 730px;
-	top: 510px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-.asteriskLabel {
-	display: block;
-	position: absolute;
-	left: 515px;
-	top: 655px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-.asterisk {
-	display: block;
-	position: absolute;
-	left: 335px;
-	top: 316px;
-	width: 200px;
-	z-index: 99;
-	font-size: 14px;	
-}
-
-
-#whiteHole{
-	top: 125px;
-	left: 180px;
-}
-
-#blackHole{
-	top: 75px;
-	left: 180px;
-}
-
-#grayHole{
-	top: 175px;
-	left: 180px;
-}
-
-
-
-
-#fingering1{
-	top: -82px;
-	left: -80px;
-}
-
-#fingering2{
-	top: -48px;
-	left: -80px;
-}
-
-#fingering3{
-	top: -14px;
-	left: -80px;
-}
-
-#fingering4{
-	top: 20px;
-	left: -80px;
-}
-
-#fingering5{
-	top: 54px;
-	left: -80px;
-}
-
-#fingering6{
-	top: 88px;
-	left: -80px;
-}
-
-#fingering7{
-	top: 122px;
-	left: -80px;
-}
-
-#fingering8{
-	top: 156px;
-	left: -80px;
-}
-
-
-#fingering9{
-	top: 190px;
-	left: -80px;
-}
-
-#fingering10{
-	top: 224px;
-	left: -80px;
-}
-
-#fingering11{
-	top: 258px;
-	left: -80px;
-}
-
-
-
-#fingeringInput1{
-	left: 315px;
-	top: 331px;
-	z-index:100;
-}
-
-#fingeringInput2{
-	left: 315px;
-	top: 365px;
-	z-index:100;
-}
-#fingeringInput3{
-	left: 315px;
-	top: 399px;
-	z-index:100;
-}
-
-#fingeringInput4{
-	left: 315px;
-	top: 433px;
-	z-index:100;
-}
-
-#fingeringInput5{
-	left: 315px;
-	top: 467px;
-	z-index:100;
-}
-
-#fingeringInput6{
-	left: 315px;
-	top: 501px;
-	z-index:100;
-}
-
-#fingeringInput7{
-	left: 315px;
-	top: 535px;
-	z-index:100;
-}
-
-#fingeringInput8{
-	left: 315px;
-	top: 569px;
-	z-index:100;
-}
-
-#fingeringInput9{
-	left: 315px;
-	top: 603px;
-	z-index:100;
-}
-
-#fingeringInput10{
-	left: 315px;
-	top: 637px;
-	z-index:100;
-}
-
-
-#fingeringInput11{
-	left: 315px;
-	top: 671px;
-	z-index:100;
-}
-
-#customControlsHeader {
-	position: absolute;
-	width: 300px;
-	left: 555px;
-	top: 271px;
-	z-index:100;
-}
-
-
-#customControls {
-	display: none;
-	position: absolute;
-}
-
-#configureCustomFingering{
-	display: block;
-	position: absolute;
-	width: 230px;
-	height: 32px;
-	top: 370px;
-	left: 50px;
-	z-index:210;
-}
-
-
-.notechannellabel {
-	display: block;
-	position: absolute;
-	left: 315px;
-	top: 384px;
-	width: 100px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-.noteChannelContainer {
-	display: block;
-	position: absolute;
-	left: 420px;
-	top: 380px;
 }
 
 .headerbuttonwrapper {
@@ -749,16 +381,6 @@ input {
 	height: 200px;
 	left: 50px;
 	top: 317px;
-	z-index:200;
-}
-
-
-.customFillContainer {
-	display: block;
-	position: absolute;
-	height: 500px;
-	left: 730px;
-	top: 527px;
 }
 
 .fingeringSelectLabel {
@@ -963,14 +585,14 @@ fieldset {
 	border-radius: 25px 25px 0px 0px;
 }
 
-#topcontrolbox {
+.topcontrolbox {
 	position: relative;
 	background-color: var(--main-bg-color);
 	padding-bottom: 50px;
 	margin-bottom: 30px;
 	display: block;
 	clear: both;
-	height: 1785px;
+	height: 1765px;
 	border-radius: 5px;
 }
 
@@ -990,6 +612,7 @@ fieldset {
 	padding-bottom: 50px;
 	margin-bottom: 50px;
 	display: block;
+	top: 1370px;
 	left: 30px;
 	height: 360px;
 	width: 960px;
@@ -1010,7 +633,7 @@ fieldset {
 	border-radius: 5px;
 }
 
-.smallcontrolbox {
+.leftsmallcontrolbox {
 	background-color: var(--main-bg-color);
 	padding-top: 0px;
 	padding-bottom: 50px;
@@ -1018,7 +641,8 @@ fieldset {
 	height: 375px;
 	float: right;
 	position: absolute;
-	top: 440px;
+	left: 527px;
+	top: 420px;
 	border-radius: 5px;
 	border: solid 2px var(--box-border-color);
 	border-radius: 5px;
@@ -1027,43 +651,42 @@ fieldset {
 	box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
 }
 
-#buttonBox{
-	top: 1390px;
+.rightsmallcontrolbox {
+	background-color: var(--main-bg-color);
+	color: var(--text-color);
+	padding-bottom: 50px;
+	width: 463px;
+	height: 375px;
+	position: absolute;
+	top: 420px;
+	left: 30px;
+	border-radius: 5px;
+	border: solid 2px var(--box-border-color);
+	-webkit-box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
+	box-shadow: 0px 0px 13px rgba(50, 50, 50, 0.75);
+}
+
+.dronescontrolBox {
+	top: 880px;
+	height: 405px;
+}
+
+.expressionBox {
+	top: 880px;
+	height: 405px;
 }
 
 #box1 {
-	left: 527px;
 }
 
 #box2 {
-	left: 527px;
 	display: none;
-}
-
-#box3 {
-	left: 527px;
-	top: 900px;
-	height: 405px;
-}
-
-#box6 {
-	left: 30px;
-	top: 900px;
-	height: 405px;
-}
-
-#box7 {
-	height: 405px;
-}
-
-#box8 {
-	height: 405px;
 }
 
 
 #pressuregraph {
 	display: none;
-	left: 527px;
 }
 
 .controlboxtitle {
@@ -1086,7 +709,6 @@ fieldset {
 	color: var(--primary-color);
 	padding: 5px;
 	cursor: pointer;
-	z-index:100;
 }
 
 .infocircle:focus {
@@ -1201,13 +823,6 @@ fieldset {
 
 .smallbutton:disabled {
 	background-color: var(--disabled-bg-color);
-		cursor: default;
-	color: #555;
-}
-
-.headerbuttons:disabled {
-	background-color: var(--disabled-bg-color);
-	cursor: default;
 	color: #555;
 }
 
@@ -1263,23 +878,6 @@ fieldset {
 
 #box4 {
 	display: none;
-	left: 30px;
-}
-
-#box5 {
-	left: 30px;
-}
-
-#box7 {
-	display: none;
-	top: 900px;
-	left: 30px;
-}
-
-#box8 {
-	display: none;
-	top: 900px;
-	left: 30px;
 }
 
 
@@ -1539,15 +1137,21 @@ input:disabled + .vibratoSlider:before {
 	box-shadow: inset 0 0 15px #000000;
 }
 
-
-.mouthpiece {
+.mouthpiecerect {
 	position: absolute;
 	display: block;
-	top: -130px;
-	left: -20px;
-	width: 20px;
-	//z-index: 999;
-	
+	top: 140px;
+	left: 125px;
+	width: 50px;
+	height: 18px;
+	color: var(--text-color);
+	background-color: #000;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2f2f2f), color-stop(.5, #1e1f1f), color-stop(.51, #0c0c0c), to(#000));
+	background: -moz-linear-gradient(top, #2f2f2f, #1e1f1f 50%, #0c0c0c 51%, #000);
+	border-bottom: solid 2px #111;
+	-moz-box-shadow: inset 0 0 15px #000000;
+	-webkit-box-shadow: inset 0 0 15px #000000;
+	box-shadow: inset 0 0 15px #000000;
 }
 
 .bellsensorrect {
@@ -1617,7 +1221,6 @@ input:disabled + .vibratoSlider:before {
 }
 
 #switch4 {
-	visibility:hidden;
 	top: 68px;
 	left: 377px;
 }
@@ -1629,17 +1232,12 @@ input:disabled + .vibratoSlider:before {
 
 
 #switch8 {
-	top: 275px;
+	top: 255px;
 	left: 160px;
 }
 
 #switch9 {
-	top: 240px;
-	left: 160px;
-}
-
-#switch19 {
-	top: 290px;
+	top: 220px;
 	left: 160px;
 }
 
@@ -1647,16 +1245,7 @@ input:disabled + .vibratoSlider:before {
 	display: block;
 	position: absolute;
 	left: 40px;
-	top: 243px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-.invertR4Label {
-	display: block;
-	position: absolute;
-	left: 85px;
-	top: 293px;
+	top: 223px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1665,7 +1254,7 @@ input:disabled + .vibratoSlider:before {
 	display: block;
 	position: absolute;
 	left: 52px;
-	top: 278px;
+	top: 258px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -1682,7 +1271,6 @@ input:disabled + .vibratoSlider:before {
 .ventedLabel {
 	display: block;
 	position: absolute;
-	visibility: hidden;
 	left: 245px;
 	top: 70px;
 	z-index: 99;
@@ -1694,10 +1282,9 @@ input:disabled + .vibratoSlider:before {
 	position: absolute;
 	height: 30px;
 	width: 60px;
-	top: 335px;
-	left: 370px;
+	top: 325px;
+	left: 250px;
 }
-
 
 .pressureOkay {
 	position: absolute;
@@ -1711,16 +1298,16 @@ input:disabled + .vibratoSlider:before {
 	position: absolute;
 	height: 50px;
 	width: 80px;
-	top: 325px;
-	left: 265px;
+	top: 315px;
+	left: 30px;
 }
 
 .advancedBagDefaults {
 	position: absolute;
 	height: 50px;
 	width: 80px;
-	top: 325px;
-	left: 160px;
+	top: 315px;
+	left: 140px;
 }
 
 .learn {
@@ -1734,17 +1321,17 @@ input:disabled + .vibratoSlider:before {
 .advanced {
 	position: absolute;
 	height: 40px;
-	width: 110px;
-	top: 340px;
-	left: 200px;
+	width: 90px;
+	top: 320px;
+	left: 220px;
 }
 
 .advancedPB {
 	position: absolute;
 	height: 40px;
-	width: 110px;
+	width: 90px;
 	top: 250px;
-	left: 70px;
+	left: 90px;
 }
 
 .advancedOkayPB {
@@ -1755,68 +1342,13 @@ input:disabled + .vibratoSlider:before {
 	left: 50px;
 }
 
-.advancedOkayCC {
-	position: absolute;
-	height: 30px;
-	width: 60px;
-	top: 365px;
-	left: 80px;
-}
-
-.mapCC {
-	position: absolute;
-	height: 30px;
-	width: 80px;
-	top: 250px;
-	left: 320px;
-}
-
-.mapVelocity {
-	position: absolute;
-	height: 30px;
-	width: 80px;
-	top: 295px;
-	left: 320px;
-}
-
-.mapAftertouch {
-	position: absolute;
-	height: 30px;
-	width: 80px;
-	top: 340px;
-	left: 320px;
-}
-
-.mapPoly {
-	position: absolute;
-	height: 30px;
-	width: 80px;
-	top: 385px;
-	left: 320px;
-}
-
-.override {
-	position: absolute;
-	height: 30px;
-	width: 100px;
-	top: 180px;
-	left: 80px;
-}
-
-.openConsole {
-	position: absolute;
-	height: 30px;
-	width: 150px;
-	top: 40px;
-	left: 100px;
-}
 
 
 .graph {
 	position: absolute;
 	height: 40px;
 	width: 90px;
-	top: 340px;
+	top: 320px;
 	left: 340px;
 }
 
@@ -1903,66 +1435,6 @@ input:disabled + .slider:before {
 	border: solid 2px #444;
 }
 
-
-/* Special slider for bag/breath switch which is a toggle */
-.slider2 {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	border: solid 2px var(--main-bg-color);
-	background: var(--switch-bg-color);
-	-webkit-transition: .2s;
-	transition: .2s;
-}
-
-.slider2:before {
-	position: absolute;
-	content: "";
-	height: 14px;
-	width: 14px;
-	left: 2px;
-	bottom: 1px;
-	background-color: var(--main-bg-color);
-	border: solid 2px var(--primary-color);
-	-webkit-transition: .2s;
-	transition: .2s;
-}
-
-input:checked + .slider2 {
-	//background: var(--switch-bg-color));
-}
-
-input:focus + .slider2 {
-	box-shadow: 0 0 1px var(--secondary-color);
-}
-
-input:checked + .slider2:before {
-	-webkit-transform: translateX(22px);
-	-ms-transform: translateX(22px);
-	transform: translateX(22px);
-	border: solid 2px var(--primary-color);
-}
-
-/* Rounded sliders */
-.slider2.round {
-	border-radius: 30px;
-}
-
-.slider2.round:before {
-	border-radius: 50%;
-}
-
-
-input:disabled + .slider2 {
-	background-color: #444;
-}
-
-input:disabled + .slider2:before {
-	border: solid 2px #444;
-}
-
 .radiogroup {
 	display: block;
 	position: absolute;
@@ -1980,18 +1452,6 @@ input:disabled + .slider2:before {
 	left: 215px;
 	padding: 0px;
 }
-
-
-
-.radiogroup10 {
-	display: block;
-	position: absolute;
-	width: 250px;
-	top: 230px;
-	left: 265px;
-	padding: 0px;
-}
-
 
 .radiogroup3 {
 	display: block;
@@ -2093,7 +1553,6 @@ h2 {
 	padding: 2em;
 	background: white;
 	color: #333333;
-	line-height: 30px;
 	max-height: 75%;
 	overflow-y: auto;
 	border-radius: 5px;
@@ -2110,30 +1569,6 @@ h2 {
 	color: #333333;
 }
 
-.consoleLabel {
-	margin-left: 30px !important;
-	//margin-top: 100px !important;
-}
-
-
-.console {
-	display: block;
-	overflow-y: auto;
-	position: absolute;
-	margin: auto;
-	text-align: center;
-	width: 145px;
-	//height: 400px;
-	max-height: 70%;
-	left: 60px;
-	top: 160px;
-	color: black;
-	z-index: 99;
-	font-size: 14px;
-	line-height: 21px;
-}
-
-
 .modal-close {
 	color: black;
 	line-height: 50px;
@@ -2147,14 +1582,6 @@ h2 {
 	text-decoration: none;
 	cursor: pointer;
 }
-
-#clear {
-	//position: absolute;
-	left: 120px;
-	top: 80px;
-	//bottom: 20px;
-}
-
 
 .modal-close:hover {
 	color: #000;
@@ -2172,25 +1599,6 @@ h2 {
 	width: 60%;
 }
 
-
-#selectedSettings{
-	display: block;
-	position: relative;
-	width: 162px;
-	height: 235px;	
-	top: 50px;
-	left: 285px;
-	border-style:solid;
-	border-width:thin;
-	border-color:  var(--text-color);
-}
-
-#advancedSliders{
-	display: block;
-	position: relative;
-	top: -105px;
-}
-
 .jumplabel {
 	display: block;
 	position: absolute;
@@ -2201,52 +1609,49 @@ h2 {
 }
 
 .jumplabel0 {
-	left: 145px;
-	top: 69px;
+	left: 135px;
+	top: 70px;
 }
 
 .jumplabel1 {
 	left: 310px;
-	top: 69px;
+	top: 70px;
 }
 
 .jumplabel2 {
 	left: 35px;
-	top: 101px;
+	top: 102px;
 }
 
 .jumplabel3 {
 	left: 35px;
-	top: 136px;
+	top: 137px;
 }
 
 .jumplabel4 {
 	left: 35px;
-	top: 171px;
-
+	top: 172px;
 }
 
 .jumplabel5 {
 	left: 35px;
-	top: 206px;
-	visibility:hidden;
-
+	top: 207px;
 }
 
 .jumplabel6 {
-	left: 17px;
-	top: 206px;
+	left: 35px;
+	top: 242px;
 }
 
 .jumplabel7 {
-	left: 20px;
-	top: 241px;
+	left: 35px;
+	top: 277px;
 }
 
 #jumpfactorContainer {
 	display: block;
 	position: absolute;
-	left: 135px;
+	left: 110px;
 	top: 100px;
 	z-index: 99;
 }
@@ -2254,7 +1659,7 @@ h2 {
 #jumpfactor2Container {
 	display: block;
 	position: absolute;
-	left: 135px;
+	left: 110px;
 	top: 135px;
 	z-index: 99;
 }
@@ -2262,7 +1667,7 @@ h2 {
 #jumpfactor3Container {
 	display: block;
 	position: absolute;
-	left: 135px;
+	left: 110px;
 	top: 170px;
 	z-index: 99;
 }
@@ -2270,32 +1675,31 @@ h2 {
 #jumpfactor4Container {
 	display: block;
 	position: absolute;
-	left: 135px;
+	left: 110px;
 	top: 205px;
 	z-index: 99;
-	visibility:hidden;
 }
 
 #jumpfactor5Container {
 	display: block;
 	position: absolute;
-	left: 135px;
-	top: 205px;
+	left: 110px;
+	top: 240px;
 	z-index: 99;
 }
 
 #jumpfactor6Container {
 	display: block;
 	position: absolute;
-	left: 135px;
-	top: 240px;
+	left: 110px;
+	top: 275px;
 	z-index: 99;
 }
 
 #jumpfactor7Container {
 	display: block;
 	position: absolute;
-	left: 305px;
+	left: 280px;
 	top: 100px;
 	z-index: 99;
 }
@@ -2303,7 +1707,7 @@ h2 {
 #jumpfactor8Container {
 	display: block;
 	position: absolute;
-	left: 305px;
+	left: 280px;
 	top: 135px;
 	z-index: 99;
 }
@@ -2311,7 +1715,7 @@ h2 {
 #jumpfactor9Container {
 	display: block;
 	position: absolute;
-	left: 305px;
+	left: 280px;
 	top: 170px;
 	z-index: 99;
 }
@@ -2319,27 +1723,24 @@ h2 {
 #jumpfactor10Container {
 	display: block;
 	position: absolute;
-	left: 305px;
+	left: 280px;
 	top: 205px;
 	z-index: 99;
-	visibility:hidden;
 }
-
-
 
 #jumpfactor11Container {
 	display: block;
 	position: absolute;
-	left: 305px;
-	top: 205px;
+	left: 280px;
+	top: 240px;
 	z-index: 99;
 }
 
 #jumpfactor12Container {
 	display: block;
 	position: absolute;
-	left: 305px;
-	top: 240px;
+	left: 280px;
+	top: 275px;
 	z-index: 99;
 }
 
@@ -2350,105 +1751,69 @@ h2 {
 }
 
 .jumpvalue {
-	left: 250px;
+	left: 230px;
 	top: 85px;
 }
 
 .jumpvalue2 {
-	left: 250px;
+	left: 230px;
 	top: 120px;
 }
 
 .jumpvalue3 {
-	left: 250px;
+	left: 230px;
 	top: 155px;
 }
 
 .jumpvalue4 {
-	left: 250px;
+	left: 230px;
 	top: 190px;
-	visibility:hidden;
-
 }
 
 .jumpvalue5 {
-	left: 250px;
-	top: 190px;
-
-}
-
-.jumpvalue6 {
-	left: 250px;
+	left: 230px;
 	top: 225px;
 }
 
+.jumpvalue6 {
+	left: 230px;
+	top: 260px;
+}
+
 .jumpvalue7 {
-	left: 420px;
+	left: 400px;
 	top: 85px;
 }
 
 .jumpvalue8 {
-	left: 420px;
+	left: 400px;
 	top: 120px;
 }
 
 .jumpvalue9 {
-	left: 420px;
+	left: 400px;
 	top: 155px;
 }
 
 .jumpvalue10 {
-	left: 420px;
+	left: 400px;
 	top: 190px;
-	visibility:hidden;
 }
 
 .jumpvalue11 {
-	left: 420px;
-	top: 190px;
+	left: 400px;
+	top: 225px;
 }
 
 .jumpvalue12 {
-	left: 420px;
-	top: 225px;
+	left: 400px;
+	top: 260px;
 }
 
 .jumpvalue14 {
 	left: 195px;
 	top: 165px;
 }
-
-/*transient filter value */
-.jumpvalue10b {
-	display: block;
-	position: absolute;
-	z-index: 99;
-	left: 890px;
-	top: 370px;
-}
-
-
-/*transient filter slider */
-#jumpfactor10bContainer {
-	display: block;
-	position: absolute;
-	left: 715px;
-	top: 385px;
-	width: 150px;
-	z-index: 99;
-}
-
-/*transient filter label */
-.jumplabel8 {
-	display: block;
-	position: absolute;
-	z-index: 99;
-	font-size: 14px;
-	left: 540px;
-	top: 385px;
-	width: 170px;
-}
-
 
 #pitchBendContainer {
 	display: block;
@@ -2502,14 +1867,14 @@ h2 {
 
 #switch12 {
 	top: 80px;
-	left: 280px;
+	left: 160px;
 }
 
 .forceVelocityLabel {
 	display: block;
 	position: absolute;
 	width: 150px;
-	left: 135px;
+	left: 15px;
 	top: 83px;
 	z-index: 99;
 	font-size: 14px;
@@ -2519,7 +1884,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 250px;
-	top: 175px;
+	top: 110px;
 	z-index: 99;
 }
 
@@ -2527,7 +1892,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 250px;
-	top: 148px;
+	top: 83px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2537,21 +1902,21 @@ h2 {
 	position: absolute;
 	width: 140px;
 	left: 25px;
-	top: 138px;
+	top: 118px;
 	z-index: 99;
 	font-size: 14px;
 }
 
 #switch6 {
-	top: 134px;
+	top: 114px;
 	left: 160px;
 }
 
 .sendPressureLabel {
 	display: block;
 	position: absolute;
-	left: 80px;
-	top: 258px;
+	left: 100px;
+	top: 168px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2559,8 +1924,8 @@ h2 {
 .sendVelocityLabel {
 	display: block;
 	position: absolute;
-	left: 52px;
-	top: 303px;
+	left: 72px;
+	top: 198px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2568,8 +1933,8 @@ h2 {
 .sendAftertouchLabel {
 	display: block;
 	position: absolute;
-	left: 100px;
-	top: 348px;
+	left: 120px;
+	top: 228px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2577,34 +1942,32 @@ h2 {
 .sendPolyAftertouchLabel {
 	display: block;
 	position: absolute;
-	left: 130px;
-	top: 393px;
+	left: 150px;
+	top: 258px;
 	z-index: 99;
 	font-size: 14px;
 }
 
 
 #switch7 {
-	top: 255px;
-	left: 228px;
+	top: 165px;
+	left: 248px;
 }
 
 #switch10 {
-	top: 300px;
-	left: 228px;
+	top: 195px;
+	left: 248px;
 }
 
 #switch11 {
-	top: 345px;
-	left: 228px;
+	top: 225px;
+	left: 248px;
 }
 
 #switch13 {
-	top: 390px;
-	left: 228px;
+	top: 255px;
+	left: 248px;
 }
-
-
 
 #switch14 {
 	top: 200px;
@@ -2615,28 +1978,6 @@ h2 {
 	top: 250px;
 	left: 350px;
 }
-
-#switch16 {
-	top: 130px;
-	left: 330px;
-}
-
-.overrideLabel {
-	position: absolute;
-	left: 85px;
-	top: 120px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-.overrideLabel2 {
-	position: absolute;
-	left: 85px;
-	top: 150px;
-	z-index: 99;
-	font-size: 14px;
-}
-
 
 .hack1Label {
 	position: absolute;
@@ -2654,21 +1995,21 @@ h2 {
 	font-size: 14px;
 }
 
+
 .expressionChannelLabel {
 	display: block;
 	position: absolute;
-	left: 227px;
-	top: 350px;
+	left: 327px;
+	top: 155px;
 	z-index: 99;
 	font-size: 14px;
-
 }
 
 .highByteLabel {
 	display: block;
 	position: absolute;
 	left: 330px;
-	top: 350px;
+	top: 220px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2689,104 +2030,50 @@ h2 {
 .expressionChannelInputContainer {
 	display: block;
 	position: absolute;
-	left: 240px;
-	top: 375px;
+	left: 340px;
+	top: 180px;
 }
 
 .expressionHighByteInputContainer {
 	display: block;
 	position: absolute;
 	left: 340px;
-	top: 375px;
-}
-
-#pressureChannel{
-	visibility:hidden;
-}
-
-#pressureCC{
-	visibility:hidden;
-}
-
-#expressionChannel{
-	visibility:hidden;
-}
-
-#highByte{
-	visibility:hidden;
+	top: 245px;
 }
 
 .radiogroup7 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 100px;
+	top: 295px;
 	left: 20px;
 	padding: 0px;
-	z-index: 1000;
 }
 
 .radiogroup8 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 100px;
+	top: 295px;
 	left: 160px;
 	padding: 0px;
-	z-index: 1000;
 }
 
 .radiogroup9 {
 	display: block;
 	position: absolute;
 	width: 250px;
-	top: 100px;
+	top: 295px;
 	left: 300px;
 	padding: 0px;
-	z-index: 1000;
 }
-
-.curveLabel {
-	display: inline;
-	position: absolute;
-	top: 15px;
-}
-
-
-.linear {
-	display: block;
-	position: absolute;
-	width: 250px;
-	top: -80px;
-	left: -75px;
-	padding: 0px;
-}
-
-.curve2 {
-		display: block;
-	position: absolute;
-	width: 250px;
-	top: -80px;
-	left: 70px;
-	padding: 0px;
-}
-
-.curve3 {
-		display: block;
-	position: absolute;
-	width: 250px;
-	top: -80px;
-	left: 215px;
-	padding: 0px;
-}
-	
 
 .maxMinContainer {
 	display: block;
 	width: 65%;
 	position: absolute;
 	left: 80px;
-	top: 220px;
+	top: 375px;
 	z-index: 99;
 }
 
@@ -2795,78 +2082,15 @@ h2 {
 	width: 65%;
 	position: absolute;
 	left: 80px;
-	top: 285px;
-	z-index: 99;
-}
-
-.maxMinContainer3 {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: 80px;
-	top: 270px;
-	z-index: 99;
-}
-
-#slider-value-min {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: -100px;
-	top: 215px;
-	z-index: 99;
-}
-
-#slider-value-max {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: 270px;
-	top: 215px;
-	z-index: 99;
-}
-
-#slider2-value-min {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: -100px;
-	top: 280px;
-	z-index: 99;
-}
-
-#slider2-value-max {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: 270px;
-	top: 280px;
-	z-index: 99;
-}
-
-#slider3-value-min {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: -100px;
-	top: 265px;
-	z-index: 99;
-}
-
-#slider3-value-max {
-	display: block;
-	width: 65%;
-	position: absolute;
-	left: 270px;
-	top: 265px;
+	top: 420px;
 	z-index: 99;
 }
 
 .rangeLabel {
 	display: block;
 	position: absolute;
-	left: 150px;
-	top: 190px;
+	left: 175px;
+	top: 350px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -2875,16 +2099,7 @@ h2 {
 	display: block;
 	position: absolute;
 	left: 195px;
-	top: 255px;
-	z-index: 99;
-	font-size: 14px;
-}
-
-.overrideRangeLabel {
-	display: block;
-	position: absolute;
-	left: 165px;
-	top: 230px;
+	top: 395px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -3040,18 +2255,11 @@ h2 {
 	top: 180px;
 }
 
-#pressureGroup{
-	display: block;
-	position: absolute;
-	left: 0px;
-	top: -50px;
-}
-
 .pressureLabel {
 	display: block;
 	position: absolute;
 	left: 60px;
-	top: 330px;
+	top: 320px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -3059,8 +2267,8 @@ h2 {
 .pressureLabelAdvanced {
 	display: block;
 	position: absolute;
-	left: 30px;
-	top: 320px;
+	left: 330px;
+	top: 310px;
 	z-index: 99;
 	font-size: 14px;
 }
@@ -3073,7 +2281,7 @@ h2 {
 	width: 60px;
 	height: 21px;
 	left: 79px;
-	top: 360px;
+	top: 350px;
 	color: var(--text-color);
 	z-index: 99;
 	font-size: 14px;
@@ -3090,8 +2298,8 @@ h2 {
 	text-align: center;
 	width: 60px;
 	height: 21px;
-	left: 49px;
-	top: 345px;
+	left: 349px;
+	top: 335px;
 	color: var(--text-color);
 	z-index: 99;
 	font-size: 14px;
@@ -3151,17 +2359,37 @@ input[type=range]::-moz-range-track {
 	cursor: pointer;
 }
 
+.consoleLabel {
+	display: block;
+	position: absolute;
+	left: 85px;
+	top: 25px;
+	z-index: 99;
+	font-size: 14px;
+}
 
-	
-#modal-center18 {
-	height: 800px;
-	width: 200px;
+.console {
+	display: block;
+	position: absolute;
+	margin: auto;
+	text-align: center;
+	width: 145px;
+	height: 21px;
+	left: 180px;
+	top: 22px;
+	color: var(--text-color);
+	z-index: 99;
+	font-size: 14px;
+	line-height: 21px;
+	border: solid 2px var(--console-border-color);
+	background-color: var(--console-bg-color);
+	border-radius: 5px;
 }
 
 .styled-select {
 	position: relative;
 	display: block;
-	background: url("../img/downarrow.png") no-repeat 96%;
+	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3182,7 +2410,7 @@ input[type=range]::-moz-range-track {
 .styled-key-select {
 	position: relative;
 	display: block;
-	background: url("../img/downarrow.png") no-repeat 96%;
+	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3204,7 +2432,7 @@ input[type=range]::-moz-range-track {
 .styled-fingering-select {
 	position: relative;
 	display: block;
-	background: url("../img/downarrow.png") no-repeat 96%;
+	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;
@@ -3222,11 +2450,28 @@ input[type=range]::-moz-range-track {
 	cursor: pointer;
 }
 
+.notechannellabel {
+	display: block;
+	position: absolute;
+	left: 60px;
+	top: 364px;
+	width: 100px;
+	z-index: 99;
+	font-size: 14px;
+}
+
+.noteChannelContainer {
+	display: block;
+	position: absolute;
+	left: 170px;
+	top: 360px;
+}
+
 
 .styled-select2 {
 	position: relative;
 	display: block;
-	background: url("../img/downarrow.png") no-repeat 96%;
+	background: url("https://warbl.xyz/img/downarrow.png") no-repeat 96%;
 	background-size: 20px 33px;
 	height: 23px;
 	overflow: hidden;

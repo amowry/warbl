@@ -3,7 +3,7 @@
 //
 
 //debugger;
-
+var sendDelay = 20 //milliseconds delay between sending commands to the WARBL
 
 var mapSelection; //keeps track of which pressure output we're mapping (CC, vel, aftertouch, poly)
 var curve = [0,0,0,0]; //which curve is selected for CC, vel, aftertouch, poly
@@ -40,6 +40,11 @@ var deviceName;
 var volume = 0;
 
 var currentNote = 62;
+
+var sendAllQueue = []; //queue for outgoing messages to WARBL port
+var sendWARBLoutQueue = []; //queue for outgoing messages to all ports
+var sendWARBLInterval  = setInterval(sendQueuedWARBLoutMessages, sendDelay); //start sending any queued messages 
+var sendAllInterval = setInterval(sendAllQueuedMessages, sendDelay); //start sending any queued messages
 
 var sensorValue = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -87,6 +92,9 @@ window.onclick = function(event) {
 	}
 	event.stopPropagation();
 }
+
+
+
 
 window.addEventListener('load', function() {
 	
@@ -166,7 +174,15 @@ function showWARBLUnknown(){
 
 function connect() {
 	
-	if (communicationMode && version > 2.0) {sendToAll(102, 99); //tell WARBL to exit communications mode if the "connect" button currently reads "Disconnect"
+	if (communicationMode && version > 2.0) {
+		//sendToAll(102, 99); //tell WARBL to exit communications mode if the "connect" button currently reads "Disconnect"		
+		var cc = buildMessage(102,99); //tell WARBL to exit communications mode if the "connect" button currently reads "Disconnect"
+		var iter = midiAccess.outputs.values();
+		for (var o = iter.next(); !o.done; o = iter.next()) {
+		o.value.send(cc); //send CC message
+	}	
+		
+		
 		communicationMode = false;
 		showWARBLNotDetected();
 		showWARBLUnknown();
@@ -326,10 +342,15 @@ function setPing() {
 	}, 3000);
 }
 
+
+
+
 //
 // Common message handler for sendToAll and sendToWARBL to build send message
 //
 function buildMessage(byte2, byte3){
+	
+	
 
 	if (!(byte2 == 102 && byte3 == 127) && !(byte2 == 106 && byte3 == 42)) {
 		blink(1);
@@ -358,64 +379,97 @@ function buildMessage(byte2, byte3){
 		}
 	}
 
+
 	cc = [0xB6, byte2, byte3]; //prepare message
+	
+
 
 	return cc;
 }
 
-//
+
+
+
 // Send to all connected MIDI devices
-//
 function sendToAll(byte2, byte3) {
 
-	//console.log("sendToAll");
-
 	var cc = buildMessage(byte2,byte3);
-
-	// Send to all MIDI output ports
-	var iter = midiAccess.outputs.values();
-
-	for (var o = iter.next(); !o.done; o = iter.next()) {
-
-		//console.log("o.value.name: "+o.value.name);
-
-		o.value.send(cc, window.performance.now()); //send CC message
-
-	}
-
+		sendAllQueue.push(cc); //add message to queue
+		if(!sendAllInterval){
+			sendAllInterval = setInterval(sendAllQueuedMessages, sendDelay); //start interval for sending queued messages
+		}
 }
+
+
+
+
 
 // Send a command to only the WARBL output port
 function sendToWARBL(byte2, byte3) {
 	if(communicationMode){
-	if (platform = "app") {
+	if (platform == "app") {
 		var cc = buildMessage(byte2,byte3);
-		var iter = midiAccess.outputs.values();
-		for (var o = iter.next(); !o.done; o = iter.next()) {
-		o.value.send(cc, window.performance.now()); //send CC message
-		
-	}}
+		sendAllQueue.push(cc); //add message to queue
+		if(!sendAllInterval){
+			sendAllInterval = setInterval(sendAllQueuedMessages, sendDelay); //start interval for sending queued messages
+		}
+	}
 	
 	else {
 
-	//console.log("sendToWARBL");
-
 	// Make sure we have a WARBL output port
 		if (!WARBLout){
-
-			console.error("sendToWARBL: No MIDI port selected!")
-		
+			console.error("sendToWARBL: No MIDI port selected!")	
 			return;
-
 		}
 
 		var cc = buildMessage(byte2,byte3);
-
-		// Send to only WARBL MIDI output port
-		WARBLout.send(cc, window.performance.now()); //send CC message
+		sendWARBLoutQueue.push(cc); //add message to queue
+		if(!sendWARBLInterval){
+		sendWARBLInterval = setInterval(sendQueuedWARBLoutMessages, sendDelay); //start interval for sending queued messages
+		}
+		
 	}
 }
 }
+
+
+
+
+//send queued MIDI messages to WARBLout port at a regular internal to allow WARBL time to receive and process them all
+function sendQueuedWARBLoutMessages() {
+	if(sendWARBLoutQueue.length > 0){
+		console.log("Sending to WARBL port");
+		var cc = sendWARBLoutQueue.shift(); //shift next value from queue	
+		WARBLout.send(cc); //send CC message
+	}
+	else {
+		clearInterval(sendWARBLInterval);
+		sendWARBLInterval = null;
+	} //stop flushing queue if it's empty
+}
+
+
+
+
+//send queued MIDI messages to all ports at a regular internal to allow WARBL time to receive and process them all
+function sendAllQueuedMessages() {
+	if(sendAllQueue.length > 0){
+		var cc = sendAllQueue.shift(); //shift next value from queue
+		
+		var iter = midiAccess.outputs.values();
+		for (var o = iter.next(); !o.done; o = iter.next()) {
+				o.value.send(cc); //send CC message to all ports
+		}
+	}	
+	else {
+		clearInterval(sendAllInterval);
+		sendAllInterval = null;
+	} //stop flushing queue if it's empty		
+}
+
+
+
 
 
 function WARBL_Receive(event) {
@@ -437,7 +491,7 @@ function WARBL_Receive(event) {
 	}
 
 	//console.log("WARBL_Receive");
-	//console.log("WARBL_Receive target = "+event.target.name);
+	//yconsole.log("WARBL_Receive target = "+event.target.name);
 	//console.log("WARBL_Receive: "+data0+" "+data1+" "+data2);
 
 	// If we haven't established the WARBL output port and we get a received message on channel 7
@@ -471,28 +525,39 @@ function WARBL_Receive(event) {
 			var outputName = o.value.name;
 
 		 	// Strip any [] postfix
+			console.log("WARBL output port: " + outputName);
 		 	
 		 	var outputBracketIndex = outputName.indexOf("[");
 
 		 	if (outputName.indexOf("[")!=-1){
 
 		 		outputName = outputName.substr(0,outputBracketIndex);
+				
 
 		 	}
 
 			if (outputName == inputName){
 
-				//console.log("Found the matching WARBL output port!")
+				console.log("Found the matching WARBL output port!")
 
-				WARBLout = o.value;
-				
+				WARBLout = o.value;	
 				break;
 			}
+			
+			 else if (outputName.includes("WARBL")) { //The "WARBL" part is a hack because when we're on BLE the input and output ports don't necessarily have the same name, for example with the Korg BLE MIDI Driver they are WARBL IN and WARBL OUT. AM 10/23
+                 console.log("Found backup WARBL output port: " + outputName)
+				backupout = o.value;
+			}
 		}	
+		
+			// only if an exact match wasn't found do we use the backup "includes-WARBL" output
+		if (!WARBLout && backupout) {
+			WARBLout = backupout;
+		}
 
 		if (!WARBLout){
 
-			//console.error("Failed to find the WARBL output port!")
+			console.error("Failed to find the WARBL output port!")
 			
 			showWARBLNotDetected();
 
@@ -570,7 +635,7 @@ function WARBL_Receive(event) {
 
 			if (parseFloat(data0 & 0x0f) == 6) { //if it's channel 7 it's from WARBL 
 
-
+			//console.log("WARBL_Receive: "+data0+" "+data1+" "+data2);
 
 				// Enable the import preset button
 				$('#importPreset').removeAttr('disabled')
@@ -1017,7 +1082,7 @@ function WARBL_Receive(event) {
 
 					version = data2;
 					
-					if (version == currentVersion) { //display the appropriate messages
+					if (version >= currentVersion) { //display the appropriate messages
 						document.getElementById("current").innerHTML = "Your firmware is up to date.";
 						document.getElementById("current").style.left = "710px";
 						document.getElementById("current").style.visibility = "visible";
@@ -1048,7 +1113,80 @@ function WARBL_Receive(event) {
 				}
 					
 					
-					//Lots of UI changes based on the current firmware version of the connected WARBL
+					
+					
+					
+			//Lots of UI changes based on the current firmware version of the connected WARBL
+					
+					
+					
+					
+					
+				if (version > 2.1){ //add new items that should only be visible with newer software versions
+				
+				//add medieval pipes and bansuri fingering for custom version
+				for (i = 0; i < document.getElementById("fingeringSelect0").length; ++i){
+    				if (document.getElementById("fingeringSelect0").options[i].value == "23"){
+ 						var a = 1;    
+				}}
+
+  				if (a != 1){
+					var x = document.getElementById("fingeringSelect0"); 		
+  					var option = document.createElement("option");
+  					option.text = "Medieval bagpipes";
+  					option.value = 22;
+  					x.add(option);
+		
+					var y = document.getElementById("fingeringSelect1");
+					var option = document.createElement("option");
+  					option.text = "Medieval bagpipes";
+  					option.value = 22;
+					y.add(option);
+		
+					var z = document.getElementById("fingeringSelect2");
+					var option = document.createElement("option");
+  					option.text = "Medieval bagpipes";
+  					option.value = 22;
+					z.add(option);
+					
+					var x = document.getElementById("fingeringSelect0"); 		
+  					var option = document.createElement("option");
+  					option.text = "Barbaro's EWI";
+  					option.value = 23;
+  					x.add(option);
+		
+					var y = document.getElementById("fingeringSelect1");
+					var option = document.createElement("option");
+  					option.text = "Barbaro's EWI";
+  					option.value = 23;
+					y.add(option);
+		
+					var z = document.getElementById("fingeringSelect2");
+					var option = document.createElement("option");
+  					option.text = "Barbaro's EWI";
+  					option.value = 23;
+					z.add(option);
+					
+					var x = document.getElementById("fingeringSelect0"); 		
+  					var option = document.createElement("option");
+  					option.text = "Bansuri";
+  					option.value = 9;
+  					x.add(option);
+		
+					var y = document.getElementById("fingeringSelect1");
+					var option = document.createElement("option");
+  					option.text = "Bansuri";
+  					option.value = 9;
+					y.add(option);
+		
+					var z = document.getElementById("fingeringSelect2");
+					var option = document.createElement("option");
+  					option.text = "Bansuri";
+  					option.value = 9;
+					z.add(option);
+
+				}
+				}
 					
 						if (version < 2.1) {
 						document.getElementById("jumpfactor10Container").style.visibility = "visible";
@@ -1289,15 +1427,57 @@ function bit_test(num, bit) {
 }
 
 
+
+
+
+
+
 function sendCustomFingeringFill(){
 	
+	//sendToWARBL(104, 87);
 	modalclose(22);	
-	var value = document.getElementById("customFingeringFill").value;
+
+	var selection = document.getElementById("customFingeringFill").value;
+	//console.log(selection);
 	for (i = 1; i < 12; ++i) {
-		document.getElementById("fingeringInput" + i).value = customFingeringFills[value][i - 1];
-		fingeringInput(i, customFingeringFills[value][i - 1]);
+		
+		document.getElementById("fingeringInput" + i).value = customFingeringFills[selection][i - 1];
+		var x = document.getElementById("fingeringInput" + i).value;
+		//fingeringInput(i, customFingeringFills[value][i - 1]);
+			sendToWARBL(104, 86 + i);
+			sendToWARBL(105, x);
+			//alert("sending");
+
+	//const e = new Event("change");
+//const element = document.querySelector('#fingeringInput1')
+//element.dispatchEvent(e);
 	}
+	document.getElementById("customFingeringFill").value = "12";
+
 }
+
+
+
+
+
+
+function fingeringInput(input, selection) { 	//send the custom fingering input entry
+		var x = document.getElementById("fingeringInput" + input).value;
+		/*
+		if (x < 0 || x > 127 || isNaN(x)) {
+			alert("Value must be 0-127.");
+			document.getElementById("fingeringInput" + input).value = null;
+		}		
+		else{
+			*/
+	
+	sendToWARBL(104, 86 + input);
+	sendToWARBL(105, x);
+		//}
+}
+
+
+
 
 
 function sendFingeringSelect(row, selection) {
@@ -1319,7 +1499,7 @@ function sendFingeringSelect(row, selection) {
 	else if (selection == 6) {
 		key = 122;
 	} //NAF
-	else if (selection == 8) {
+	else if (selection == 8 || selection == 23) {
 		key = 125;
 	} //Recorder
 	else if (selection == 11) {
@@ -1334,6 +1514,9 @@ function sendFingeringSelect(row, selection) {
 		else if (selection == 20) {
 		key = 123;
 	} //Bombarde
+			else if (selection == 22) {
+		key = 5;
+	} //Medieval bagpipes
 	else {
 		key = 0;
 	} //default key of D for many patterns
@@ -1347,20 +1530,7 @@ function sendFingeringSelect(row, selection) {
 }
 
 
-function fingeringInput(input, selection) { 	//send the custom fingering input entry
 
-		var x = document.getElementById("fingeringInput" + input).value;
-		if (x < 0 || x > 127 || isNaN(x)) {
-			alert("Value must be 0-127.");
-			document.getElementById("fingeringInput" + input).value = null;
-		}		
-		else{
-	blink(1);
-	document.getElementById("customFingeringFill").value = "12";
-	sendToWARBL(104, 86 + input);
-	sendToWARBL(105, selection);
-		}
-}
 
 
 function defaultInstrument() { //tell WARBL to set the current instrument as the default
@@ -1966,9 +2136,9 @@ function mapCC() {
 	document.getElementById("box6").style.display = "none";
 	if(curve[0] < 3) {document.getElementById("curveRadio" + curve[0]).checked = true;
 	}
-	if (version > 1.8){
+	//if (version > 1.8){
 		document.getElementById("pressureMappingHeader").innerHTML="CC Mapping";
-	}
+	//}
 }
 
 function mapVelocity() {
@@ -2142,27 +2312,30 @@ function sendRow(rowNum) {
 	sendToWARBL(102, 90 + rowNum);
 	var y = (100) + parseFloat(document.getElementById("row" + rowNum).value);
 	sendToWARBL(102, y);
-	sendMIDIrow(rowNum);
-	sendChannel(rowNum);
-	sendByte2(rowNum);
-	sendByte3(rowNum);
+	sendMIDIrow(rowNum); //this is just to fix an issue with the LED being stuck on with the old WARBL and this Config Tool version.
+	//sendMIDIrow(rowNum);
+	//sendChannel(rowNum);
+	//sendByte2(rowNum);
+	//sendByte3(rowNum);
 	if (rowNum < 3) {
-		sendMomentary(rowNum);
+		//sendMomentary(rowNum);
 	}
 }
 
 function sendMIDIrow(MIDIrowNum) {
+	
 	blink(1);
 	updateCells();
 	sendToWARBL(102, 90 + MIDIrowNum);
 	var y = (112) + parseFloat(document.getElementById("MIDIrow" + MIDIrowNum).value);
 	sendToWARBL(102, y);
-	sendChannel(MIDIrowNum);
-	sendByte2(MIDIrowNum);
-	sendByte3(MIDIrowNum);
+	//sendChannel(MIDIrowNum);
+	//sendByte2(MIDIrowNum);
+	//sendByte3(MIDIrowNum);
 	if (MIDIrowNum < 3) {
-		sendMomentary(MIDIrowNum);
+		//sendMomentary(MIDIrowNum);
 	}
+	
 }
 
 function sendChannel(rowNum) {
@@ -2350,7 +2523,7 @@ function restoreAll() {
 	blink(3);
 	sendToWARBL(102, 125);
 	communicationMode = 0;
-	if (version > 1.9) { //WARBL will restart, so try to reconnect to it.
+	if (version > 1.9 && version < 4.0) { //WARBL will restart, so try to reconnect to it.
 		setTimeout(connect, 3000);
 	}
 }
@@ -2819,7 +2992,7 @@ function importPreset(context){
 	var maxSupportedPresetVersion = 1;
 
 	// How long to wait in msec between sending commands
-	var delay = 5;
+	var delay = 10;
      
     //debugger;
 

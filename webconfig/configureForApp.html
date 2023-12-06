@@ -44,16 +44,19 @@
     </style>
     
     
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-129157937-1">
-    </script>
 
+    
+    
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-129157937-1');
-    </script>
+    if (window.isSecureContext) {
+  // Page is a secure context so service workers are now available
+
+  
+  console.log("secure");
+}
+  </script>   
+    
+
     
   </head>
 
@@ -510,7 +513,7 @@
                 <option value="17">Säckpipa (major)</option>
                 <option value="18">Säckpipa (minor)</option> 
                 <option value="20">Bombarde</option>
-                <option value="21">Baroque flute</option>                
+                <option value="21">Baroque flute</option>            
                 <option value="19">Custom</option>       
               </select>
 
@@ -538,7 +541,7 @@
                 <option value="17">Säckpipa (major)</option>
                 <option value="18">Säckpipa (minor)</option>
                 <option value="20">Bombarde</option>
-                <option value="21">Baroque flute</option>                  
+                <option value="21">Baroque flute</option>                 
                 <option value="19">Custom</option> 
               </select>
 
@@ -566,7 +569,7 @@
                 <option value="17">Säckpipa (major)</option>
                 <option value="18">Säckpipa (minor)</option>
                 <option value="20">Bombarde</option>
-                <option value="21">Baroque flute</option>                
+                <option value="21">Baroque flute</option>              
                 <option value="19">Custom</option>
               </select>
 
@@ -936,7 +939,7 @@
 
             <div class="slidecontainer" id="jumpfactor3Container">
 
-              <input type="range" min="0" max="60" value="20" class="ranger" id="jumpFactor3" onChange="sendJumpFactor(3, value)">
+              <input type="range" min="0" max="100" value="20" class="ranger" id="jumpFactor3" onChange="sendJumpFactor(3, value)">
 
             </div>
 
@@ -972,7 +975,7 @@
 
             <div class="slidecontainer" id="jumpfactor9Container">
 
-              <input type="range" min="0" max="60" value="20" class="ranger" id="jumpFactor9" onChange="sendJumpFactor(9, value)">
+              <input type="range" min="0" max="100" value="20" class="ranger" id="jumpFactor9" onChange="sendJumpFactor(9, value)">
 
             </div>
 
@@ -2604,7 +2607,7 @@
         <div>
           
           <p>
-            These settings control the way that the register is changed by overblowing. Each variable below has a setting for a <b>bag</b> and one for the <b>breath</b> (mouthpiece). which settings are used depends on whether you currently have Bag or Breath selected in the main Note Trigger and Register Control panel.
+            These settings control the way that the register is changed by overblowing. Each variable below has a setting for a <b>bag</b> and one for the <b>breath</b> (mouthpiece). which settings are used depends on whether you currently have Bag or Breath selected in the main Note Trigger and Register Control panel (the currently selected group of settings are surrounded by a white box).
             The variables that are most likely to need adjustment are located near the top. Clicking the <b>Bag defaults</b> button will restore the default bag settings for all variables in the panel, and clicking the <b>Breath defaults</b> button will restore the default settings for breath. Units are not shown for some of these settings because they use arbitrary units.
           </p>
 
@@ -2986,7 +2989,7 @@
     
     <script src='js/0650_SBLive_sf2.js'></script>
     
-    <script src="js/midi.min.js"></script>
+    <script src="js/midi.js"></script>
 
     <script src="js/d3.min.js"></script>
 
