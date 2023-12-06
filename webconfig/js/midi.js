@@ -1333,6 +1333,9 @@ function sendFingeringSelect(row, selection) {
 	} //Sackpipa
 		else if (selection == 20) {
 		key = 123;
+	} //Medieval
+		else if (selection == 22) {
+		key = 5;
 	} //Bombarde
 	else {
 		key = 0;
