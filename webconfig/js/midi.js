@@ -491,18 +491,21 @@ function WARBL_Receive(event) {
 	}
 
 	//console.log("WARBL_Receive");
-	//yconsole.log("WARBL_Receive target = "+event.target.name);
+	//console.log("WARBL_Receive target = "+event.target.name);
 	//console.log("WARBL_Receive: "+data0+" "+data1+" "+data2);
 
 	// If we haven't established the WARBL output port and we get a received message on channel 7
 	// find the port by name by walking the output ports and matching the input port name
-	if ((!WARBLout) && ((data0 & 0x0F) == 6)){
+
+	 if ((!WARBLout) && ((data0 & 0x0F) == 6) && ((data0 & 0xf0) == 176) && (data1 == 110)) { //tstt to narrow the search to only MIDI ports that sent a CC 110 message (which should be the first mesage that WARBL sends).
 		//alert(data0 & 0x0F);
 		
 	if (platform == "web"){
 
 		//alert(input.value.name);
 	 	var inputName = event.target.name;
+		
+		console.log("WARBL input port: " + inputName);
 
 
 	 	// Strip any [] postfix
@@ -525,7 +528,7 @@ function WARBL_Receive(event) {
 			var outputName = o.value.name;
 
 		 	// Strip any [] postfix
-			console.log("WARBL output port: " + outputName);
+			console.log("Output port: " + outputName);
 		 	
 		 	var outputBracketIndex = outputName.indexOf("[");
 
@@ -544,7 +547,7 @@ function WARBL_Receive(event) {
 				break;
 			}
 			
-			 else if (outputName.includes("WARBL")) { //The "WARBL" part is a hack because when we're on BLE the input and output ports don't necessarily have the same name, for example with the Korg BLE MIDI Driver they are WARBL IN and WARBL OUT. AM 10/23
+			 else if (outputName.includes("WARBL")) { //The "WARBL" part is a hack because the input and output ports don't necessarily have the same name, for example with the Korg BLE MIDI Driver they are WARBL IN and WARBL OUT. AM 10/23
                  console.log("Found backup WARBL output port: " + outputName)
 				backupout = o.value;
 			}
